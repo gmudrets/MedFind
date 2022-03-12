@@ -1,5 +1,1 @@
 # MedFind
-
-
-
-Avinoam Edit
