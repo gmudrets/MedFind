@@ -1,27 +1,35 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import logo from '../../../Assets/Images/logo.png'
+import { getSafe } from '../../../Utils/Utils'
+import * as STATE_PATHS from '../../../Consts/StatePaths'
 
 function Header() {
-  const [auth, setAuth] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+//   const navigate = useNavigate();
+  const [auth, setAuth] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
   const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
+  useEffect(() => {
+    if (username == ''){
+        setAuth(false);
+    }
+    else {
+        setAuth(true);
+    }
+  
+  }, [username])
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -29,22 +37,11 @@ function Header() {
 
   const handleCloseUserMenu = () => {
     setAnchorEl(null);
+    // navigate("/logout");
   };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={auth}
-              onChange={handleChange}
-              aria-label="login switch"
-            />
-          }
-          label={auth ? 'Logout' : 'Login'}
-        />
-      </FormGroup>
       <AppBar position="static" color="grey">
         <Toolbar>
           <IconButton
@@ -94,7 +91,6 @@ function Header() {
               </Menu>
             </div>
           )}
-          {!auth && (<Button color="inherit">Login</Button>)}
         </Toolbar>
       </AppBar>
     </Box>
