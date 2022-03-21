@@ -21,7 +21,7 @@ function Home() {
   const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
   
   useEffect(() => {
-    if (username == ''){
+    if (username === ''){
         navigate("/login");
     }
   

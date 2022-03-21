@@ -3,10 +3,6 @@ import Home from '../../HomeArea/Home';
 import Login from '../../AuthArea/Login/Login';
 import Register from '../../AuthArea/Register/Register';
 import Logout from '../../AuthArea/Logout/Logout';
-// import PageNotFound from '../PageNotFound/PageNotFound';
-// import Loadable from 'react-loadable';
-// import Loading from '../../SharedArea/Loading/Loading';
-// import ContactUs from '../../AboutArea/ContactUs/ContactUs';
 
 function Routing() {
 	return (

@@ -13,7 +13,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-// import { connect } from "react-redux";
 import { useSelector, useDispatch } from 'react-redux';
 import { Actions } from "../../../Redux/Auth";
 import { getSafe } from '../../../Utils/Utils'
@@ -33,8 +32,8 @@ function Login() {
 		let user = data.get('username');
 		let pass = data.get('password');
 		console.log({
-		username: user,
-		password: pass,
+			username: user,
+			password: pass,
 		});
 		dispatch(Actions.requestUserLogin(user, pass));
 		navigate("/");
