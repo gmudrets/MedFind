@@ -14,19 +14,31 @@ import SearchIcon from '@mui/icons-material/Search';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import { getSafe } from '../../Utils/Utils'
 import * as STATE_PATHS from '../../Consts/StatePaths'
+import {getRequest} from "../../Utils/AxiosRequests";
+import {ServerConsts} from "../../Consts/apiPaths";
 
 function Home() {
-  const theme = createTheme();
+  const theme = createTheme({direction: 'rtl'});
   const navigate = useNavigate();
   const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
-  
+
   useEffect(() => {
     if (username === ''){
         navigate("/login");
     }
-  
-  }, [username])
-  
+  }, [username]);
+
+
+  const search = async () => {
+
+      const axiosConfig = {
+          baseURL: 'http://localhost:8080/',
+          timeout: 30000,
+      };
+
+      let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : "acamol", "prescription" : "true", "pageIndex" : "1" }, axiosConfig);
+      console.log(data);
+  };
 
   return (
     <ThemeProvider theme={theme}>

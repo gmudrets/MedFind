@@ -20,7 +20,7 @@ import * as STATE_PATHS from '../../../Consts/StatePaths'
 
 
 function Login() {
-	const theme = createTheme();
+	const theme = createTheme({direction: 'rtl'});
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
