@@ -6,6 +6,7 @@ import openu.MedFind.dto.MedicineResults;
 import openu.MedFind.dto.RequestMedicineByName;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,8 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
+// To allow access to nodejs local instance for development purposes
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class MedicineQuery {
 
@@ -40,8 +43,6 @@ public class MedicineQuery {
 
         return headersSpec.retrieve().bodyToMono(String.class).block(WEB_CLIENT_TIMEOUT);
     }
-
-
 
     @GetMapping("/api/SearchMedicine")
     public MedicineResults SearchMedicine(@RequestParam String name,

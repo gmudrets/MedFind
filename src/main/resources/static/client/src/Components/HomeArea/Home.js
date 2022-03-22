@@ -6,6 +6,12 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -22,23 +28,89 @@ function Home() {
   const navigate = useNavigate();
   const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
 
+  const [ tableRows, setTableRows ] = useState([]);
+  const [ searchValue, setSearchValue ] = useState("");
+
   useEffect(() => {
     if (username === ''){
         navigate("/login");
     }
   }, [username]);
 
+  function createData(activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
+                      dragHebName, health, images, prescription, secondarySymptom) {
+      return { activeComponents, barcodes, customerPrice, dosageForm, dragEnName, dragHebName, health,
+                  images, prescription, secondarySymptom };
+  }
+
+  function generateMultiField(data) {
+    let final = '';
+
+    data.forEach(
+      function(d) {
+        final += d + ":";
+      }
+    );
+
+    // Remove last character
+    return final.slice(0, -1);
+  }
+
+  function getValue(data) {
+    if(data === "null") {
+      return ""
+    }
+    else if(data === true) {
+      return "כן";
+    }
+    else if(data === false) {
+      return "לא";
+    }
+
+    return data;
+  }
+
+  const nameMapping = {
+    "activeComponents" : "חומרים פעילים",
+    "barcodes" : "ברקוד",
+    "customerPrice" : "מחיר לצרכן",
+    "dosageForm" : "צורת צריכה",
+    "dragEnName" : "שם באנגלית",
+    "dragHebName" : "שם בעברית",
+    "health" : "בסל הבריאות",
+    "images" : "תמונות",
+    "prescription" : "צריך מרשם",
+    "secondarySymptom" : "השפעות",
+  };
 
   const search = async () => {
+    let rows = [];
+    let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "true", "pageIndex" : "1" });
 
-      const axiosConfig = {
-          baseURL: 'http://localhost:8080/',
-          timeout: 30000,
-      };
+    data["results"].forEach(
+      function(d){
+        rows.push(createData(
+          generateMultiField(d["activeComponents"]),
+          d["barcodes"],
+          d["customerPrice"],
+          d["dosageForm"],
+          d["dragEnName"],
+          d["dragHebName"],
+          d["health"],
+          generateMultiField(d["images"]),
+          d["prescription"],
+          d["secondarySymptom"],
+          ))
+      }
+    );
 
-      let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : "acamol", "prescription" : "true", "pageIndex" : "1" }, axiosConfig);
-      console.log(data);
-  };
+    setTableRows(rows);
+  }
+
+  function handleSearchValueChange(event) {
+    setSearchValue(event.target.value);
+  }
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -63,8 +135,9 @@ function Home() {
                     sx={{ ml: 1, flex: 1 }}
                     placeholder="חיפוש תרופה"
                     inputProps={{ 'aria-label': 'חיפוש תרופה' }}
+                    onChange={handleSearchValueChange}
                 />
-                <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+                <IconButton type="submit" sx={{ p: '10px' }} aria-label="search" onClick={search}>
                     <SearchIcon />
                 </IconButton>
                 <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
@@ -74,6 +147,42 @@ function Home() {
                 </Paper>
             </Box>
         </Container>
+        <br/><br/>
+        { tableRows.length > 0 ? (
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                <TableCell align="right">{nameMapping["dragHebName"]}</TableCell>
+                <TableCell align="right">{nameMapping["dragEnName"]}</TableCell>
+                <TableCell align="right">{nameMapping["activeComponents"]}</TableCell>
+                <TableCell align="right">{nameMapping["customerPrice"]}</TableCell>
+                <TableCell align="right">{nameMapping["dosageForm"]}</TableCell>
+                <TableCell align="right">{nameMapping["health"]}</TableCell>
+                <TableCell align="right">{nameMapping["prescription"]}</TableCell>
+                <TableCell align="right">{nameMapping["secondarySymptom"]}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tableRows.map((row) => (
+                <TableRow
+                  key={row.name}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell align="right">{row.dragHebName}</TableCell>
+                  <TableCell align="right">{row.dragEnName}</TableCell>
+                  <TableCell align="right">{row.activeComponents}</TableCell>
+                  <TableCell align="right">{row.customerPrice}</TableCell>
+                  <TableCell align="right">{getValue(row.dosageForm)}</TableCell>
+                  <TableCell align="right">{getValue(row.health)}</TableCell>
+                  <TableCell align="right">{getValue(row.prescription)}</TableCell>
+                  <TableCell align="right">{getValue(row.secondarySymptom)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>) : (<p> No Data to show </p>) }
+        <br/><br/>
     </ThemeProvider>
   );
 }

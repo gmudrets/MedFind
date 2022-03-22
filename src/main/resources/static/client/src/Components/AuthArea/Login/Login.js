@@ -27,16 +27,16 @@ function Login() {
 	const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
 
   	const handleSubmit = (event) => {
-		event.preventDefault();
-		const data = new FormData(event.currentTarget);
-		let user = data.get('username');
-		let pass = data.get('password');
-		console.log({
-			username: user,
-			password: pass,
-		});
-		dispatch(Actions.requestUserLogin(user, pass));
-		navigate("/");
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      let user = data.get('username');
+      let pass = data.get('password');
+      console.log({
+        username: user,
+        password: pass,
+      });
+      dispatch(Actions.requestUserLogin(user, pass));
+      navigate("/");
   	};
 
 
