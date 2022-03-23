@@ -147,9 +147,8 @@ function Home() {
                 </Paper>
             </Box>
         </Container>
-        <br/><br/>
         { tableRows.length > 0 ? (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ m: 2 }}>
           <Table sx={{ minWidth: 650 }} aria-label="sticky table">
             <TableHead>
               <TableRow>
@@ -181,7 +180,7 @@ function Home() {
               ))}
             </TableBody>
           </Table>
-        </TableContainer>) : (<p> No Data to show </p>) }
+        </TableContainer>) : (<p align="center"> אין מידע להצגה </p>) }
         <br/><br/>
     </ThemeProvider>
   );
