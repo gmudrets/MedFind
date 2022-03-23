@@ -137,7 +137,7 @@ function Home() {
                     inputProps={{ 'aria-label': 'חיפוש תרופה' }}
                     onChange={handleSearchValueChange}
                 />
-                <IconButton type="submit" sx={{ p: '10px' }} aria-label="search" onClick={search}>
+                <IconButton sx={{ p: '10px' }} aria-label="search" onClick={search}>
                     <SearchIcon />
                 </IconButton>
                 <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
