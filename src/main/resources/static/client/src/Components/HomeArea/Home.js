@@ -37,17 +37,17 @@ function Home() {
     }
   }, [username]);
 
-  function createData(activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
-                      dragHebName, health, images, prescription, secondarySymptom) {
+  const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
+                      dragHebName, health, images, prescription, secondarySymptom) => {
       return { activeComponents, barcodes, customerPrice, dosageForm, dragEnName, dragHebName, health,
                   images, prescription, secondarySymptom };
   }
 
-  function generateMultiField(data) {
+  const generateMultiField = (data) => {
     let final = '';
 
     data.forEach(
-      function(d) {
+      (d) => {
         final += d + ":";
       }
     );
@@ -56,7 +56,7 @@ function Home() {
     return final.slice(0, -1);
   }
 
-  function getValue(data) {
+  const getValue = (data) => {
     if(data === "null") {
       return ""
     }
@@ -88,7 +88,7 @@ function Home() {
     let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "true", "pageIndex" : "1" });
 
     data["results"].forEach(
-      function(d){
+      (d) => {
         rows.push(createData(
           generateMultiField(d["activeComponents"]),
           d["barcodes"],
@@ -107,8 +107,8 @@ function Home() {
     setTableRows(rows);
   }
 
-  function handleSearchValueChange(event) {
-    setSearchValue(event.target.value);
+  const handleSearchValueChange = (eventData) => {
+    setSearchValue(eventData.target.value);
   }
 
 
