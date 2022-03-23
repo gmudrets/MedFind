@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -19,12 +19,16 @@ const theme = createTheme({direction: 'rtl'});
 
 function Register() {
 	const navigate = useNavigate();
-  const [userType, setUserType] = React.useState([]);
   const types = [
     'משתמש רגיל',
     'רופא',
     'צוות רפואי',
   ];
+  const [userType, setUserType] = useState(types[0]);
+
+  const handleSelectUserType = (event) => {
+    setUserType(event.target.value);
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -64,6 +68,8 @@ function Register() {
                   label="סוג משתמש"
                   name="userType"
                   autoFocus
+                  value={userType}
+                  onChange={handleSelectUserType}
                 >
                   {types.map((type) => (
                   <MenuItem key={type} value={type}>
