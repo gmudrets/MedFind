@@ -19,6 +19,15 @@ npm_run {
 
 processResources.dependsOn npm_run
 
+processResources {
+	exclude '**/node_modules'
+	exclude '/static/client/public/**'
+	exclude '/static/client/src/**'
+	exclude '/static/client/package*.json'
+	exclude '/static/client/README*'
+}
+
+
 group = 'openu'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
@@ -36,6 +45,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

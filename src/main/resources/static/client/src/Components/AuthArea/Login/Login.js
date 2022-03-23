@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,38 +12,38 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useSelector, useDispatch } from 'react-redux';
-import { Actions } from "../../../Redux/Auth";
-import { getSafe } from '../../../Utils/Utils'
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {useSelector, useDispatch} from 'react-redux';
+import {Actions} from "../../../Redux/Auth";
+import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
 
 
 function Login() {
-	const theme = createTheme();
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
+  const theme = createTheme({direction: 'rtl'});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-	const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+  const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
 
-  	const handleSubmit = (event) => {
-		event.preventDefault();
-		const data = new FormData(event.currentTarget);
-		let user = data.get('username');
-		let pass = data.get('password');
-		console.log({
-			username: user,
-			password: pass,
-		});
-		dispatch(Actions.requestUserLogin(user, pass));
-		navigate("/");
-  	};
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    let user = data.get('username');
+    let pass = data.get('password');
+    console.log({
+      username: user,
+      password: pass,
+    });
+    dispatch(Actions.requestUserLogin(user, pass));
+    navigate("/");
+  };
 
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        <CssBaseline />
+        <CssBaseline/>
         <Box
           sx={{
             marginTop: 8,
@@ -52,13 +52,13 @@ function Login() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+            <LockOutlinedIcon/>
           </Avatar>
           <Typography component="h1" variant="h5">
             התחברות
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
             <TextField
               margin="normal"
               required
@@ -80,25 +80,29 @@ function Login() {
               autoComplete="current-password"
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox value="remember" color="primary"/>}
               label="זכור אותי"
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{mt: 3, mb: 2}}
             >
               התחבר
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2" onClick={() => {navigate("/forgotpass");}}>
+                <Link href="#" variant="body2" onClick={() => {
+                  navigate("/forgotpass");
+                }}>
                   ?שכחת סיסמה
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2" onClick={() => {navigate("/register");}} >
+                <Link href="#" variant="body2" onClick={() => {
+                  navigate("/register");
+                }}>
                   {"אינך משתמש רשום? הרשם"}
                 </Link>
               </Grid>
