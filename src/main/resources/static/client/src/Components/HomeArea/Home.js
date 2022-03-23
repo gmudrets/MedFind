@@ -181,7 +181,6 @@ function Home() {
             </TableBody>
           </Table>
         </TableContainer>) : (<p align="center"> אין מידע להצגה </p>) }
-        <br/><br/>
     </ThemeProvider>
   );
 }
