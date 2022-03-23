@@ -93,17 +93,16 @@ function Login() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2" onClick={() => {
+                <Link href="#/forgotpass" variant="body2" onClick={() => {
                   navigate("/forgotpass");
                 }}>
-                  ?שכחת סיסמה
+                  שכחת סיסמה?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2" onClick={() => {
-                  navigate("/register");
-                }}>
-                  {"אינך משתמש רשום? הרשם"}
+			  	<Link href="#/register" variant="body2" onClick={() => {
+					  navigate("/register");}}>
+                  אינך משתמש רשום? הרשם
                 </Link>
               </Grid>
             </Grid>
