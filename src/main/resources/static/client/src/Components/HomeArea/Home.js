@@ -22,6 +22,8 @@ import { getSafe } from '../../Utils/Utils'
 import * as STATE_PATHS from '../../Consts/StatePaths'
 import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
+import TransitionsModal from '../UI/Modal/Modal';
+import BarcodeScanner from '../BarcodeScanner/BarcodeScanner';
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -30,6 +32,7 @@ function Home() {
 
   const [ tableRows, setTableRows ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
+  const [ scannerOpen, setScannerOpen ] = useState(false);
 
   useEffect(() => {
     if (username === ''){
@@ -111,6 +114,14 @@ function Home() {
     setSearchValue(eventData.target.value);
   }
 
+  const toggleScanner = () => {
+    setScannerOpen(!scannerOpen);
+  }
+
+  const searchBarcode = (data) =>{
+    setSearchValue(data);
+    search();
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -136,17 +147,21 @@ function Home() {
                     placeholder="חיפוש תרופה"
                     inputProps={{ 'aria-label': 'חיפוש תרופה' }}
                     onChange={handleSearchValueChange}
+                    value={searchValue}
                 />
                 <IconButton sx={{ p: '10px' }} aria-label="search" onClick={search}>
                     <SearchIcon />
                 </IconButton>
                 <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                <IconButton color="primary" sx={{ p: '10px' }} aria-label="barcode">
+                <IconButton color="primary" sx={{ p: '10px' }} aria-label="barcode" onClick={toggleScanner}>
                     <QrCode2Icon />
                 </IconButton>
                 </Paper>
             </Box>
         </Container>
+          <TransitionsModal open={scannerOpen} toggleModal={toggleScanner}>
+            <BarcodeScanner setScannedData={searchBarcode} closeModal={toggleScanner}/>
+          </TransitionsModal>
         { tableRows.length > 0 ? (
         <TableContainer component={Paper} sx={{ m: 2 }}>
           <Table sx={{ minWidth: 650 }} aria-label="sticky table">
