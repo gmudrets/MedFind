@@ -13,23 +13,28 @@ function BarcodeScanner(props) {
   }
 
   return (
-    <Box            sx={{
-        marginTop: 8,
+    <Box 
+      sx={{
+        marginTop: 1,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',}}>
-      <BarcodeScannerComponent
-        width={250}
-        height={250}
-        onUpdate={(err, result) => {
-          if (result) {
-              props.setScannedData(result.text);
-              dismissBarcodeReader();
-            }
-          else setData("Not Found");
-        }}
-        stopStream={stopStream}
-      />
+        alignItems: 'center',
+      }}>
+      <h2>Scan barcode</h2>
+      <Box sx={{ p: 2, border: '5px dashed grey' }}>
+        <BarcodeScannerComponent
+          width={250}
+          height={250}
+          onUpdate={(err, result) => {
+            if (result) {
+                props.setScannedData(result.text);
+                dismissBarcodeReader();
+              }
+            else setData("Not Found");
+          }}
+          stopStream={stopStream}
+        />
+      </Box>
       <p>{data}</p>
     </Box>
   );
