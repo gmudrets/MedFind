@@ -15,11 +15,7 @@ jobs:
         with:
           java-version: 17
           distribution: 'adopt'
-      - name: Build with Gradle
+      - name: Build and run with Gradle
         run: ./gradlew build
-        env:
-          CI: ""
-      - name: Run with Gradle
-        run: ./gradlew test
         env:
           CI: ""
