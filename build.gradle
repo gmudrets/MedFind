@@ -20,7 +20,7 @@ task generateSSLKey {
 			}
 		} else {
 			exec {
-				commandLine 'create_cert.sh', javaHome + '/bin/keytool'
+				commandLine './create_cert.sh', javaHome + '/bin/keytool'
 			}
 		}
 	}
