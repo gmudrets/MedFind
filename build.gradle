@@ -16,11 +16,11 @@ task generateSSLKey {
 
 		if (osName.toLowerCase().contains('windows')) {
 			exec {
-				commandLine 'cmd', '/c', 'create_cert.bat', javaHome + '/bin/keytool.exe'
+				commandLine 'cmd', '/c', projectDir.toString() + '/create_cert.bat', javaHome + '/bin/keytool.exe'
 			}
 		} else {
 			exec {
-				commandLine './create_cert.sh', javaHome + '/bin/keytool'
+				commandLine projectDir.toString() + '/create_cert.sh', javaHome + '/bin/keytool'
 			}
 		}
 	}
