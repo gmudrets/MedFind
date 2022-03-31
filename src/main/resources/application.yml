@@ -9,3 +9,12 @@ spring:
       static-locations: "classpath:/static/client/build/"
   mvc:
     static-path-pattern: "/**"
+
+server:
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: build/.keyStore/key.cert
+    key-store-password: SecretP4ss
+
+
