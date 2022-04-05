@@ -3,76 +3,49 @@ import { validate } from "react-email-validator"
 // Fields validators
 
 export const usernameEmpty = (username) => {
-    if (username.length === 0){
-        return true;
-    }
-    return false;
+    return username.length === 0;
 }
 
 export const usernameMinChars = (username) => {
-    if (username.length >= 8){
-        return true;
-    }
-    return false;
+    return username.length >= 8;
 }
 
 export const usernameValid = (username) => {
-    //Check username contains only allowed chars.
-    return true;
+    let validChars = /^[A-Za-z0-9]*$/
+    return validChars.test(username);
 }
 
 export const passwordsMatches = (password, matchPassword) => {
-    if (password !== matchPassword){
-        return false;
-    }
-    return true;
+    return password === matchPassword;
 }
 
 export const passwordEmpty = (password) => {
-    if (password.length === 0){
-        return true;
-    }
-    return false;
+    return password.length === 0;
 }
 
 export const passwordValid = (password) => {
-    //Check password contains only allowed chars.
-    return true;
+    let validChars = /^[A-Za-z0-9!@#$%^&*()-_~`+-]*$/
+    return validChars.test(password);
 }
 
 export const passwordMinChars = (password) => {
-    if (password.length >= 8) {
-        return true;
-    }
-    return false;
+    return password.length >= 8;
 }
 
 export const emailEmpty = (email) => {
-    if (email.length === 0){
-        return true;
-    }
-    return false;
+    return email.length === 0;
 }
 
 export const emailValid = (email) => {
-    if(validate(email)){
-        return true;
-    }
-    return false;
+    return validate(email);
 }
 
 export const firstnameEmpty = (firstname) => {
-    if(firstname.length === 0) {
-        return true;
-    }
-    return false;
+    return firstname.length === 0;
 }
 
 export const lastnameEmpty = (lastname) => {
-    if(lastname.length === 0) {
-        return true;
-    }
-    return false;
+    return lastname.length === 0;
 }
 
 

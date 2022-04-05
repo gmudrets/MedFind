@@ -16,24 +16,24 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String usertype;
-    private String username;
-    private String firstname;
-    private String lastname;
+    private String userType;
+    private String userName;
+    private String firstName;
+    private String lastName;
     private String email;
     private String password;
 
-    public User(String usertype,
-                String username,
-                String firstname,
-                String lastname,
+    public User(String userType,
+                String userName,
+                String firstName,
+                String lastName,
                 String email,
                 String password){
 
-        this.usertype = usertype;
-        this.username = username;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.userType = userType;
+        this.userName = userName;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
     }

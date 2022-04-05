@@ -14,15 +14,11 @@ public class RegistrationService {
 
     public String registerNewUser(RegistrationRequest registerRequest) {
 
-        // Add validations on fields + check if username/email doesn't already exist.
-        // maybe in another function?
-        // the if else - inside the controller or service?
-
         userRepo.save(new User(
-                registerRequest.getUsertype(),
-                registerRequest.getUsername(),
-                registerRequest.getFirstname(),
-                registerRequest.getLastname(),
+                registerRequest.getUserType(),
+                registerRequest.getUserName(),
+                registerRequest.getFirstName(),
+                registerRequest.getLastName(),
                 registerRequest.getEmail(),
                 registerRequest.getPassword()
         ));

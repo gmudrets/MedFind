@@ -20,9 +20,8 @@ public class RegistrationController {
 
     private RegistrationService registrationService;
 
-    @PostMapping("/api/user/register")
+    @PostMapping("/api/User/Register")
     public String UserRegistration(@RequestBody RegistrationRequest registerRequest){
-        System.out.println(registerRequest);
         return registrationService.registerNewUser(registerRequest);
     }
 }

@@ -17,10 +17,7 @@ import { createTheme, ThemeProvider} from '@mui/material/styles';
 import {postRequest} from "../../../Utils/AxiosRequests";
 import {ServerConsts} from "../../../Consts/apiPaths";
 import * as validations from "../Validators/Validators";
-
-// TO-DO client-side:
-// 1. get the usertype + the allowExtraEmails info.
-// 2. add additional field of doctor's number when usertype == doctor.
+import {Snackbar, Alert} from "@mui/material";
 
 const theme = createTheme({direction: 'rtl'});
 
@@ -43,6 +40,9 @@ function Register() {
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
 
+  const [registerSuccessMessage, setRegisterSuccessMessage] = useState(false);
+  const [registerErrorMessage, setRegisterErrorMessage] = useState(false);
+
 
   const handleSelectUserType = (event) => {
     setUserType(event.target.value);
@@ -58,7 +58,14 @@ function Register() {
       "email" : data.get("email"),
       "password" : data.get("password")
     });
-    console.log("response from server is: \n" + res);
+  }
+
+  const handleRegisterSuccess = () =>{
+    navigate("/login");
+  }
+
+  const handleRegisterError = () => {
+    setRegisterErrorMessage(false);
   }
 
   const handleSubmit = (event) => {
@@ -129,23 +136,37 @@ function Register() {
 
     if(allValidationsPassed){
       registerNewUser(data).then( () => {
-        alert("נרשמת בהצלחה, עבור להתחברות !")
-        navigate("/login");
+        setRegisterSuccessMessage(true);
       });
     }
 
     else{
-      alert("אחד (או יותר) מהפרטים שהזנת לא תקין, אנא תקן ובצע שוב !")
-    }
-
-    // Logging all form entries
-    for (let pair of data.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
+      setRegisterErrorMessage(true);
     }
   };
 
   return (
     <ThemeProvider theme={theme}>
+      <Snackbar open={registerSuccessMessage}
+                autoHideDuration={3000}
+                onClose={handleRegisterSuccess}
+                anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
+      >
+        <Alert severity="success">
+          נרשמת בהצלחה ! מיד תועבר/י להתחברות
+        </Alert>
+      </Snackbar>
+
+      <Snackbar open={registerErrorMessage}
+                autoHideDuration={3000}
+                onClose={handleRegisterError}
+                anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
+      >
+        <Alert severity="error">
+          אחד (או יותר) מהפרטים שהזנת שגויים. אנא בדוק ונסה שנית.
+        </Alert>
+      </Snackbar>
+
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
