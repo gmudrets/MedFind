@@ -18,10 +18,14 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getSafe } from '../../Utils/Utils'
 import * as STATE_PATHS from '../../Consts/StatePaths'
 import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
+import TransitionsModal from '../UI/Modal/Modal';
+import BarcodeScanner from '../BarcodeScanner/BarcodeScanner';
+import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -30,12 +34,24 @@ function Home() {
 
   const [ tableRows, setTableRows ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
+  const [ scannerOpen, setScannerOpen ] = useState(false);
+  const [ triggerSearch, setTriggerSearch ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
 
   useEffect(() => {
     if (username === ''){
         navigate("/login");
     }
   }, [username]);
+
+  useEffect(() => {
+    if (triggerSearch && searchValue !== ''){
+        search()
+        setTriggerSearch(!triggerSearch);
+    }
+  }, [triggerSearch]);
+
+
 
   const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
                       dragHebName, health, images, prescription, secondarySymptom) => {
@@ -84,6 +100,7 @@ function Home() {
   };
 
   const search = async () => {
+      setLoading(true)
     let rows = [];
     let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "true", "pageIndex" : "1" });
 
@@ -105,12 +122,20 @@ function Home() {
     );
 
     setTableRows(rows);
+    setLoading(false);
   }
 
   const handleSearchValueChange = (eventData) => {
     setSearchValue(eventData.target.value);
   }
 
+  const toggleScanner = () => {
+    setScannerOpen(!scannerOpen);
+  }
+
+  const searchBarcode = (data) =>{
+      setSearchValue(data);
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -136,17 +161,30 @@ function Home() {
                     placeholder="חיפוש תרופה"
                     inputProps={{ 'aria-label': 'חיפוש תרופה' }}
                     onChange={handleSearchValueChange}
+                    value={searchValue}
+                    onKeyDown={
+                        (e) => {
+                            if (e.key === 'Enter') {
+                                search();
+                                e.preventDefault();
+                            }
+                        }
+                    }
                 />
                 <IconButton sx={{ p: '10px' }} aria-label="search" onClick={search}>
                     <SearchIcon />
                 </IconButton>
                 <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                <IconButton color="primary" sx={{ p: '10px' }} aria-label="barcode">
+                <IconButton color="primary" sx={{ p: '10px' }} aria-label="barcode" onClick={toggleScanner}>
                     <QrCode2Icon />
                 </IconButton>
                 </Paper>
             </Box>
         </Container>
+          <TransitionsModal open={scannerOpen} toggleModal={toggleScanner}>
+            <BarcodeScanner setScannedData={searchBarcode} triggerSearch={setTriggerSearch} closeModal={toggleScanner}/>
+          </TransitionsModal>
+        <CircularProgressBackdrop open={loading} toggle={setLoading}/>
         { tableRows.length > 0 ? (
         <TableContainer component={Paper} sx={{ m: 2 }}>
           <Table sx={{ minWidth: 650 }} aria-label="sticky table">
