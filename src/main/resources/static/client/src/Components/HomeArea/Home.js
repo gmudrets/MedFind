@@ -164,6 +164,14 @@ function Home() {
                     inputProps={{ 'aria-label': 'חיפוש תרופה' }}
                     onChange={handleSearchValueChange}
                     value={searchValue}
+                    onKeyDown={
+                        (e) => {
+                            if (e.key === 'Enter') {
+                                search();
+                                e.preventDefault();
+                            }
+                        }
+                    }
                 />
                 <IconButton sx={{ p: '10px' }} aria-label="search" onClick={search}>
                     <SearchIcon />
