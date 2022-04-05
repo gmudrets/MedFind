@@ -1,5 +1,6 @@
 module.exports = {
     ServerConsts : {
-        SEARCH_MEDICINE : "/api/SearchMedicine"
+        SEARCH_MEDICINE : "/api/SearchMedicine",
+        REGISTER : "/api/user/register"
     }
 };
