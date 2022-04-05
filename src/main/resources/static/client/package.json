@@ -19,7 +19,8 @@
 		"web-vitals": "^2.1.4",
 		"redux": "^4.1.2",
 		"redux-devtools-extension": "^2.13.9",
-		"axios": "^0.26.1"
+		"axios": "^0.26.1",
+		"react-email-validator": "^1.0.2"
 	},
 	"scripts": {
 		"start": "react-scripts start",
