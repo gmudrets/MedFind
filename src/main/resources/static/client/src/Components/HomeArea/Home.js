@@ -33,6 +33,7 @@ function Home() {
   const [ tableRows, setTableRows ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
   const [ scannerOpen, setScannerOpen ] = useState(false);
+  const [ barcodeData, setBarcodeData ] = useState(false);
 
   useEffect(() => {
     if (username === ''){
@@ -40,6 +41,12 @@ function Home() {
     }
   }, [username]);
 
+  useEffect(() => {
+    setSearchValue(barcodeData);
+    search();
+      
+  }, [barcodeData])
+  
   const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
                       dragHebName, health, images, prescription, secondarySymptom) => {
       return { activeComponents, barcodes, customerPrice, dosageForm, dragEnName, dragHebName, health,
@@ -119,8 +126,7 @@ function Home() {
   }
 
   const searchBarcode = (data) =>{
-    setSearchValue(data);
-    search();
+    setBarcodeData(data);
   }
 
   return (
