@@ -18,12 +18,14 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getSafe } from '../../Utils/Utils'
 import * as STATE_PATHS from '../../Consts/StatePaths'
 import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
 import TransitionsModal from '../UI/Modal/Modal';
 import BarcodeScanner from '../BarcodeScanner/BarcodeScanner';
+import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -33,7 +35,8 @@ function Home() {
   const [ tableRows, setTableRows ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
   const [ scannerOpen, setScannerOpen ] = useState(false);
-  const [ barcodeData, setBarcodeData ] = useState(false);
+  const [ triggerSearch, setTriggerSearch ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
 
   useEffect(() => {
     if (username === ''){
@@ -42,11 +45,14 @@ function Home() {
   }, [username]);
 
   useEffect(() => {
-    setSearchValue(barcodeData);
-    search();
-      
-  }, [barcodeData])
-  
+    if (triggerSearch && searchValue !== ''){
+        search()
+        setTriggerSearch(!triggerSearch);
+    }
+  }, [triggerSearch]);
+
+
+
   const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
                       dragHebName, health, images, prescription, secondarySymptom) => {
       return { activeComponents, barcodes, customerPrice, dosageForm, dragEnName, dragHebName, health,
@@ -94,6 +100,7 @@ function Home() {
   };
 
   const search = async () => {
+      setLoading(true)
     let rows = [];
     let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "true", "pageIndex" : "1" });
 
@@ -115,6 +122,7 @@ function Home() {
     );
 
     setTableRows(rows);
+    setLoading(false);
   }
 
   const handleSearchValueChange = (eventData) => {
@@ -126,7 +134,9 @@ function Home() {
   }
 
   const searchBarcode = (data) =>{
-    setBarcodeData(data);
+      // alert(data)
+      setSearchValue(data);
+      // search();
   }
 
   return (
@@ -166,8 +176,9 @@ function Home() {
             </Box>
         </Container>
           <TransitionsModal open={scannerOpen} toggleModal={toggleScanner}>
-            <BarcodeScanner setScannedData={searchBarcode} closeModal={toggleScanner}/>
+            <BarcodeScanner setScannedData={searchBarcode} triggerSearch={setTriggerSearch} closeModal={toggleScanner}/>
           </TransitionsModal>
+        <CircularProgressBackdrop open={loading} toggle={setLoading}/>
         { tableRows.length > 0 ? (
         <TableContainer component={Paper} sx={{ m: 2 }}>
           <Table sx={{ minWidth: 650 }} aria-label="sticky table">

@@ -27,10 +27,10 @@ function BarcodeScanner(props) {
           height={250}
           onUpdate={(err, result) => {
             if (result) {
-                props.setScannedData(result.text);
+                props.setScannedData(result);
+                props.triggerSearch(true);
                 dismissBarcodeReader();
               }
-            else setData("Not Found");
           }}
           stopStream={stopStream}
         />
