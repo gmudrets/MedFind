@@ -134,9 +134,7 @@ function Home() {
   }
 
   const searchBarcode = (data) =>{
-      // alert(data)
       setSearchValue(data);
-      // search();
   }
 
   return (
