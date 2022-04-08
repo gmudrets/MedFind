@@ -51,16 +51,16 @@ function Register() {
   // performs POST request - adding a new user.
   const registerNewUser = async (data) => {
     let res = await postRequest(ServerConsts.REGISTER, {
-      "usertype" : data.get("userType"),
-      "username" : data.get("userName"),
-      "firstname" : data.get("firstName"),
-      "lastname" : data.get("lastName"),
+      "userType" : data.get("userType"),
+      "userName" : data.get("userName"),
+      "firstName" : data.get("firstName"),
+      "lastName" : data.get("lastName"),
       "email" : data.get("email"),
       "password" : data.get("password")
     });
   }
 
-  const handleRegisterSuccess = () =>{
+  const handleRegisterSuccess = () => {
     navigate("/login");
   }
 
