@@ -22,12 +22,7 @@ public class RegistrationService {
                 registerRequest.getEmail(),
                 registerRequest.getPassword()
         ));
-
-        // prints all registered users after saving the latest one.
-        for(User us : userRepo.findAll()){
-            System.out.println(us);
-        }
-
+        
         return "OK";
     }
 }
