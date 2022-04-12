@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import openu.MedFind.dto.RegistrationRequest;
 import openu.MedFind.restservice.entities.User;
 import openu.MedFind.restservice.repositories.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,7 +14,7 @@ public class RegistrationService {
 
     private final UserRepository userRepo;
 
-    public String registerNewUser(RegistrationRequest registerRequest) {
+    public ResponseEntity<String> registerNewUser(RegistrationRequest registerRequest) {
 
         userRepo.save(new User(
                 registerRequest.getUserType(),
@@ -23,6 +25,6 @@ public class RegistrationService {
                 registerRequest.getPassword()
         ));
         
-        return "OK";
+        return new ResponseEntity<String>("User registered successfully.", HttpStatus.CREATED );
     }
 }
