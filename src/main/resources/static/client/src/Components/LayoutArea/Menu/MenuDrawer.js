@@ -15,18 +15,21 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import ShareIcon from '@mui/icons-material/Share';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SearchIcon from '@mui/icons-material/Search';
+import {useNavigate} from "react-router-dom";
 
 export default function MenuDrawer(props) {
 
   const drawerWidth = 250;
   const anchor='right';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const navigate = useNavigate;
   useEffect(() => {
     setIsMenuOpen(props.isMenuOpen);
 
   }, [props.isMenuOpen])
-  
+  const handleSettingPress = ()=>{
+    navigate("/settings");
+  }
   const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -71,7 +74,7 @@ export default function MenuDrawer(props) {
             </ListItemIcon>
             <ListItemText primary='תזכורות' />
           </ListItem>
-          <ListItem button key='settings'>
+          <ListItem button onClick= {handleSettingPress} key='settings'>
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
