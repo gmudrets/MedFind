@@ -11,8 +11,12 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import {createTheme} from "@mui/material/styles";
+import {ThemeProvider} from "@emotion/react";
+import {AccountCircle} from "@mui/icons-material";
 
 export default function Settings2() {
+    const theme = createTheme({direction: 'rtl'});
     const [values, setValues] = React.useState({
         amount: '',
         password: '',
@@ -22,7 +26,7 @@ export default function Settings2() {
     });
 
     const handleChange = (prop) => (event) => {
-        setValues({ ...values, [prop]: event.target.value });
+        setValues({...values, [prop]: event.target.value});
     };
 
     const handleClickShowPassword = () => {
@@ -35,171 +39,54 @@ export default function Settings2() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-
+    const marginX = 7;
+    const m = 3;
     return (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-            <div>
-                <TextField
-                    label="With normal TextField"
-                    id="outlined-start-adornment"
-                    sx={{ m: 1, width: '25ch' }}
-                    InputProps={{
-                        startAdornment: <InputAdornment position="start">kg</InputAdornment>,
-                    }}
-                />
-                <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-                    <OutlinedInput
-                        id="outlined-adornment-weight"
-                        value={values.weight}
-                        onChange={handleChange('weight')}
-                        endAdornment={<InputAdornment position="end">kg</InputAdornment>}
-                        aria-describedby="outlined-weight-helper-text"
-                        inputProps={{
-                            'aria-label': 'weight',
-                        }}
+        <ThemeProvider theme={theme}>
+
+                 <div>
+                    <TextField
+                        label="שם משתמש"
+                        id="outlined-start-adornment"
+                        sx={{m:m,marginX: marginX, width: '25ch'}}
+                        InputLabelProps={{sx:{textAlign:'right'}}}
+                        focused
                     />
-                    <FormHelperText id="outlined-weight-helper-text">Weight</FormHelperText>
-                </FormControl>
-                <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                    <OutlinedInput
-                        id="outlined-adornment-password"
-                        type={values.showPassword ? 'text' : 'password'}
-                        value={values.password}
-                        onChange={handleChange('password')}
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                >
-                                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                        label="Password"
+                    <TextField
+                        label="מייל"
+                        id="outlined-start-adornment"
+                        sx={{m:m,marginX: marginX, width: '25ch',}}
+                        focused
+
                     />
-                </FormControl>
-                <FormControl fullWidth sx={{ m: 1 }}>
-                    <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
-                    <OutlinedInput
-                        id="outlined-adornment-amount"
-                        value={values.amount}
-                        onChange={handleChange('amount')}
-                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                        label="Amount"
-                    />
-                </FormControl>
-            </div>
-            <div>
-                <TextField
-                    label="With normal TextField"
-                    id="filled-start-adornment"
-                    sx={{ m: 1, width: '25ch' }}
-                    InputProps={{
-                        startAdornment: <InputAdornment position="start">kg</InputAdornment>,
-                    }}
-                    variant="filled"
-                />
-                <FormControl sx={{ m: 1, width: '25ch' }} variant="filled">
-                    <FilledInput
-                        id="filled-adornment-weight"
-                        value={values.weight}
-                        onChange={handleChange('weight')}
-                        endAdornment={<InputAdornment position="end">kg</InputAdornment>}
-                        aria-describedby="filled-weight-helper-text"
-                        inputProps={{
-                            'aria-label': 'weight',
-                        }}
-                    />
-                    <FormHelperText id="filled-weight-helper-text">Weight</FormHelperText>
-                </FormControl>
-                <FormControl sx={{ m: 1, width: '25ch' }} variant="filled">
-                    <InputLabel htmlFor="filled-adornment-password">Password</InputLabel>
-                    <FilledInput
-                        id="filled-adornment-password"
-                        type={values.showPassword ? 'text' : 'password'}
-                        value={values.password}
-                        onChange={handleChange('password')}
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                >
-                                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                    />
-                </FormControl>
-                <FormControl fullWidth sx={{ m: 1 }} variant="filled">
-                    <InputLabel htmlFor="filled-adornment-amount">Amount</InputLabel>
-                    <FilledInput
-                        id="filled-adornment-amount"
-                        value={values.amount}
-                        onChange={handleChange('amount')}
-                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                    />
-                </FormControl>
-            </div>
-            <div>
-                <TextField
-                    label="With normal TextField"
-                    id="standard-start-adornment"
-                    sx={{ m: 1, width: '25ch' }}
-                    InputProps={{
-                        startAdornment: <InputAdornment position="start">kg</InputAdornment>,
-                    }}
-                    variant="standard"
-                />
-                <FormControl variant="standard" sx={{ m: 1, mt: 3, width: '25ch' }}>
-                    <Input
-                        id="standard-adornment-weight"
-                        value={values.weight}
-                        onChange={handleChange('weight')}
-                        endAdornment={<InputAdornment position="end">kg</InputAdornment>}
-                        aria-describedby="standard-weight-helper-text"
-                        inputProps={{
-                            'aria-label': 'weight',
-                        }}
-                    />
-                    <FormHelperText id="standard-weight-helper-text">Weight</FormHelperText>
-                </FormControl>
-                <FormControl sx={{ m: 1, width: '25ch' }} variant="standard">
-                    <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
-                    <Input
-                        id="standard-adornment-password"
-                        type={values.showPassword ? 'text' : 'password'}
-                        value={values.password}
-                        onChange={handleChange('password')}
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                >
-                                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                    />
-                </FormControl>
-                <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                    <InputLabel htmlFor="standard-adornment-amount">Amount</InputLabel>
-                    <Input
-                        id="standard-adornment-amount"
-                        value={values.amount}
-                        onChange={handleChange('amount')}
-                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                    />
-                </FormControl>
-            </div>
-        </Box>
+
+                    <FormControl sx={{m:m,marginX: marginX, width: '25ch'}} variant="outlined" focused>
+                        <InputLabel
+                            htmlFor="outlined-adornment-password">ססמא</InputLabel>
+                        <OutlinedInput
+                            id="outlined-adornment-password"
+                            type={values.showPassword ? 'text' : 'password'}
+                            value={values.password}
+                            onChange={handleChange('password')}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {values.showPassword ? <VisibilityOff/> : <Visibility/>}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="Password"
+                        />
+                    </FormControl>
+
+
+                </div>
+        </ThemeProvider>
+
     );
 }
