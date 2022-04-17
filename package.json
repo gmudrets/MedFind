@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "jss-rtl": "^0.3.0",
+    "stylis": "^4.1.0",
+    "stylis-plugin-rtl": "^2.1.1"
+  }
+}

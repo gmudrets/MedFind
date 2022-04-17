@@ -13,7 +13,22 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {createTheme} from "@mui/material/styles";
 import {ThemeProvider} from "@emotion/react";
-import {AccountCircle} from "@mui/icons-material";
+import Grid from "@mui/material/Grid";
+//rtl stuff https://mui.com/material-ui/guides/right-to-left/
+import rtlPlugin from 'stylis-plugin-rtl';
+import {CacheProvider} from '@emotion/react';
+import createCache from '@emotion/cache';
+import {prefixer} from 'stylis';
+
+// Create rtl cache
+const cacheRtl = createCache({
+    key: 'muirtl',
+    stylisPlugins: [prefixer, rtlPlugin],
+});
+
+function RTL(props) {
+    return <CacheProvider value={cacheRtl}>{props.children}</CacheProvider>;
+}
 
 export default function Settings2() {
     const theme = createTheme({direction: 'rtl'});
@@ -39,54 +54,61 @@ export default function Settings2() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-    const marginX = 7;
+    const marginY = 2;
     const m = 3;
     return (
-        <ThemeProvider theme={theme}>
+        <CacheProvider value={cacheRtl}>
+            <ThemeProvider theme={theme}>
+                <React.Fragment>
+                    <Grid container spacing={10} sx={{marginY: marginY}}>
+                        <Grid item sm={4}>
+                            <TextField
+                                label="שם משתמש"
+                                id="outlined-start-adornment"
 
-                 <div>
-                    <TextField
-                        label="שם משתמש"
-                        id="outlined-start-adornment"
-                        sx={{m:m,marginX: marginX, width: '25ch'}}
-                        InputLabelProps={{sx:{textAlign:'right'}}}
-                        focused
-                    />
-                    <TextField
-                        label="מייל"
-                        id="outlined-start-adornment"
-                        sx={{m:m,marginX: marginX, width: '25ch',}}
-                        focused
+                                InputLabelProps={{sx: {textAlign: 'right'}}}
 
-                    />
-
-                    <FormControl sx={{m:m,marginX: marginX, width: '25ch'}} variant="outlined" focused>
-                        <InputLabel
-                            htmlFor="outlined-adornment-password">ססמא</InputLabel>
-                        <OutlinedInput
-                            id="outlined-adornment-password"
-                            type={values.showPassword ? 'text' : 'password'}
-                            value={values.password}
-                            onChange={handleChange('password')}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {values.showPassword ? <VisibilityOff/> : <Visibility/>}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            label="Password"
-                        />
-                    </FormControl>
+                            />
+                        </Grid>
+                        <Grid item sm={4}>
+                            <TextField
+                                label="מייל"
+                                id="outlined-start-adornment"
 
 
-                </div>
-        </ThemeProvider>
+                            />
+                        </Grid>
+                        <Grid item sm={4}>
+                            <FormControl variant="outlined">
+                                <InputLabel
+                                    htmlFor="outlined-adornment-password">ססמא</InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    type={values.showPassword ? 'text' : 'password'}
+                                    value={values.password}
+                                    onChange={handleChange('password')}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {values.showPassword ? <VisibilityOff/> : <Visibility/>}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    label="Password"
+                                />
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                </React.Fragment>
+
+            </ThemeProvider>
+        </CacheProvider>
+
 
     );
 }
