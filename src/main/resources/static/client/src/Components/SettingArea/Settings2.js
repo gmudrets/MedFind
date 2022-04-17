@@ -60,25 +60,27 @@ export default function Settings2() {
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
                 <React.Fragment>
-                    <Grid container spacing={10} sx={{marginY: marginY}}>
-                        <Grid item sm={4}>
+                    <Grid container  sx={{paddingTop:"40px"}}>
+                        <Grid item sm={3} sx={{textAlign:"center"}}>
                             <TextField
                                 label="שם משתמש"
                                 id="outlined-start-adornment"
-
-                                InputLabelProps={{sx: {textAlign: 'right'}}}
-
                             />
                         </Grid>
-                        <Grid item sm={4}>
+                        <Grid item sm={3} sx={{textAlign:"center"}}>
                             <TextField
                                 label="מייל"
                                 id="outlined-start-adornment"
-
-
                             />
                         </Grid>
-                        <Grid item sm={4}>
+                        <Grid item sm={3} sx={{textAlign:"center"}}>
+                            <TextField
+                                label="מספר טלפון"
+                                id="outlined-start-adornment"
+                            />
+                            
+                        </Grid>
+                        <Grid item sm={3} sx={{textAlign:"center"}}>
                             <FormControl variant="outlined">
                                 <InputLabel
                                     htmlFor="outlined-adornment-password">ססמא</InputLabel>
