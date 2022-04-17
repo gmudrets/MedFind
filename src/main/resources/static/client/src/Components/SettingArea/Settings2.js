@@ -13,12 +13,19 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {createTheme} from "@mui/material/styles";
 import {ThemeProvider} from "@emotion/react";
+import DeleteIcon from '@mui/icons-material/Delete';
+import ClearIcon from '@mui/icons-material/Clear';
+
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import SendIcon from '@mui/icons-material/Send';
 import Grid from "@mui/material/Grid";
 //rtl stuff https://mui.com/material-ui/guides/right-to-left/
 import rtlPlugin from 'stylis-plugin-rtl';
 import {CacheProvider} from '@emotion/react';
 import createCache from '@emotion/cache';
 import {prefixer} from 'stylis';
+import {Button} from "@mui/material";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -79,6 +86,11 @@ export default function Settings2() {
                                 id="outlined-start-adornment"
                             />
                             
+                            <Button variant="outlined" startIcon={<ClearIcon/>}>
+
+                            </Button>
+                            <Button variant="contained" endIcon={<CheckIcon />}>
+                            </Button>
                         </Grid>
                         <Grid item sm={3} sx={{textAlign:"center"}}>
                             <FormControl variant="outlined">
