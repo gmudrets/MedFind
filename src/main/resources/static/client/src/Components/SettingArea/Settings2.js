@@ -68,7 +68,7 @@ export default function Settings2() {
             <ThemeProvider theme={theme}>
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
-                        <Grid container spacing={5} sx={{paddingTop: "40px"} }>
+                        <Grid container columnSpacing={5} rowSpacing={2} sx={{paddingTop: "40px"} }>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <TextField
                                     label="שם משתמש"
