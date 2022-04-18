@@ -68,34 +68,37 @@ export default function Settings2() {
             <ThemeProvider theme={theme}>
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
-                        <Grid container sx={{paddingTop: "40px"}}>
+                        <Grid container spacing={5} sx={{paddingTop: "40px"} }>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <TextField
                                     label="שם משתמש"
                                     id="outlined-start-adornment"
+                                    fullWidth
                                 />
                             </Grid>
-                            <Grid container md={3} sx={{textAlign: "center"}}>
+                            <Grid item md={3} sx={{textAlign: "center"}}>
                                 <Grid container>
                                     <Grid item md={9}>
                                         <TextField
                                             label="מייל"
                                             id="outlined-start-adornment"
+                                            fullWidth
                                         />
                                     </Grid>
                                     <Grid item md={3} >
                                         <Stack>
-                                            <Button variant="outlined" component="span" style={{minWidth: 'fit-content'}} endIcon={<ClearIcon/>}/>
-                                            <Button variant="contained" component="span" style={{minWidth: 'fit-content'}} endIcon={<CheckIcon/>}/>
+                                            <Button variant="outlined" component="span" style={{minWidth: 'fit-content'}} endIcon={<EditIcon/>}/>
+
                                         </Stack>
                                     </Grid>
 
                                 </Grid>
                             </Grid>
-                            <Grid container md={3} sx={{textAlign: "center"}}>
+                            <Grid item md={3} sx={{textAlign: "center"}}>
                                 <Grid container>
                                     <Grid item md={9}>
                                         <TextField
+                                            fullWidth
                                             label="מספר טלפון"
                                             id="outlined-start-adornment"
                                         />
@@ -110,14 +113,15 @@ export default function Settings2() {
                                 </Grid>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <FormControl variant="outlined">
+                                <FormControl variant="outlined" fullWidth>
                                     <InputLabel
-                                        htmlFor="outlined-adornment-password">ססמא</InputLabel>
+                                        htmlFor="outlined-adornment-password" >ססמא</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
                                         type={values.showPassword ? 'text' : 'password'}
                                         value={values.password}
                                         onChange={handleChange('password')}
+
                                         endAdornment={
                                             <InputAdornment position="end">
                                                 <IconButton
@@ -131,6 +135,7 @@ export default function Settings2() {
                                             </InputAdornment>
                                         }
                                         label="Password"
+
                                     />
                                 </FormControl>
                             </Grid>
