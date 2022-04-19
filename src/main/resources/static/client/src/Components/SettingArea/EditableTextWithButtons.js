@@ -31,6 +31,7 @@ export default function EditableTextWithButtons(props) {
     const handleEditClick = () => {
         setIsEditMode(true);
         setShowPassword(true);
+        inputRef.current.focus();
     }
     const handleClearClick = () => {
         setIsEditMode(false);
@@ -79,6 +80,8 @@ export default function EditableTextWithButtons(props) {
                     fullWidth
                     value={currentText}
                     error={!currentlyValidated && isEditMode}
+                    onClick={handleEditClick}
+                    ref={inputRef}
                 />
                 : <FormControl variant="outlined" fullWidth>
                     <InputLabel
@@ -96,6 +99,7 @@ export default function EditableTextWithButtons(props) {
                         fullWidth
                         value={currentText}
                         error={!currentlyValidated && isEditMode}
+                        onClick={handleEditClick}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
@@ -108,6 +112,7 @@ export default function EditableTextWithButtons(props) {
                                 </IconButton>
                             </InputAdornment>
                         }
+
 
                     />
                 </FormControl>}
