@@ -74,61 +74,18 @@ export default function Settings2() {
                     <Box sx={{flexGrow: 1}}>
                         <Grid container columnSpacing={5} rowSpacing={2} sx={{paddingTop: "40px"}}>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <TextField
-                                    label="שם משתמש"
-                                    id="outlined-start-adornment"
-                                    fullWidth
-                                />
+                                <EditableTextWithButtons label="שם משתמש" validate={validateName}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <Grid container>
-                                    <Grid item md={9}>
-                                        <TextField
-                                            label="מייל"
-                                            id="outlined-start-adornment"
-                                            fullWidth
-                                        />
-                                    </Grid>
-                                    <Grid item md={3}>
-                                        <Stack>
-                                            <Button variant="outlined" component="span"
-                                                    style={{minWidth: 'fit-content'}} endIcon={<EditIcon/>}/>
-
-                                        </Stack>
-                                    </Grid>
-
-                                </Grid>
+                                <EditableTextWithButtons label="מייל" validate={validateName}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="שם משתמש" initVal="hey" validate={validateName}/>
+                                <EditableTextWithButtons label="טלפון" validate={validateName}/>
 
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <FormControl variant="outlined" fullWidth>
-                                    <InputLabel
-                                        htmlFor="outlined-adornment-password">ססמא</InputLabel>
-                                    <OutlinedInput
-                                        id="outlined-adornment-password"
-                                        type={values.showPassword ? 'text' : 'password'}
-                                        value={values.password}
-                                        onChange={handleChange('password')}
+                                <EditableTextWithButtons password={ true} label="ססמא" validate={validateName}/>
 
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {values.showPassword ? <VisibilityOff/> : <Visibility/>}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                        label="Password"
-
-                                    />
-                                </FormControl>
                             </Grid>
                         </Grid>
                     </Box>
