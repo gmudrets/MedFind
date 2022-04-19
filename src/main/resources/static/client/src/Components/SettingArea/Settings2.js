@@ -62,6 +62,9 @@ export default function Settings2() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+    const validateName = (s) => {
+        return s != '' && s.charAt(0) == 'a';
+    }
     const marginY = 2;
     const m = 3;
     return (
@@ -97,7 +100,7 @@ export default function Settings2() {
                                 </Grid>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons initVal="hey"/>
+                                <EditableTextWithButtons label="שם משתמש" initVal="hey" validate={validateName}/>
 
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>

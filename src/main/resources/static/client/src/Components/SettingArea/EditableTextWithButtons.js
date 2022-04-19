@@ -1,70 +1,98 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import FilledInput from '@mui/material/FilledInput';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
+
 import TextField from '@mui/material/TextField';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {createTheme} from "@mui/material/styles";
-import {ThemeProvider} from "@emotion/react";
-import DeleteIcon from '@mui/icons-material/Delete';
+
 import ClearIcon from '@mui/icons-material/Clear';
 
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
-import SendIcon from '@mui/icons-material/Send';
 import Grid from "@mui/material/Grid";
 import {Button, Stack} from "@mui/material";
 import {useState} from "react";
-import {checkNode} from "@testing-library/jest-dom/dist/utils";
+
 
 export default function EditableTextWithButtons(props) {
-    const [isEdited, setIsEdited] = useState(false);
-    const [isValidate, setIsValidate] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [currentlyValidated, setCurrentlyValidated] = useState(false);
     const [currentText, setCurrentText] = useState(props.initVal);
+    const [lastSubmitted, setLastSubmitted] = useState(props.initVal);
+    const [submiting, setSubmitings] = useState(false);
+
+
     const handleEditClick = () => {
-        setIsEdited(true);
+        setIsEditMode(true);
     }
     const handleClearClick = () => {
-        setIsEdited(false);
+        setIsEditMode(false);
+        setCurrentText(lastSubmitted);
     }
-    // const handleChange = (event) => {
-    //     setCurrentText(event.target.value)
-    //     setIsValidate(props.validate(currentText))
-    // }
+    const handleChange = (event) => {
+        setCurrentText(event.target.value)
+        setCurrentlyValidated(props.validate(event.target.value))
+
+    }
+    const myHandleSubmit = () => {
+        var cur = currentText;
+        setSubmitings(true);
+        if(props.handleSubmit(cur)) {
+            setLastSubmitted(cur);
+            setCurrentText(cur);
+        }else{
+          alert("Error Submiting " + props.label)
+        }
+        setIsEditMode(false);
+        setSubmitings(false);
+
+    }
     return (<Grid container>
         <Grid item md={9}>
             <TextField
-                fullWidth
-                label="מספר טלפון"
-                id="outlined-start-adornment"
+                focused={isEditMode}
+                defaultValue={lastSubmitted}
                 InputProps={{
-                    readOnly: !isEdited,
+                    readOnly: !isEditMode && !submiting,
                 }}
-                focused={isEdited}
-                defaultValue={props.initVal}
+                onChange={handleChange}
+                label={props.label}
+                id="outlined-start-adornment"
+                fullWidth
+                value={currentText}
+                error={!currentlyValidated && isEditMode}
+
             />
         </Grid>
         <Grid item md={3}>
             <Stack>
-                {isEdited && <Button onClick={handleClearClick} variant="contained" component="span"
-                                     style={{minWidth: 'fit-content', maxWidth: "20px"}}
-                                     endIcon={<ClearIcon/>}/>}
-                {isEdited &&
-                    <Button variant="outlined" component="span" style={{minWidth: 'fit-content', maxWidth: "20px"}}
+                {isEditMode && <Button onClick={handleClearClick} variant="outlined" component="span"
+                                       style={{minWidth: 'fit-content', maxWidth: "20px"}}
+                                       endIcon={<ClearIcon/>}/>}
+                {isEditMode &&
+                    <Button onClick={myHandleSubmit} variant="contained" component="span"
+                            style={{minWidth: 'fit-content', maxWidth: "20px"}}
                             endIcon={<CheckIcon/>}
-                            disabled={!isValidate}/>}
-                {!isEdited && <Button onClick={handleEditClick} variant="outlined" component="span"
-                                      style={{minWidth: 'fit-content', maxWidth: "20px"}} endIcon={<EditIcon/>}/>}
+                            disabled={!currentlyValidated}/>}
+                {!isEditMode && <Button onClick={handleEditClick} variant="outlined" component="span"
+                                        style={{minWidth: 'fit-content', maxWidth: "20px"}} endIcon={<EditIcon/>}
+                />}
 
             </Stack>
         </Grid>
 
     </Grid>)
+
+
+}
+
+EditableTextWithButtons.defaultProps = {
+    //the initial value of the field
+    initVal: "",
+    //validation function for the field
+    validate: (s) => true,
+    //label of field
+    label: "field",
+    //handle submition return true if everything was ok
+    handleSubmit: (s) => {return true},
+    //is passwor
+    password:false
+
 }
