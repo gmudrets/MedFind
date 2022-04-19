@@ -26,6 +26,7 @@ import {CacheProvider} from '@emotion/react';
 import createCache from '@emotion/cache';
 import {prefixer} from 'stylis';
 import {Button, Stack} from "@mui/material";
+import EditableTextWithButtons from "./EditableTextWithButtons";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -68,7 +69,7 @@ export default function Settings2() {
             <ThemeProvider theme={theme}>
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
-                        <Grid container columnSpacing={5} rowSpacing={2} sx={{paddingTop: "40px"} }>
+                        <Grid container columnSpacing={5} rowSpacing={2} sx={{paddingTop: "40px"}}>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <TextField
                                     label="שם משתמש"
@@ -85,9 +86,10 @@ export default function Settings2() {
                                             fullWidth
                                         />
                                     </Grid>
-                                    <Grid item md={3} >
+                                    <Grid item md={3}>
                                         <Stack>
-                                            <Button variant="outlined" component="span" style={{minWidth: 'fit-content'}} endIcon={<EditIcon/>}/>
+                                            <Button variant="outlined" component="span"
+                                                    style={{minWidth: 'fit-content'}} endIcon={<EditIcon/>}/>
 
                                         </Stack>
                                     </Grid>
@@ -95,27 +97,13 @@ export default function Settings2() {
                                 </Grid>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <Grid container>
-                                    <Grid item md={9}>
-                                        <TextField
-                                            fullWidth
-                                            label="מספר טלפון"
-                                            id="outlined-start-adornment"
-                                        />
-                                    </Grid>
-                                    <Grid item md={3} >
-                                        <Stack>
-                                            <Button variant="outlined" component="span" style={{minWidth: 'fit-content'}} endIcon={<ClearIcon/>}/>
-                                            <Button variant="contained" component="span" style={{minWidth: 'fit-content'}} endIcon={<CheckIcon/>}/>
-                                        </Stack>
-                                    </Grid>
+                                <EditableTextWithButtons initVal="hey"/>
 
-                                </Grid>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <FormControl variant="outlined" fullWidth>
                                     <InputLabel
-                                        htmlFor="outlined-adornment-password" >ססמא</InputLabel>
+                                        htmlFor="outlined-adornment-password">ססמא</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
                                         type={values.showPassword ? 'text' : 'password'}
