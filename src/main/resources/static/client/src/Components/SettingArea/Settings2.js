@@ -27,6 +27,9 @@ import createCache from '@emotion/cache';
 import {prefixer} from 'stylis';
 import {Button, Stack} from "@mui/material";
 import EditableTextWithButtons from "./EditableTextWithButtons";
+import {useSelector} from "react-redux";
+import {getSafe} from "../../Utils/Utils";
+import * as STATE_PATHS from "../../Consts/StatePaths";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -47,7 +50,7 @@ export default function Settings2() {
         weightRange: '',
         showPassword: false,
     });
-
+    const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     const handleChange = (prop) => (event) => {
         setValues({...values, [prop]: event.target.value});
     };
@@ -72,9 +75,9 @@ export default function Settings2() {
             <ThemeProvider theme={theme}>
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
-                        <Grid container columnSpacing={5} rowSpacing={2} sx={{paddingTop: "40px"}}>
+                        <Grid container columnSpacing={5} rowSpacing={2} sx={{paddingTop: "40px", paddingLeft: "20px",paddingBottom:"70px"}}>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="שם משתמש" validate={validateName}/>
+                                <EditableTextWithButtons label="שם משתמש" validate={validateName} initVal={username}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="מייל" validate={validateName}/>
