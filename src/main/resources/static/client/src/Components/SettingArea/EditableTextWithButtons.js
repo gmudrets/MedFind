@@ -20,30 +20,42 @@ import FormControl from "@mui/material/FormControl";
 
 export default function EditableTextWithButtons(props) {
     const inputRef = useRef();
+    const passwordRef = useRef();
+
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentlyValidated, setCurrentlyValidated] = useState(false);
     const [currentText, setCurrentText] = useState(props.initVal);
     const [lastSubmitted, setLastSubmitted] = useState(props.initVal);
     const [submiting, setSubmitings] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(!props.password);
 
     const handleEditClick = () => {
         inputRef.current.focus();
         setIsEditMode(true);
-        setShowPassword(true);
+        if (props.password) {
+            setShowPassword(true);
+        }
         setCurrentlyValidated(props.validate(lastSubmitted));
-        inputRef.current.focus();
     }
     useEffect(() => {
             if (isEditMode) {
-                inputRef.current.focus();
+
+                if (!props.password)
+                    inputRef.current.focus();
+                else
+                    passwordRef.current.focus();
             }
-        },[]
+        }
+
+        ,
+        [isEditMode]
     )
     const handleClearClick = () => {
         setIsEditMode(false);
         setCurrentText(lastSubmitted);
-        setShowPassword(false);
+        if (props.password) {
+            setShowPassword(false);
+        }
     }
     const handleChange = (event) => {
         setCurrentText(event.target.value)
@@ -62,9 +74,17 @@ export default function EditableTextWithButtons(props) {
         }
         setIsEditMode(false);
         setSubmitings(false);
+        if (props.password) {
+            setShowPassword(false);
+        }
 
     }
-    //password stuff
+    const handleKeyPress = (event)=>{
+        if(currentlyValidated && event.code === "Enter"){
+            myHandleSubmit();
+        }
+    }
+//password stuff
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -74,7 +94,7 @@ export default function EditableTextWithButtons(props) {
 
     return (<Grid container>
         <Grid item md={9}>
-            {!props.password ?
+            {(!props.password || !isEditMode) ?
                 <TextField
                     focused={isEditMode}
                     defaultValue={lastSubmitted}
@@ -88,8 +108,10 @@ export default function EditableTextWithButtons(props) {
                     value={currentText}
                     error={!currentlyValidated && isEditMode}
                     onClick={handleEditClick}
-                    ref={inputRef}
+                    inputRef={inputRef}
+                    type={showPassword ? 'text' : 'password'}
                     variant={isEditMode ? "outlined" : "standard"}
+                    onKeyPress={handleKeyPress}
 
                 />
                 : <FormControl variant="outlined" fullWidth>
@@ -108,7 +130,9 @@ export default function EditableTextWithButtons(props) {
                         fullWidth
                         value={currentText}
                         error={!currentlyValidated && isEditMode}
+                        inputRef={passwordRef}
                         onClick={handleEditClick}
+                        onKeyPress={handleKeyPress}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
@@ -121,7 +145,7 @@ export default function EditableTextWithButtons(props) {
                                 </IconButton>
                             </InputAdornment>
                         }
-
+                        variant={isEditMode ? "outlined" : "standard"}
 
                     />
                 </FormControl>}
