@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import Grid from "@mui/material/Grid";
 import {Button, Stack} from "@mui/material";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -19,6 +19,7 @@ import FormControl from "@mui/material/FormControl";
 
 
 export default function EditableTextWithButtons(props) {
+    const inputRef = useRef();
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentlyValidated, setCurrentlyValidated] = useState(false);
     const [currentText, setCurrentText] = useState(props.initVal);
@@ -26,13 +27,19 @@ export default function EditableTextWithButtons(props) {
     const [submiting, setSubmitings] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    const inputRef = React.createRef();
-
     const handleEditClick = () => {
+        inputRef.current.focus();
         setIsEditMode(true);
         setShowPassword(true);
+        setCurrentlyValidated(props.validate(lastSubmitted));
         inputRef.current.focus();
     }
+    useEffect(() => {
+            if (isEditMode) {
+                inputRef.current.focus();
+            }
+        },[]
+    )
     const handleClearClick = () => {
         setIsEditMode(false);
         setCurrentText(lastSubmitted);
@@ -45,7 +52,7 @@ export default function EditableTextWithButtons(props) {
     }
 
     const myHandleSubmit = () => {
-        var cur = currentText;
+        const cur = currentText;
         setSubmitings(true);
         if (props.handleSubmit(cur)) {
             setLastSubmitted(cur);
@@ -82,6 +89,8 @@ export default function EditableTextWithButtons(props) {
                     error={!currentlyValidated && isEditMode}
                     onClick={handleEditClick}
                     ref={inputRef}
+                    variant={isEditMode ? "outlined" : "standard"}
+
                 />
                 : <FormControl variant="outlined" fullWidth>
                     <InputLabel
