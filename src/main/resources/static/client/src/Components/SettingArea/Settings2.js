@@ -13,6 +13,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {createTheme} from "@mui/material/styles";
 import {ThemeProvider} from "@emotion/react";
+import LogoutIcon from '@mui/icons-material/Logout';
+import HomeIcon from '@mui/icons-material/Home';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 
@@ -98,7 +100,7 @@ export default function Settings2() {
 
                             </Grid>
                             <Box width="100%"/>
-                            <Grid item xs={4} >
+                            <Grid item xs={4} sx={{textAlign: "left" ,marginTop:"30px"}}>
                                 <Box sx={{flexGrow: 1}} xs={6} sx={{textAlign: "left"}}>
                                     <Typography component="h1" variant="subtitle1">דרך קבלת התראות</Typography>
                                     <Grid container>
@@ -114,7 +116,7 @@ export default function Settings2() {
                                     </Grid>
                                 </Box>
                             </Grid>
-                            <Grid item xs={4} sx={{textAlign: "left"}}>
+                            <Grid item xs={4} sx={{textAlign: "left" ,marginTop:"30px"}}>
                                 <Box sx={{flexGrow: 1}}>
                                     <Typography component="h1" variant="subtitle1">סוג התראות</Typography>
                                     <Grid container>
@@ -128,17 +130,17 @@ export default function Settings2() {
                                     </Grid>
                                 </Box>
                             </Grid>
-                            <Grid item xs={4} sx={{textAlign: "left"}}>
+                            <Box width="100%"/>
+                            <Grid item md = {4} xs={12} sx={{textAlign: "left" ,marginTop:"30px"}}>
                                 <Box sx={{flexGrow: 1}}>
-                                    <Typography component="h1" variant="subtitle1">סוג התראות</Typography>
+                                    <Typography component="h1" variant="subtitle1">ניווט</Typography>
                                     <Grid container>
-                                        <Grid item md={5} sx={{textAlign: "center"}}>
-                                            <SettingsCheckBox label="לקיחת תרופה"/>
+                                        <Grid item md={6} sx={{textAlign: "center"}}>
+                                            <Button variant={"outlined"} endIcon={<HomeIcon/>}>חזור לחיפוש</Button>
                                         </Grid>
-                                        <Grid item md={5} sx={{textAlign: "center"}}>
-                                            <SettingsCheckBox label="סיום תוקף"/>
+                                        <Grid item md={6} sx={{textAlign: "center"}}>
+                                            <Button variant={"contained"} endIcon={<LogoutIcon/>}>התנתק</Button>
                                         </Grid>
-
                                     </Grid>
                                 </Box>
                             </Grid>
