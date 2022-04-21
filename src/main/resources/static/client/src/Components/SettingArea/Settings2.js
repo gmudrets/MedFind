@@ -49,49 +49,47 @@ function RTL(props) {
 
 export default function Settings2() {
     const theme = createTheme({direction: 'rtl'});
-    const [values, setValues] = React.useState({
-        amount: '',
-        password: '',
-        weight: '',
-        weightRange: '',
-        showPassword: false,
-    });
     const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
-    const handleChange = (prop) => (event) => {
-        setValues({...values, [prop]: event.target.value});
-    };
+    const phoneNum = "1111";//TODO:
+    const mail = "a@gmail.com";//TODO:
+    const password = "123456";//TODO
+    const handleUserNameSubmit = (s) => {
+        //TODO
+        return true;
+    }
+    const handleMailSubmit = (s) => {
+        //TODO
+        return true;
 
-    const handleClickShowPassword = () => {
-        setValues({
-            ...values,
-            showPassword: !values.showPassword,
-        });
-    };
+    }
+    const handlePhoneNumSubmit = (s) => {
+        //TODO
+        return true;
 
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
+    }
+    const handlePasswordSubmit = (s)=>{
+        //TODO
+        return true;
+    }
     const validateName = (s) => {
-        return s != '' && s.charAt(0) == 'a';
-    }
-    const handleUserNameSubmit =(s)=>{
-        return true;
-    }
-    const handleMailSubmit = (s)=>{
-        return true;
-
-    }
-    const handlePhoneNumSubmit =(s)=>{
+        //TODO
         return true;
 
     }
 
-
-    const validateMail = (s)=>{
+    const validateMail = (s) => {
+        //TODO
+        return true;
 
     }
-    const validatePhoneNum = (s)=>{
+    const validatePhoneNum = (s) => {
+        //TODO
+        return true;
 
+    }
+    const validatePassword = (s)=>{
+        //TODO
+        return true;
     }
     const marginY = 2;
     const m = 3;
@@ -101,26 +99,30 @@ export default function Settings2() {
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
                         <Grid container columnSpacing={5} rowSpacing={2}
-                              sx={isMobile? {padding: "2%", paddingLeft:"4%"}:{padding: "40px"}}>
+                              sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {padding: "40px"}}>
                             <Grid item xs={12} sx={{textAlign: "left"}}>
                                 <Typography component="h1" variant="subtitle1"> פרטי משתמש
                                 </Typography> </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="שם משתמש" validate={validateName} initVal={username} onSubmit = {handleUserNameSubmit}/>
+                                <EditableTextWithButtons label="שם משתמש" initVal={username} validate={validateName}
+                                                         onSubmit={handleUserNameSubmit}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="מייל" validate={validateMail} onSubmit = {handleMailSubmit}/>
+                                <EditableTextWithButtons label="מייל" initVal={mail} validate={validateMail}
+                                                         intionSubmit={handleMailSubmit}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="טלפון" validate={validatePhoneNum} onSubmit = {handlePhoneNumSubmit}/>
+                                <EditableTextWithButtons label="טלפון" initVal={phoneNum} validate={validatePhoneNum}
+                                                         onSubmit={handlePhoneNumSubmit}/>
 
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons password={true} label="ססמא" validate={validateName}/>
+                                <EditableTextWithButtons password={true} label="ססמא" initVal={password}
+                                                         validate={validatePassword} onSubmit={handlePasswordSubmit}/>
 
                             </Grid>
                             <Box width="100%"/>
-                            <Grid item xs={4} sx={{textAlign: "left" ,marginTop:"30px"}}>
+                            <Grid item xs={4} sx={{textAlign: "left", marginTop: "30px"}}>
                                 <Box sx={{flexGrow: 1}} xs={6} sx={{textAlign: "left"}}>
                                     <Typography component="h1" variant="subtitle1">קבלת התראות</Typography>
                                     <Grid container>
@@ -136,7 +138,7 @@ export default function Settings2() {
                                     </Grid>
                                 </Box>
                             </Grid>
-                            <Grid item xs={4} sx={{textAlign: "left" ,marginTop:"30px"}}>
+                            <Grid item xs={4} sx={{textAlign: "left", marginTop: "30px"}}>
                                 <Box sx={{flexGrow: 1}}>
                                     <Typography component="h1" variant="subtitle1">סוג התראות</Typography>
                                     <Grid container>
@@ -151,7 +153,7 @@ export default function Settings2() {
                                 </Box>
                             </Grid>
                             <Box width="100%"/>
-                            <Grid item md = {4} xs={12} sx={{textAlign: "left" ,marginTop:"30px"}}>
+                            <Grid item md={4} xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
                                 <Box sx={{flexGrow: 1}}>
                                     <Typography component="h1" variant="subtitle1">ניווט</Typography>
                                     <Grid container>
