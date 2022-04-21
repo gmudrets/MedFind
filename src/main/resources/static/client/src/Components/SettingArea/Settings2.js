@@ -25,12 +25,14 @@ import rtlPlugin from 'stylis-plugin-rtl';
 import {CacheProvider} from '@emotion/react';
 import createCache from '@emotion/cache';
 import {prefixer} from 'stylis';
-import {Button, Stack} from "@mui/material";
+import {Button, Checkbox, FormControlLabel, FormGroup, Stack} from "@mui/material";
 import EditableTextWithButtons from "./EditableTextWithButtons";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import Typography from "@mui/material/Typography";
+import {CheckBox} from "@mui/icons-material";
+import SettingsCheckBox from "./SettingsCheckBox";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -77,9 +79,9 @@ export default function Settings2() {
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
                         <Grid container columnSpacing={5} rowSpacing={2}
-                              sx={{paddingTop: "40px", paddingLeft: "20px", paddingBottom: "70px"}}>
-                            <Grid item xs = {12} sx={{textAlign: "left"}}>
-                                <Typography component="h1" variant="subtitle1" > פרטי משתמש
+                              sx={{padding: "40px"}}>
+                            <Grid item xs={12} sx={{textAlign: "left"}}>
+                                <Typography component="h1" variant="subtitle1"> פרטי משתמש
                                 </Typography> </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="שם משתמש" validate={validateName} initVal={username}/>
@@ -95,9 +97,51 @@ export default function Settings2() {
                                 <EditableTextWithButtons password={true} label="ססמא" validate={validateName}/>
 
                             </Grid>
-                            <Grid item xs = {12} sx={{textAlign: "left"}}>
-                                <Typography component="h1" variant="subtitle1" >קבלת התראות
-                                </Typography> </Grid>
+                            <Box width="100%"/>
+                            <Grid item xs={4} >
+                                <Box sx={{flexGrow: 1}} xs={6} sx={{textAlign: "left"}}>
+                                    <Typography component="h1" variant="subtitle1">דרך קבלת התראות</Typography>
+                                    <Grid container>
+                                        <Grid item md={3} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="מייל"/>
+                                        </Grid>
+                                        <Grid item md={3} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="טלפון"/>
+                                        </Grid>
+                                        <Grid item md={3} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="דפדפן"/>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={4} sx={{textAlign: "left"}}>
+                                <Box sx={{flexGrow: 1}}>
+                                    <Typography component="h1" variant="subtitle1">סוג התראות</Typography>
+                                    <Grid container>
+                                        <Grid item md={5} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="לקיחת תרופה"/>
+                                        </Grid>
+                                        <Grid item md={5} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="סיום תוקף"/>
+                                        </Grid>
+
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={4} sx={{textAlign: "left"}}>
+                                <Box sx={{flexGrow: 1}}>
+                                    <Typography component="h1" variant="subtitle1">סוג התראות</Typography>
+                                    <Grid container>
+                                        <Grid item md={5} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="לקיחת תרופה"/>
+                                        </Grid>
+                                        <Grid item md={5} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="סיום תוקף"/>
+                                        </Grid>
+
+                                    </Grid>
+                                </Box>
+                            </Grid>
                         </Grid>
                     </Box>
                 </React.Fragment>
@@ -106,5 +150,6 @@ export default function Settings2() {
         </CacheProvider>
 
 
-    );
+    )
+        ;
 }
