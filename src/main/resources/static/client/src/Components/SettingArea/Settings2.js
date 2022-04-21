@@ -35,6 +35,7 @@ import * as STATE_PATHS from "../../Consts/StatePaths";
 import Typography from "@mui/material/Typography";
 import {CheckBox} from "@mui/icons-material";
 import SettingsCheckBox from "./SettingsCheckBox";
+import {isMobile} from "react-device-detect";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -100,7 +101,7 @@ export default function Settings2() {
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
                         <Grid container columnSpacing={5} rowSpacing={2}
-                              sx={{padding: "min(5%,40px)"}}>
+                              sx={isMobile? {padding: "2%", paddingLeft:"4%"}:{padding: "40px"}}>
                             <Grid item xs={12} sx={{textAlign: "left"}}>
                                 <Typography component="h1" variant="subtitle1"> פרטי משתמש
                                 </Typography> </Grid>
