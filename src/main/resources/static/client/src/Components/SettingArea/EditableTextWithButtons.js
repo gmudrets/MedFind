@@ -16,6 +16,7 @@ import IconButton from "@mui/material/IconButton";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import FormControl from "@mui/material/FormControl";
+import Box from "@mui/material/Box";
 
 
 export default function EditableTextWithButtons(props) {
@@ -80,8 +81,8 @@ export default function EditableTextWithButtons(props) {
         }
 
     }
-    const handleKeyPress = (event)=>{
-        if(currentlyValidated && event.code === "Enter"){
+    const handleKeyPress = (event) => {
+        if (currentlyValidated && event.code === "Enter") {
             myHandleSubmit();
         }
     }
@@ -94,84 +95,88 @@ export default function EditableTextWithButtons(props) {
     };
 
     return (
-        <Grid container>
-        <Grid item md={9}>
-            {(!props.password || !isEditMode) ?
-                <TextField
-                    focused={isEditMode}
-                    defaultValue={lastSubmitted}
-                    InputProps={{
-                        readOnly: !isEditMode && !submiting,
-                    }}
-                    onChange={handleChange}
-                    label={props.label}
-                    id="outlined-start-adornment"
-                    fullWidth
-                    value={currentText}
-                    error={!currentlyValidated && isEditMode}
-                    onClick={handleEditClick}
-                    inputRef={inputRef}
-                    type={showPassword ? 'text' : 'password'}
-                    variant={isEditMode ? "outlined" : "standard"}
-                    onKeyPress={handleKeyPress}
+        <Box sx={{flexGrow: 1}}>
 
-                />
-                : <FormControl variant="outlined" fullWidth>
-                    <InputLabel
-                        htmlFor="outlined-adornment-password">{props.label}</InputLabel>
-                    <OutlinedInput
-                        type={showPassword ? 'text' : 'password'}
-                        focused={isEditMode}
-                        defaultValue={lastSubmitted}
-                        InputProps={{
-                            readOnly: !isEditMode && !submiting,
-                        }}
-                        onChange={handleChange}
-                        label={props.label}
-                        id="outlined-start-adornment"
-                        fullWidth
-                        value={currentText}
-                        error={!currentlyValidated && isEditMode}
-                        inputRef={passwordRef}
-                        onClick={handleEditClick}
-                        onKeyPress={handleKeyPress}
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                >
-                                    {showPassword ? <VisibilityOff/> : <Visibility/>}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                        variant={isEditMode ? "outlined" : "standard"}
+            <Grid container>
+                <Grid item md={9}>
+                    {(!props.password || !isEditMode) ?
+                        <TextField
+                            focused={isEditMode}
+                            defaultValue={lastSubmitted}
+                            InputProps={{
+                                readOnly: !isEditMode && !submiting,
+                            }}
+                            onChange={handleChange}
+                            label={props.label}
+                            id="outlined-start-adornment"
+                            fullWidth
+                            value={currentText}
+                            error={!currentlyValidated && isEditMode}
+                            onClick={handleEditClick}
+                            inputRef={inputRef}
+                            type={showPassword ? 'text' : 'password'}
+                            variant={isEditMode ? "outlined" : "standard"}
+                            onKeyPress={handleKeyPress}
 
-                    />
-                </FormControl>}
+                        />
+                        : <FormControl variant="outlined" fullWidth>
+                            <InputLabel
+                                htmlFor="outlined-adornment-password">{props.label}</InputLabel>
+                            <OutlinedInput
+                                type={showPassword ? 'text' : 'password'}
+                                focused={isEditMode}
+                                defaultValue={lastSubmitted}
+                                InputProps={{
+                                    readOnly: !isEditMode && !submiting,
+                                }}
+                                onChange={handleChange}
+                                label={props.label}
+                                id="outlined-start-adornment"
+                                fullWidth
+                                value={currentText}
+                                error={!currentlyValidated && isEditMode}
+                                inputRef={passwordRef}
+                                onClick={handleEditClick}
+                                onKeyPress={handleKeyPress}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff/> : <Visibility/>}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                variant={isEditMode ? "outlined" : "standard"}
+
+                            />
+                        </FormControl>}
 
 
-        </Grid>
-        <Grid item md={3}>
-            <Stack>
-                {isEditMode && <Button onClick={handleClearClick} variant="outlined" component="span"
-                                       style={{minWidth: 'fit-content', maxWidth: "20px"}}
-                                       endIcon={<ClearIcon/>}/>}
-                {isEditMode &&
-                    <Button onClick={myHandleSubmit} variant="contained" component="span"
-                            style={{minWidth: 'fit-content', maxWidth: "20px"}}
-                            endIcon={<CheckIcon/>}
-                            disabled={!currentlyValidated}/>}
-                {!isEditMode && <Button onClick={handleEditClick} variant="outlined" component="span"
-                                        style={{minWidth: 'fit-content', maxWidth: "20px"}} endIcon={<EditIcon/>}
-                />}
+                </Grid>
+                <Grid item md={3}>
+                    <Stack>
+                        {isEditMode && <Button onClick={handleClearClick} variant="outlined" component="span"
+                                               style={{minWidth: 'fit-content', maxWidth: "20px"}}
+                                               endIcon={<ClearIcon/>}/>}
+                        {isEditMode &&
+                            <Button onClick={myHandleSubmit} variant="contained" component="span"
+                                    style={{minWidth: 'fit-content', maxWidth: "20px"}}
+                                    endIcon={<CheckIcon/>}
+                                    disabled={!currentlyValidated}/>}
+                        {!isEditMode && <Button onClick={handleEditClick} variant="outlined" component="span"
+                                                style={{minWidth: 'fit-content', maxWidth: "20px"}}
+                                                endIcon={<EditIcon/>}
+                        />}
 
-            </Stack>
-        </Grid>
+                    </Stack>
+                </Grid>
 
-    </Grid>)
+            </Grid>
+        </Box>)
 
 
 }
