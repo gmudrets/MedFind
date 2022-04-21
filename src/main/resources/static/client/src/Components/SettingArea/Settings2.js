@@ -74,12 +74,14 @@ export default function Settings2() {
         return s != '' && s.charAt(0) == 'a';
     }
     const handleUserNameSubmit =(s)=>{
-
+        return true;
     }
     const handleMailSubmit = (s)=>{
+        return true;
 
     }
     const handlePhoneNumSubmit =(s)=>{
+        return true;
 
     }
 
