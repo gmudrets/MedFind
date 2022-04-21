@@ -73,6 +73,23 @@ export default function Settings2() {
     const validateName = (s) => {
         return s != '' && s.charAt(0) == 'a';
     }
+    const handleUserNameSubmit =(s)=>{
+
+    }
+    const handleMailSubmit = (s)=>{
+
+    }
+    const handlePhoneNumSubmit =(s)=>{
+
+    }
+
+
+    const validateMail = (s)=>{
+
+    }
+    const validatePhoneNum = (s)=>{
+
+    }
     const marginY = 2;
     const m = 3;
     return (
@@ -86,13 +103,13 @@ export default function Settings2() {
                                 <Typography component="h1" variant="subtitle1"> פרטי משתמש
                                 </Typography> </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="שם משתמש" validate={validateName} initVal={username}/>
+                                <EditableTextWithButtons label="שם משתמש" validate={validateName} initVal={username} onSubmit = {handleUserNameSubmit}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="מייל" validate={validateName}/>
+                                <EditableTextWithButtons label="מייל" validate={validateMail} onSubmit = {handleMailSubmit}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="טלפון" validate={validateName}/>
+                                <EditableTextWithButtons label="טלפון" validate={validatePhoneNum} onSubmit = {handlePhoneNumSubmit}/>
 
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
@@ -102,7 +119,7 @@ export default function Settings2() {
                             <Box width="100%"/>
                             <Grid item xs={4} sx={{textAlign: "left" ,marginTop:"30px"}}>
                                 <Box sx={{flexGrow: 1}} xs={6} sx={{textAlign: "left"}}>
-                                    <Typography component="h1" variant="subtitle1">דרך קבלת התראות</Typography>
+                                    <Typography component="h1" variant="subtitle1">קבלת התראות</Typography>
                                     <Grid container>
                                         <Grid item md={3} sx={{textAlign: "center"}}>
                                             <SettingsCheckBox label="מייל"/>

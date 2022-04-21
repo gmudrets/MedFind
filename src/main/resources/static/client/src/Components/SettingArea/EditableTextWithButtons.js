@@ -66,11 +66,12 @@ export default function EditableTextWithButtons(props) {
     const myHandleSubmit = () => {
         const cur = currentText;
         setSubmitings(true);
-        if (props.handleSubmit(cur)) {
+        if (props.onSubmit(cur)) {
             setLastSubmitted(cur);
             setCurrentText(cur);
         } else {
             alert("Error Submiting " + props.label)
+            setCurrentText(lastSubmitted);
         }
         setIsEditMode(false);
         setSubmitings(false);
@@ -92,7 +93,8 @@ export default function EditableTextWithButtons(props) {
         event.preventDefault();
     };
 
-    return (<Grid container>
+    return (
+        <Grid container>
         <Grid item md={9}>
             {(!props.password || !isEditMode) ?
                 <TextField
