@@ -100,7 +100,7 @@ export default function Settings2() {
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
                         <Grid container columnSpacing={5} rowSpacing={2}
-                              sx={{padding: "40px"}}>
+                              sx={{padding: "min(5%,40px)"}}>
                             <Grid item xs={12} sx={{textAlign: "left"}}>
                                 <Typography component="h1" variant="subtitle1"> פרטי משתמש
                                 </Typography> </Grid>
