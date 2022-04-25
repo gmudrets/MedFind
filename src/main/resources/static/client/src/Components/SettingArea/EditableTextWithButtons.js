@@ -22,13 +22,24 @@ import Box from "@mui/material/Box";
 export default function EditableTextWithButtons(props) {
     const inputRef = useRef();
     const passwordRef = useRef();
-
+    const buttonRef = useRef();
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentlyValidated, setCurrentlyValidated] = useState(false);
     const [currentText, setCurrentText] = useState(props.initVal);
     const [lastSubmitted, setLastSubmitted] = useState(props.initVal);
     const [submiting, setSubmitings] = useState(false);
     const [showPassword, setShowPassword] = useState(!props.password);
+
+    const clickOutside = (refrence, e) => {
+        return refrence.current && !refrence.current.contains(e.target);
+    }
+    const handleClickOutside = e => {
+        console.log("\n");
+        if (clickOutside(inputRef, e) && (!props.password || props.password && clickOutside(passwordRef, e)) && clickOutside(buttonRef, e)) {
+            handleClearClick();
+        }
+    };
+
 
     const handleEditClick = () => {
         inputRef.current.focus();
@@ -46,6 +57,8 @@ export default function EditableTextWithButtons(props) {
                 else
                     passwordRef.current.focus();
             }
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
         }
 
         ,
@@ -123,10 +136,7 @@ export default function EditableTextWithButtons(props) {
                                 htmlFor="outlined-adornment-password">{props.label}</InputLabel>
                             <OutlinedInput
                                 type={showPassword ? 'text' : 'password'}
-                                focused={isEditMode}
-                                InputProps={{
-                                    readOnly: !isEditMode && !submiting,
-                                }}
+                                focused={isEditMode}S
                                 onChange={handleChange}
                                 label={props.label}
                                 id="outlined-start-adornment"
@@ -163,6 +173,7 @@ export default function EditableTextWithButtons(props) {
                                 component="span"
                                 style={{minWidth: 'fit-content', maxWidth: "20px"}}
                                 endIcon={!isEditMode ? <EditIcon/> : <CheckIcon/>}
+                                ref={buttonRef}
                         />
 
                     </Stack>
