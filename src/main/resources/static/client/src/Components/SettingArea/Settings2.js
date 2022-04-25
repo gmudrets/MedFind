@@ -67,7 +67,7 @@ export default function Settings2() {
         return true;
 
     }
-    const handlePasswordSubmit = (s)=>{
+    const handlePasswordSubmit = (s) => {
         //TODO
         return true;
     }
@@ -87,7 +87,7 @@ export default function Settings2() {
         return true;
 
     }
-    const validatePassword = (s)=>{
+    const validatePassword = (s) => {
         //TODO
         return true;
     }
@@ -109,12 +109,12 @@ export default function Settings2() {
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="מייל" initVal={mail} validate={validateMail}
-                                                         intionSubmit={handleMailSubmit}/>
+                                onSubmit={handleMailSubmit}/>
+
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="טלפון" initVal={phoneNum} validate={validatePhoneNum}
                                                          onSubmit={handlePhoneNumSubmit}/>
-
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons password={true} label="ססמא" initVal={password}
