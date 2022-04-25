@@ -102,7 +102,6 @@ export default function EditableTextWithButtons(props) {
                     {(!props.password || !isEditMode) ?
                         <TextField
                             focused={isEditMode}
-                            defaultValue={lastSubmitted}
                             InputProps={{
                                 readOnly: !isEditMode && !submiting,
                             }}
@@ -125,7 +124,6 @@ export default function EditableTextWithButtons(props) {
                             <OutlinedInput
                                 type={showPassword ? 'text' : 'password'}
                                 focused={isEditMode}
-                                defaultValue={lastSubmitted}
                                 InputProps={{
                                     readOnly: !isEditMode && !submiting,
                                 }}
@@ -159,18 +157,13 @@ export default function EditableTextWithButtons(props) {
                 </Grid>
                 <Grid item md={3}>
                     <Stack>
-                        {isEditMode && <Button onClick={handleClearClick} variant="outlined" component="span"
-                                               style={{minWidth: 'fit-content', maxWidth: "20px"}}
-                                               endIcon={<ClearIcon/>}/>}
-                        {isEditMode &&
-                            <Button onClick={myHandleSubmit} variant="contained" component="span"
-                                    style={{minWidth: 'fit-content', maxWidth: "20px"}}
-                                    endIcon={<CheckIcon/>}
-                                    disabled={!currentlyValidated}/>}
-                        {!isEditMode && <Button onClick={handleEditClick} variant="outlined" component="span"
-                                                style={{minWidth: 'fit-content', maxWidth: "20px"}}
-                                                endIcon={<EditIcon/>}
-                        />}
+
+                        <Button onClick={!isEditMode ? handleEditClick : myHandleSubmit}
+                                variant={!isEditMode ? "outlined" : "contained"}
+                                component="span"
+                                style={{minWidth: 'fit-content', maxWidth: "20px"}}
+                                endIcon={!isEditMode ? <EditIcon/> : <CheckIcon/>}
+                        />
 
                     </Stack>
                 </Grid>
