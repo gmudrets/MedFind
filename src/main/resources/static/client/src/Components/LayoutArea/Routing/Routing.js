@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import {HashRouter, Route, Routes} from 'react-router-dom';
 import Home from '../../HomeArea/Home';
 import Login from '../../AuthArea/Login/Login';
 import Register from '../../AuthArea/Register/Register';
