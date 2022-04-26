@@ -4,6 +4,7 @@ import Login from '../../AuthArea/Login/Login';
 import Register from '../../AuthArea/Register/Register';
 import Logout from '../../AuthArea/Logout/Logout';
 import Settings from '../../SettingArea/Settings'
+import Reminders from "../../RemindersArea/Reminders";
 
 function Routing() {
 	return (
@@ -15,6 +16,7 @@ function Routing() {
 					<Route path="/login" element={<Login/>} />
 					<Route path="/logout" element={<Logout/>}/>
 					<Route path="/settings" element={<Settings/>}/>
+					<Route path="/reminders" element={<Reminders/>}/>
 				</Routes>
 
 		</div>
