@@ -59,7 +59,8 @@ export default function Reminders() {
         setOnReminderCreation(!onReminderCreation);
     }
     const loadReminders = () => {
-        //TODO: currently will create fake data
+        //TODO: load data, currently will create fake data
+
     }
     const handleAddClick = () => {
         setOnReminderCreation(true);

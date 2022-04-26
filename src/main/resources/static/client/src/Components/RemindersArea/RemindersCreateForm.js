@@ -20,8 +20,8 @@ import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 
 function RemindersCreateForm(props) {
-    const [data, setData] = React.useState("Not Found");
     const [stopStream, setStopStream] = useState(false);
+    const [timesArray, setTimesArray] = useState([null]);
     const navigate = useNavigate();
     const types = [
         'משתמש רגיל',
@@ -42,7 +42,11 @@ function RemindersCreateForm(props) {
             password: data.get('password'),
         });
     };
-
+    const handleAddTimeClick = () => {
+        const next = [...timesArray, null];
+        setTimesArray(next);
+        console.log(next);
+    }
     const dismissBarcodeReader = () => {
         setStopStream(true)
         setTimeout(() => props.closeModal(), 50)
@@ -50,13 +54,13 @@ function RemindersCreateForm(props) {
 
     return (
         <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
-            sx={{
-                marginTop: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}
-            overflow={'auto'}>
+               sx={{
+                   marginTop: 1,
+                   display: 'flex',
+                   flexDirection: 'column',
+                   alignItems: 'center',
+               }}
+               overflow={'auto'}>
             <Container component="main" maxWidth="xs">
                 <CssBaseline/>
                 <Box
@@ -82,6 +86,34 @@ function RemindersCreateForm(props) {
                                     label="כותרת"
                                 />
                             </Grid>
+                            {timesArray.map((time, index) =>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        required
+                                        fullWidth
+                                        id={"time " + index}
+                                        label="זמן"
+                                        name="time"
+
+                                    />
+                                </Grid>)
+                            }
+
+                            <Grid item xs={12}>
+                                <IconButton onClick={handleAddTimeClick}><AddAlarmIcon/></IconButton>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    autoComplete="given-name"
+                                    name="firstName"
+                                    required
+                                    fullWidth
+                                    id="firstName"
+                                    label="שם פרטי"
+                                />
+                            </Grid>
+
                             <Grid item xs={12}>
                                 <TextField
                                     select
@@ -102,118 +134,17 @@ function RemindersCreateForm(props) {
                                 </TextField>
                             </Grid>
                             <Grid item xs={12}>
-                                <IconButton><AddAlarmIcon/></IconButton>
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    autoComplete="given-name"
-                                    name="firstName"
-                                    required
-                                    fullWidth
-                                    id="firstName"
-                                    label="שם פרטי"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
                                 <TextField
                                     required
                                     fullWidth
-                                    id="lastName"
-                                    label="שם משפחה"
-                                    name="lastName"
-                                    autoComplete="family-name"
+                                    name="password"
+                                    label="סיסמה"
+                                    type="password"
+                                    id="password"
+                                    autoComplete="new-password"
                                 />
                             </Grid>
 
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
 
                             <Grid item xs={12}>
                                 <FormControlLabel
