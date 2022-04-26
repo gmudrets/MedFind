@@ -4,7 +4,6 @@ import Login from '../../AuthArea/Login/Login';
 import Register from '../../AuthArea/Register/Register';
 import Logout from '../../AuthArea/Logout/Logout';
 import Settings from '../../SettingArea/Settings'
-import Settings2 from '../../SettingArea/Settings2'
 
 function Routing() {
 	return (
@@ -15,7 +14,7 @@ function Routing() {
 					<Route path="/register" element={<Register/>} />
 					<Route path="/login" element={<Login/>} />
 					<Route path="/logout" element={<Logout/>}/>
-					<Route path="/settings" element={<Settings2/>}/>
+					<Route path="/settings" element={<Settings/>}/>
 				</Routes>
 
 		</div>

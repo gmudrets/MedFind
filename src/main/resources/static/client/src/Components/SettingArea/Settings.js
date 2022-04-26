@@ -1,118 +1,162 @@
 import * as React from 'react';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
+
 import {createTheme} from "@mui/material/styles";
 import {ThemeProvider} from "@emotion/react";
 
-function Settings() {
-    const theme = createTheme({direction: 'rtl'});
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-    return (
-        <ThemeProvider theme={theme}>
-            <React.Fragment>
-                <Typography variant="h6" gutterBottom>
-                    Shipping address
-                </Typography>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            required
-                            id="firstName"
-                            name="firstName"
-                            label="First name"
-                            fullWidth
-                            autoComplete="given-name"
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            required
-                            id="lastName"
-                            name="lastName"
-                            label="Last name"
-                            fullWidth
-                            autoComplete="family-name"
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            required
-                            id="address1"
-                            name="address1"
-                            label="Address line 1"
-                            fullWidth
-                            autoComplete="shipping address-line1"
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            id="address2"
-                            name="address2"
-                            label="Address line 2"
-                            fullWidth
-                            autoComplete="shipping address-line2"
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            required
-                            id="city"
-                            name="city"
-                            label="City"
-                            fullWidth
-                            autoComplete="shipping address-level2"
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            id="state"
-                            name="state"
-                            label="State/Province/Region"
-                            fullWidth
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            required
-                            id="zip"
-                            name="zip"
-                            label="Zip / Postal code"
-                            fullWidth
-                            autoComplete="shipping postal-code"
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            required
-                            id="country"
-                            name="country"
-                            label="Country"
-                            fullWidth
-                            autoComplete="shipping country"
-                            variant="standard"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <FormControlLabel
-                            control={<Checkbox color="secondary" name="saveAddress" value="yes"/>}
-                            label="Use this address for payment details"
-                        />
-                    </Grid>
-                </Grid>
-            </React.Fragment>
-        </ThemeProvider>
+import Grid from "@mui/material/Grid";
+//rtl stuff https://mui.com/material-ui/guides/right-to-left/
+import rtlPlugin from 'stylis-plugin-rtl';
+import {CacheProvider} from '@emotion/react';
+import createCache from '@emotion/cache';
+import {prefixer} from 'stylis';
+import {Button} from "@mui/material";
+import EditableTextWithButtons from "./EditableTextWithButtons";
+import {useSelector} from "react-redux";
+import {getSafe} from "../../Utils/Utils";
+import * as STATE_PATHS from "../../Consts/StatePaths";
+import Typography from "@mui/material/Typography";
+import SettingsCheckBox from "./SettingsCheckBox";
+import {isMobile} from "react-device-detect";
 
-    );
+// Create rtl cache
+const cacheRtl = createCache({
+    key: 'muirtl',
+    stylisPlugins: [prefixer, rtlPlugin],
+});
+
+function RTL(props) {
+    return <CacheProvider value={cacheRtl}>{props.children}</CacheProvider>;
 }
 
-export default Settings;
+export default function Settings() {
+    const theme = createTheme({direction: 'rtl'});
+    const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+    const phoneNum = "1111";//TODO:
+    const mail = "a@gmail.com";//TODO:
+    const password = "123456";//TODO
+    const handleUserNameSubmit = (s) => {
+        //TODO
+        return true;
+    }
+    const handleMailSubmit = (s) => {
+        //TODO
+        return true;
+
+    }
+    const handlePhoneNumSubmit = (s) => {
+        //TODO
+        return true;
+
+    }
+    const handlePasswordSubmit = (s) => {
+        //TODO
+        return true;
+    }
+    const validateName = (s) => {
+        //TODO
+        return true;
+
+    }
+
+    const validateMail = (s) => {
+        //TODO
+        return true;
+
+    }
+    const validatePhoneNum = (s) => {
+        //TODO
+        return true;
+
+    }
+    const validatePassword = (s) => {
+        //TODO
+        return true;
+    }
+    const marginY = 2;
+    const m = 3;
+    return (
+        <CacheProvider value={cacheRtl}>
+            <ThemeProvider theme={theme}>
+                <React.Fragment>
+                    <Box sx={{flexGrow: 1}}>
+                        <Grid container columnSpacing={5} rowSpacing={2}
+                              sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {padding: "40px"}}>
+                            <Grid item xs={12} sx={{textAlign: "left"}}>
+                                <Typography component="h1" variant="subtitle1"> פרטי משתמש
+                                </Typography> </Grid>
+                            <Grid item md={3} sx={{textAlign: "center"}}>
+                                <EditableTextWithButtons label="שם משתמש" initVal={username} validate={validateName}
+                                                         onSubmit={handleUserNameSubmit}/>
+                            </Grid>
+                            <Grid item md={3} sx={{textAlign: "center"}}>
+                                <EditableTextWithButtons label="מייל" initVal={mail} validate={validateMail}
+                                                         onSubmit={handleMailSubmit}/>
+
+                            </Grid>
+                            <Grid item md={3} sx={{textAlign: "center"}}>
+                                <EditableTextWithButtons label="טלפון" initVal={phoneNum} validate={validatePhoneNum}
+                                                         onSubmit={handlePhoneNumSubmit}/>
+                            </Grid>
+                            <Grid item md={3} sx={{textAlign: "center"}}>
+                                <EditableTextWithButtons password={true} label="ססמא" initVal={password}
+                                                         validate={validatePassword} onSubmit={handlePasswordSubmit}/>
+
+                            </Grid>
+                            <Box width="100%"/>
+                            <Grid item xs={4} sx={{textAlign: "left", marginTop: "30px"}}>
+                                <Box sx={{flexGrow: 1}} xs={6} sx={{textAlign: "left"}}>
+                                    <Typography component="h1" variant="subtitle1">קבלת התראות</Typography>
+                                    <Grid container columnSpacing={2}>
+                                        <Grid item md={3} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="מייל"/>
+                                        </Grid>
+                                        <Grid item md={3} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="טלפון"/>
+                                        </Grid>
+                                        <Grid item md={3} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="דפדפן"/>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={4} sx={{textAlign: "left", marginTop: "30px"}}>
+                                <Box sx={{flexGrow: 1}}>
+                                    <Typography component="h1" variant="subtitle1">סוג התראות</Typography>
+                                    <Grid container>
+                                        <Grid item md={5} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="לקיחת תרופה"/>
+                                        </Grid>
+                                        <Grid item md={5} sx={{textAlign: "center"}}>
+                                            <SettingsCheckBox label="סיום תוקף"/>
+                                        </Grid>
+
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                            <Box width="100%"/>
+                            <Grid item md={4} xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
+                                <Box sx={{flexGrow: 1}}>
+                                    <Typography component="h1" variant="subtitle1">ניווט</Typography>
+                                    <Grid container>
+                                        <Grid item md={6} sx={{textAlign: "center"}}>
+                                            <Button variant={"outlined"} startIcon={<ArrowForwardIcon/>}>חזור
+                                                לחיפוש</Button>
+                                        </Grid>
+
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </React.Fragment>
+
+            </ThemeProvider>
+        </CacheProvider>
+
+
+    )
+        ;
+}
