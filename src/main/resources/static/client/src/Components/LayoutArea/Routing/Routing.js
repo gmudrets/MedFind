@@ -4,7 +4,6 @@ import Login from '../../AuthArea/Login/Login';
 import Register from '../../AuthArea/Register/Register';
 import Logout from '../../AuthArea/Logout/Logout';
 import Settings from '../../SettingArea/Settings'
-import Settings from '../../SettingArea/Settings'
 
 function Routing() {
 	return (
