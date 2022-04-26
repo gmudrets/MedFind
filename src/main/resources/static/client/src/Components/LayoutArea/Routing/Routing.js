@@ -9,7 +9,7 @@ import Settings2 from '../../SettingArea/Settings2'
 function Routing() {
 	return (
 		<div className="Routing">
-			<HashRouter>
+
 				<Routes>
 					<Route path="/" element={<Home/>} />
 					<Route path="/register" element={<Register/>} />
@@ -17,7 +17,7 @@ function Routing() {
 					<Route path="/logout" element={<Logout/>}/>
 					<Route path="/settings" element={<Settings2/>}/>
 				</Routes>
-			</HashRouter>
+
 		</div>
 	);
 }

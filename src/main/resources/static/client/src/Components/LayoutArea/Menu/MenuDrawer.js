@@ -15,6 +15,7 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import ShareIcon from '@mui/icons-material/Share';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SearchIcon from '@mui/icons-material/Search';
+import {ListItemButton} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 
 export default function MenuDrawer(props) {
@@ -22,7 +23,7 @@ export default function MenuDrawer(props) {
   const drawerWidth = 250;
   const anchor='right';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   useEffect(() => {
     setIsMenuOpen(props.isMenuOpen);
 
@@ -47,39 +48,39 @@ export default function MenuDrawer(props) {
       onKeyDown={props.toggleMenu()}
     >
       <List>
-          <ListItem button key='search'>
+          <ListItemButton key='search'>
             <ListItemIcon>
               <SearchIcon />
             </ListItemIcon>
             <ListItemText primary='חיפוש תרופה' />
-          </ListItem>
-          <ListItem button key='myMeds'>
+          </ListItemButton>
+          <ListItemButton key='myMeds'>
             <ListItemIcon>
               <MedicationIcon/>
             </ListItemIcon>
             <ListItemText primary='התרופות שלי' />
-          </ListItem>
-          <ListItem button key='myShares'>
+          </ListItemButton>
+          <ListItemButton key='myShares'>
             <ListItemIcon>
               <ShareIcon/>
             </ListItemIcon>
             <ListItemText primary='השיתופים שלי' />
-          </ListItem>
+          </ListItemButton>
       </List>
       <Divider />
       <List>
-          <ListItem button key='reminders'>
+          <ListItemButton key='reminders'>
             <ListItemIcon>
               <NotificationsActiveIcon />
             </ListItemIcon>
             <ListItemText primary='תזכורות' />
-          </ListItem>
-          <ListItem button onClick= {handleSettingPress} key='settings'>
+          </ListItemButton>
+          <ListItemButton onClick= {handleSettingPress} key='settings'>
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
             <ListItemText primary='הגדרות' />
-          </ListItem>
+          </ListItemButton>
       </List>
     </Box>
   );
