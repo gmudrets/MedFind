@@ -15,6 +15,7 @@ import {createTheme} from "@mui/material/styles";
 import {ThemeProvider} from "@emotion/react";
 import LogoutIcon from '@mui/icons-material/Logout';
 import HomeIcon from '@mui/icons-material/Home';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 
@@ -33,7 +34,7 @@ import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import Typography from "@mui/material/Typography";
-import {CheckBox} from "@mui/icons-material";
+import {CheckBox, Forward} from "@mui/icons-material";
 import SettingsCheckBox from "./SettingsCheckBox";
 import {isMobile} from "react-device-detect";
 
@@ -125,7 +126,7 @@ export default function Settings2() {
                             <Grid item xs={4} sx={{textAlign: "left", marginTop: "30px"}}>
                                 <Box sx={{flexGrow: 1}} xs={6} sx={{textAlign: "left"}}>
                                     <Typography component="h1" variant="subtitle1">קבלת התראות</Typography>
-                                    <Grid container>
+                                    <Grid container  columnSpacing={2}>
                                         <Grid item md={3} sx={{textAlign: "center"}}>
                                             <SettingsCheckBox label="מייל"/>
                                         </Grid>
@@ -158,11 +159,9 @@ export default function Settings2() {
                                     <Typography component="h1" variant="subtitle1">ניווט</Typography>
                                     <Grid container>
                                         <Grid item md={6} sx={{textAlign: "center"}}>
-                                            <Button variant={"outlined"} endIcon={<HomeIcon/>}>חזור לחיפוש</Button>
+                                            <Button variant={"outlined"} startIcon={<ArrowForwardIcon/>}>חזור לחיפוש</Button>
                                         </Grid>
-                                        <Grid item md={6} sx={{textAlign: "center"}}>
-                                            <Button variant={"contained"} endIcon={<LogoutIcon/>}>התנתק</Button>
-                                        </Grid>
+
                                     </Grid>
                                 </Box>
                             </Grid>
