@@ -34,7 +34,6 @@ export default function EditableTextWithButtons(props) {
         return refrence.current && !refrence.current.contains(e.target);
     }
     const handleClickOutside = e => {
-        console.log("\n");
         if (clickOutside(inputRef, e) && (!props.password || props.password && clickOutside(passwordRef, e)) && clickOutside(buttonRef, e)) {
             handleClearClick();
         }
