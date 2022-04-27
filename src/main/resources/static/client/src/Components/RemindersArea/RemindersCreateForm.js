@@ -12,17 +12,24 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
+
 import Link from "@mui/material/Link";
-import {useNavigate} from "react-router-dom";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
+import {useNavigate} from "react-router-dom";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 function RemindersCreateForm(props) {
     const [stopStream, setStopStream] = useState(false);
     const [timesArray, setTimesArray] = useState([null]);
+    const [value, setValue] = React.useState(null);
+
     const navigate = useNavigate();
+
     const types = [
         'משתמש רגיל',
         'רופא',
@@ -42,6 +49,9 @@ function RemindersCreateForm(props) {
             password: data.get('password'),
         });
     };
+    const handleTimeChange = (time, index) => {
+
+    }
     const handleAddTimeClick = () => {
         const next = [...timesArray, null];
         setTimesArray(next);
@@ -88,14 +98,16 @@ function RemindersCreateForm(props) {
                             </Grid>
                             {timesArray.map((time, index) =>
                                 <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id={"time " + index}
-                                        label="זמן"
-                                        name="time"
-
-                                    />
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <TimePicker
+                                            label="Basic example"
+                                            value={timesArray[index]}
+                                            onChange={(newValue) => {
+                                                handleTimeChange(newValue, index);
+                                            }}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </LocalizationProvider>
                                 </Grid>)
                             }
 
