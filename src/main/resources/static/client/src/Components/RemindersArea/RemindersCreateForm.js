@@ -8,12 +8,16 @@ import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import CancelIcon from '@mui/icons-material/Cancel';
-
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Select from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
 import Link from "@mui/material/Link";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
@@ -26,14 +30,6 @@ import {TimePicker} from "@mui/x-date-pickers/TimePicker";
 
 function RemindersCreateForm(props) {
     const maxTimes = 15;
-    const [stopStream, setStopStream] = useState(false);
-    const [timesArray, setTimesArray] = useState([null]);
-    const [value, setValue] = React.useState(null);
-    const [hasErrorArr, setHasErrorArr] = React.useState(new Array(15).fill(false));
-    const [triedSubmit, setTriedSubmitted] = React.useState(false);
-    const [reachedMaxTimes, setReachedMaxTimes] = React.useState(false);
-
-    const navigate = useNavigate();
 
     const types = [
         'לא חוזר',
@@ -42,14 +38,65 @@ function RemindersCreateForm(props) {
         'כל שבוע',
         'כל כמה שבועות',
     ];
+    const names = [
+        'ראשון',
+        'שני',
+        'שלישי',
+        'רביעי',
+        'חמישי',
+        'שישי',
+        'שבת'
+    ]
 
-    const [selectedReturnsType, setSelectedReturnsType] = useState(types[0]);
+    const [stopStream, setStopStream] = useState(false);
+    const [timesArray, setTimesArray] = useState([null]);
+    const [name, setName] = React.useState("");
+    const [value, setValue] = React.useState(null);
+    const [hasErrorArr, setHasErrorArr] = React.useState(new Array(15).fill(false));
+    const [triedSubmit, setTriedSubmitted] = React.useState(false);
+    const [reachedMaxTimes, setReachedMaxTimes] = React.useState(false);
+    const [eachManyDays, setEachManyDays] = React.useState(2);
+    const [eachManyWeeks, setEachManyWeeks] = React.useState(2);
+    const [returnsType, setReturnsType] = useState(types[0]);
+    const [personName, setPersonName] = React.useState([]);
 
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
+    };
+    const handleEachManyWeeksChange = (event) => {
+        setEachManyWeeks(event.target.value);
+    }
+    const handleEachManyDaysChange = (event) => {
+        setEachManyDays(event.target.value);
+    }
+    const handleNameChange = (event) => {
+        setName(event.target.value);
+    }
+
+    const handleChange = (event) => {
+        const {
+            target: { value },
+        } = event;
+        setPersonName(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+    };
+    const navigate = useNavigate();
+
+    // const days =
 
 
     const showError = (time, index) => {
         let hasError = !validateTime(time, index);
-
+        console.log(hasError + "\n")
         if (!triedSubmit && time == null) {
             return false;
         } else {
@@ -65,8 +112,10 @@ function RemindersCreateForm(props) {
 
         for (let i = 0; i < timesArray.length; i++) {
             if (index != i) {
-                if (timesArray[index] == timesArray[i]) {
-                    return false;
+                if (new Date(time).getHours() == new Date(timesArray[i]).getHours() && new Date(time).getMinutes() == new Date(timesArray[i]).getMinutes()) {
+                    if (index > i) {
+                        return false;
+                    }
                 }
             }
         }
@@ -97,7 +146,7 @@ function RemindersCreateForm(props) {
         setTimesArray(next);
     }
     const handleSelectUserType = (event) => {
-        setSelectedReturnsType(event.target.value);
+        setReturnsType(event.target.value);
     };
 
     const handleSubmit = (event) => {
@@ -148,6 +197,8 @@ function RemindersCreateForm(props) {
                                     fullWidth
                                     id="title"
                                     label="כותרת"
+                                    value={name}
+                                    onChange={handleNameChange}
                                 />
                             </Grid>
                             {timesArray.map((time, index) =>
@@ -161,10 +212,10 @@ function RemindersCreateForm(props) {
                                             }}
                                             renderInput={(params) => <TextField {...params} fullWidth
                                                                                 error={showError(time, index)}
+                                                                                InputLabelProps={{shrink: true}}
 
                                             />}
                                             InputProps={{
-
                                                 startAdornment: (index !== 0) && (
                                                     <IconButton
                                                         aria-label="toggle password visibility"
@@ -174,6 +225,7 @@ function RemindersCreateForm(props) {
                                                     </IconButton>
                                                 )
                                             }}
+
 
                                         />
                                     </LocalizationProvider>
@@ -192,7 +244,7 @@ function RemindersCreateForm(props) {
                                     label="חזרה"
                                     name="returns"
                                     autoFocus
-                                    value={selectedReturnsType}
+                                    value={returnsType}
                                     onChange={handleSelectUserType}
                                 >
                                     {types.map((type) => (
@@ -202,17 +254,63 @@ function RemindersCreateForm(props) {
                                     ))}
                                 </TextField>
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    autoComplete="given-name"
-                                    name="firstName"
-                                    required
-                                    fullWidth
-                                    id="firstName"
-                                    label="שם פרטי"
-                                />
-                            </Grid>
-
+                            {/*in case of repeat each few days*/}
+                            {returnsType == types[2] &&
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="day number"
+                                        label="מספר ימים"
+                                        type="number"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={eachManyDays}
+                                        onChange={handleEachManyDaysChange}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            }
+                            {/*in case of repeat each few days*/}
+                            {returnsType == types[4] &&
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="'week number'"
+                                        label="מספר שבועות"
+                                        type="number"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={eachManyWeeks}
+                                        onChange={handleEachManyWeeksChange}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            }
+                            {/*in case of repeat each few or each week weeks*/}
+                            {(returnsType == types[3] || returnsType == types[4]) &&
+                                <div>
+                                    <FormControl sx={{ m: 1, width: 300 }}>
+                                        <InputLabel id="demo-multiple-checkbox-label">בימים</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-checkbox-label"
+                                            id="demo-multiple-checkbox"
+                                            multiple
+                                            value={personName}
+                                            onChange={handleChange}
+                                            input={<OutlinedInput label="ימים בשבוע" />}
+                                            renderValue={(selected) => selected.join(', ')}
+                                            MenuProps={MenuProps}
+                                        >
+                                            {names.map((name) => (
+                                                <MenuItem key={name} value={name}>
+                                                    <Checkbox checked={personName.indexOf(name) > -1} />
+                                                    <ListItemText primary={name} />
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                            }
 
                             <Grid item xs={12}>
                                 <TextField
@@ -255,9 +353,9 @@ function RemindersCreateForm(props) {
                 </Box>
             </Container>
 
-
         </Paper>
-    );
+    )
+        ;
 }
 
 export default RemindersCreateForm;
