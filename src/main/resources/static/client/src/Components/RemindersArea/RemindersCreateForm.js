@@ -12,6 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
+import CancelIcon from '@mui/icons-material/Cancel';
 
 import Link from "@mui/material/Link";
 import DateRangeIcon from '@mui/icons-material/DateRange';
@@ -31,29 +32,21 @@ function RemindersCreateForm(props) {
     const [hasErrorArr, setHasErrorArr] = React.useState(new Array(15).fill(false));
     const [triedSubmit, setTriedSubmitted] = React.useState(false);
     const [reachedMaxTimes, setReachedMaxTimes] = React.useState(false);
+
     const navigate = useNavigate();
 
     const types = [
-        'משתמש רגיל',
-        'רופא',
-        'צוות רפואי',
+        'לא חוזר',
+        'כל יום',
+        'כל כמה ימים',
+        'כל שבוע',
+        'כל כמה שבועות',
     ];
 
+    const [selectedReturnsType, setSelectedReturnsType] = useState(types[0]);
 
-    const [userType, setUserType] = useState(types[0]);
 
-    const handleSelectUserType = (event) => {
-        setUserType(event.target.value);
-    };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
-    };
     const showError = (time, index) => {
         let hasError = !validateTime(time, index);
 
@@ -79,19 +72,13 @@ function RemindersCreateForm(props) {
         }
         return true;
     }
-    const checkIfHasError = (time,index) =>{
+    const checkIfHasError = (time, index) => {
         let hasError = !validateTime(time, index);
         let nextHasError = [...hasErrorArr];
         nextHasError[index] = hasError;
         setHasErrorArr(nextHasError);
     }
-    useEffect(() => {
-        if (timesArray.length == maxTimes) {
-            setReachedMaxTimes(true);
-        } else {
-            setReachedMaxTimes(false);
-        }
-    });
+
     const handleTimeChange = (time, index) => {
         const next = [...timesArray];
         next[index] = time;
@@ -103,11 +90,32 @@ function RemindersCreateForm(props) {
 
         console.log(next);
     }
-    const dismissBarcodeReader = () => {
-        setStopStream(true)
-        setTimeout(() => props.closeModal(), 50)
-    }
 
+    const handleRemoveTime = (index) => {
+        const next = [...timesArray];
+        next.splice(index, 1);
+        setTimesArray(next);
+    }
+    const handleSelectUserType = (event) => {
+        setSelectedReturnsType(event.target.value);
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        console.log({
+            email: data.get('email'),
+            password: data.get('password'),
+        });
+    };
+
+    useEffect(() => {
+        if (timesArray.length == maxTimes) {
+            setReachedMaxTimes(true);
+        } else {
+            setReachedMaxTimes(false);
+        }
+    });
     return (
         <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
                sx={{
@@ -146,14 +154,26 @@ function RemindersCreateForm(props) {
                                 <Grid item xs={12} key={"test123" + index}>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <TimePicker
-                                            label="Basic example"
+                                            label="בחר שעה"
                                             value={timesArray[index]}
                                             onChange={(newValue) => {
                                                 handleTimeChange(newValue, index);
                                             }}
                                             renderInput={(params) => <TextField {...params} fullWidth
                                                                                 error={showError(time, index)}
-                                                                                />}
+
+                                            />}
+                                            InputProps={{
+
+                                                startAdornment: (index !== 0) && (
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={() => handleRemoveTime(index)}
+                                                    >
+                                                        <CancelIcon/>
+                                                    </IconButton>
+                                                )
+                                            }}
 
                                         />
                                     </LocalizationProvider>
@@ -164,7 +184,24 @@ function RemindersCreateForm(props) {
                                 <IconButton onClick={handleAddTimeClick}
                                             disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
                             </Grid>
-
+                            <Grid item xs={12}>
+                                <TextField
+                                    select
+                                    fullWidth
+                                    id="returns"
+                                    label="חזרה"
+                                    name="returns"
+                                    autoFocus
+                                    value={selectedReturnsType}
+                                    onChange={handleSelectUserType}
+                                >
+                                    {types.map((type) => (
+                                        <MenuItem key={type} value={type}>
+                                            {type}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     autoComplete="given-name"
@@ -176,25 +213,7 @@ function RemindersCreateForm(props) {
                                 />
                             </Grid>
 
-                            <Grid item xs={12}>
-                                <TextField
-                                    select
-                                    required
-                                    fullWidth
-                                    id="user-type"
-                                    label="סוג משתמש"
-                                    name="userType"
-                                    autoFocus
-                                    value={userType}
-                                    onChange={handleSelectUserType}
-                                >
-                                    {types.map((type) => (
-                                        <MenuItem key={type} value={type}>
-                                            {type}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
+
                             <Grid item xs={12}>
                                 <TextField
                                     required
