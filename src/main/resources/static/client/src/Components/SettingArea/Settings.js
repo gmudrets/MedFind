@@ -2,23 +2,22 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 
 import {createTheme} from "@mui/material/styles";
-import {ThemeProvider} from "@emotion/react";
+import {CacheProvider, ThemeProvider} from "@emotion/react";
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import Grid from "@mui/material/Grid";
 import rtlPlugin from 'stylis-plugin-rtl';
-import {CacheProvider} from '@emotion/react';
 import createCache from '@emotion/cache';
-import {prefixer} from 'stylis';
 import {Button} from "@mui/material";
 import EditableTextWithButtons from "../UI/EditableTextWithButtons";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
-import * as STATE_PATHS from "../../Consts/StatePaths";
 import Typography from "@mui/material/Typography";
 import SettingsCheckBox from "../UI/SettingsCheckBox";
 import {isMobile} from "react-device-detect";
+import {prefixer} from 'stylis';
+import * as STATE_PATHS from "../../Consts/StatePaths";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -88,6 +87,14 @@ export default function Settings() {
                                 </Typography> </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="שם משתמש" initVal={username} validate={validateName}
+                                                         onSubmit={handleUserNameSubmit}/>
+                            </Grid>
+                            <Grid item md={3} sx={{textAlign: "center"}}>
+                                <EditableTextWithButtons label="שם פרטי" initVal={firstName} validate={validateFirstName}
+                                                         onSubmit={handleFir}/>
+                            </Grid>
+                            <Grid item md={3} sx={{textAlign: "center"}}>
+                                <EditableTextWithButtons label="שם משפחה" initVal={username} validate={validateName}
                                                          onSubmit={handleUserNameSubmit}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>

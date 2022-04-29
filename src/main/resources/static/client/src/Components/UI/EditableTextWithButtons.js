@@ -26,8 +26,8 @@ export default function EditableTextWithButtons(props) {
     const [lastSubmitted, setLastSubmitted] = useState(props.initVal);
     const [submiting, setSubmitings] = useState(false);
     const [showPassword, setShowPassword] = useState(!props.password);
-    const [pointerInButton,setPointerInButton] = React.useState(false);
-    
+    const [pointerInButton, setPointerInButton] = React.useState(false);
+
 
     useEffect(() => {
             if (isEditMode) {
@@ -45,7 +45,7 @@ export default function EditableTextWithButtons(props) {
         [isEditMode]
     )
     const handlePointerEnterButton = () => {
-      setPointerInButton(true);
+        setPointerInButton(true);
     }
     const handlePointerLeaveButton = () => {
         setPointerInButton(false);
@@ -140,7 +140,7 @@ export default function EditableTextWithButtons(props) {
                                 htmlFor="outlined-adornment-password">{props.label}</InputLabel>
                             <OutlinedInput
                                 type={showPassword ? 'text' : 'password'}
-                                focused={isEditMode}S
+                                focused={isEditMode} S
                                 onChange={handleChange}
                                 label={props.label}
                                 id="outlined-start-adornment"
@@ -172,14 +172,15 @@ export default function EditableTextWithButtons(props) {
                 <Grid item md={3}>
                     <Stack>
 
-                        <Button onClick={!isEditMode ? handleEditClick : myHandleSubmit}
-                                variant={(!isEditMode&&!pointerInButton) ? 'text' : "contained"}
-                                style={{maxWidth: "45px"}}
-                                endIcon={!isEditMode ? <EditIcon/> : <CheckIcon/>}
-                                ref={buttonRef}
-                                onPointerEnter={handlePointerEnterButton}
-                                onPointerLeave={handlePointerLeaveButton}
-                        />
+                        <IconButton onClick={!isEditMode ? handleEditClick : myHandleSubmit}
+                                    color={(!isEditMode && !pointerInButton) ? 'default' : "primary"}
+                                    style={{maxWidth: "45px"}}
+                                    ref={buttonRef}
+                                    onPointerEnter={handlePointerEnterButton}
+                                    onPointerLeave={handlePointerLeaveButton}
+                        >
+                            {!isEditMode ? <EditIcon/> : <CheckIcon/>}
+                        </IconButton>
 
                     </Stack>
                 </Grid>
