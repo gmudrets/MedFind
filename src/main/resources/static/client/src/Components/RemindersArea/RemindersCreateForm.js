@@ -331,7 +331,7 @@ function RemindersCreateForm(props) {
                                 </div>
                             }
                             {returnsType != returnsTypeOptions[0] &&
-                                <Grid item xs={8}>
+                                <Grid item xs={5}>
                                     <TextField
                                         select
                                         fullWidth
@@ -349,20 +349,21 @@ function RemindersCreateForm(props) {
                                     </TextField>
                                 </Grid>}
                             {returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[0] &&
-                                <Grid item xs={4}>
+                                <Grid item xs={7}>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <DatePicker
                                             label="תאריך"
                                             value={untilDate}
                                             onChange={handleUntilDateChange}
                                             renderInput={(params) => <TextField {...params} />}
+
                                         />
                                     </LocalizationProvider>
                                 </Grid>
 
                             }
                             {returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[1] &&
-                                <Grid item xs={4}>
+                                <Grid item xs={7}>
                                     <TextField
                                         id="reminders num"
                                         label="כמות תזכורת (שנותרו)"
@@ -376,25 +377,7 @@ function RemindersCreateForm(props) {
                                     />
                                 </Grid>
                             }
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="סיסמה"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
 
-
-                            <Grid item xs={12}>
-                                <FormControlLabel
-                                    control={<Checkbox value="allowExtraEmails" color="primary"/>}
-                                    label="אני מעוניין לקבל התראות לכתובת האימייל שלי"
-                                />
-                            </Grid>
                         </Grid>
                         <Button
                             type="submit"
@@ -402,17 +385,9 @@ function RemindersCreateForm(props) {
                             variant="contained"
                             sx={{mt: 3, mb: 2}}
                         >
-                            הרשמה
+                            צור תזכורת
                         </Button>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <Link href="#/login" variant="body2" onClick={() => {
-                                    navigate("/login");
-                                }}>
-                                    משתמש רשום? התחבר
-                                </Link>
-                            </Grid>
-                        </Grid>
+
                     </Box>
                 </Box>
             </Container>
