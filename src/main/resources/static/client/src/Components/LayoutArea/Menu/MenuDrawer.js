@@ -28,7 +28,7 @@ export default function MenuDrawer(props) {
     setIsMenuOpen(props.isMenuOpen);
 
   }, [props.isMenuOpen])
-  const handleSettingPress = ()=>{
+  const handleSettingClick = ()=>{
     navigate("/settings");
   }
   const DrawerHeader = styled('div')(({ theme }) => ({
@@ -75,7 +75,7 @@ export default function MenuDrawer(props) {
             </ListItemIcon>
             <ListItemText primary='תזכורות' />
           </ListItemButton>
-          <ListItemButton onClick= {handleSettingPress} key='settings'>
+          <ListItemButton onClick= {handleSettingClick} key='settings'>
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>

@@ -1,9 +1,6 @@
 import * as React from 'react';
 
 import TextField from '@mui/material/TextField';
-
-import ClearIcon from '@mui/icons-material/Clear';
-
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import Grid from "@mui/material/Grid";
@@ -29,7 +26,30 @@ export default function EditableTextWithButtons(props) {
     const [lastSubmitted, setLastSubmitted] = useState(props.initVal);
     const [submiting, setSubmitings] = useState(false);
     const [showPassword, setShowPassword] = useState(!props.password);
+    const [pointerInButton,setPointerInButton] = React.useState(false);
+    
 
+    useEffect(() => {
+            if (isEditMode) {
+
+                if (!props.password)
+                    inputRef.current.focus();
+                else
+                    passwordRef.current.focus();
+            }
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        ,
+        [isEditMode]
+    )
+    const handlePointerEnterButton = () => {
+      setPointerInButton(true);
+    }
+    const handlePointerLeaveButton = () => {
+        setPointerInButton(false);
+    }
     const clickOutside = (refrence, e) => {
         return refrence.current && !refrence.current.contains(e.target);
     }
@@ -48,21 +68,7 @@ export default function EditableTextWithButtons(props) {
         }
         setCurrentlyValidated(props.validate(lastSubmitted));
     }
-    useEffect(() => {
-            if (isEditMode) {
 
-                if (!props.password)
-                    inputRef.current.focus();
-                else
-                    passwordRef.current.focus();
-            }
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => document.removeEventListener('mousedown', handleClickOutside);
-        }
-
-        ,
-        [isEditMode]
-    )
     const handleClearClick = () => {
         setIsEditMode(false);
         setCurrentText(lastSubmitted);
@@ -77,11 +83,11 @@ export default function EditableTextWithButtons(props) {
     }
 
     const myHandleSubmit = () => {
-        const cur = currentText;
+        const currentTextInField = currentText;
         setSubmitings(true);
-        if (props.onSubmit(cur)) {
-            setLastSubmitted(cur);
-            setCurrentText(cur);
+        if (props.onSubmit(currentTextInField)) {
+            setLastSubmitted(currentTextInField);
+            setCurrentText(currentTextInField);
         } else {
             alert("Error Submiting " + props.label)
             setCurrentText(lastSubmitted);
@@ -98,7 +104,6 @@ export default function EditableTextWithButtons(props) {
             myHandleSubmit();
         }
     }
-//password stuff
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -168,11 +173,12 @@ export default function EditableTextWithButtons(props) {
                     <Stack>
 
                         <Button onClick={!isEditMode ? handleEditClick : myHandleSubmit}
-                                variant={!isEditMode ? "outlined" : "contained"}
-                                component="span"
-                                style={{minWidth: 'fit-content', maxWidth: "20px"}}
+                                variant={(!isEditMode&&!pointerInButton) ? 'text' : "contained"}
+                                style={{maxWidth: "45px"}}
                                 endIcon={!isEditMode ? <EditIcon/> : <CheckIcon/>}
                                 ref={buttonRef}
+                                onPointerEnter={handlePointerEnterButton}
+                                onPointerLeave={handlePointerLeaveButton}
                         />
 
                     </Stack>

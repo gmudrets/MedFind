@@ -7,18 +7,17 @@ import {ThemeProvider} from "@emotion/react";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import Grid from "@mui/material/Grid";
-//rtl stuff https://mui.com/material-ui/guides/right-to-left/
 import rtlPlugin from 'stylis-plugin-rtl';
 import {CacheProvider} from '@emotion/react';
 import createCache from '@emotion/cache';
 import {prefixer} from 'stylis';
 import {Button} from "@mui/material";
-import EditableTextWithButtons from "./EditableTextWithButtons";
+import EditableTextWithButtons from "../UI/EditableTextWithButtons";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import Typography from "@mui/material/Typography";
-import SettingsCheckBox from "./SettingsCheckBox";
+import SettingsCheckBox from "../UI/SettingsCheckBox";
 import {isMobile} from "react-device-detect";
 
 // Create rtl cache
