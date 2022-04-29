@@ -27,18 +27,19 @@ import {useNavigate} from "react-router-dom";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {TimePicker} from "@mui/x-date-pickers/TimePicker";
+import {DatePicker} from "@mui/x-date-pickers";
 
 function RemindersCreateForm(props) {
     const maxTimes = 15;
 
-    const types = [
+    const returnsTypeOptions = [
         'לא חוזר',
         'כל יום',
         'כל כמה ימים',
         'כל שבוע',
         'כל כמה שבועות',
     ];
-    const names = [
+    const daysWeekOptions = [
         'ראשון',
         'שני',
         'שלישי',
@@ -46,8 +47,15 @@ function RemindersCreateForm(props) {
         'חמישי',
         'שישי',
         'שבת'
+    ];
+    const untilTypeOptions = [
+        'תאריך',
+        'כמות תזכורת'
     ]
-
+    const initilizeWeekDaysSelected = () => {
+        const today = new Date().getDay();
+        return [daysWeekOptions[today]];
+    }
     const [stopStream, setStopStream] = useState(false);
     const [timesArray, setTimesArray] = useState([null]);
     const [name, setName] = React.useState("");
@@ -57,8 +65,12 @@ function RemindersCreateForm(props) {
     const [reachedMaxTimes, setReachedMaxTimes] = React.useState(false);
     const [eachManyDays, setEachManyDays] = React.useState(2);
     const [eachManyWeeks, setEachManyWeeks] = React.useState(2);
-    const [returnsType, setReturnsType] = useState(types[0]);
-    const [personName, setPersonName] = React.useState([]);
+    const [returnsType, setReturnsType] = useState(returnsTypeOptions[0]);
+    const [weekDaysSelected, setWeekDaysSelected] = React.useState(initilizeWeekDaysSelected());
+    const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
+    const [remindersRemain, setRemindersRemain] = React.useState(2);
+    const [untilDate, setUntilDate] = React.useState(new Date());
+
 
     const ITEM_HEIGHT = 48;
     const ITEM_PADDING_TOP = 8;
@@ -70,6 +82,15 @@ function RemindersCreateForm(props) {
             },
         },
     };
+    const handleUntilDateChange = (date) => {
+        setUntilDate(date);
+    }
+    const handleRemindersRemainChange = (event) => {
+        setRemindersRemain(event.target.value);
+    }
+    const handleUntilTypeChange = (event) => {
+        setUntilType(event.target.value);
+    }
     const handleEachManyWeeksChange = (event) => {
         setEachManyWeeks(event.target.value);
     }
@@ -80,18 +101,16 @@ function RemindersCreateForm(props) {
         setName(event.target.value);
     }
 
-    const handleChange = (event) => {
+    const handleWeekDaysSelectedChange = (event) => {
         const {
-            target: { value },
+            target: {value},
         } = event;
-        setPersonName(
+        setWeekDaysSelected(
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
     };
     const navigate = useNavigate();
-
-    // const days =
 
 
     const showError = (time, index) => {
@@ -164,6 +183,7 @@ function RemindersCreateForm(props) {
         } else {
             setReachedMaxTimes(false);
         }
+        console.log(weekDaysSelected);
     });
     return (
         <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
@@ -236,18 +256,17 @@ function RemindersCreateForm(props) {
                                 <IconButton onClick={handleAddTimeClick}
                                             disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={8}>
                                 <TextField
                                     select
                                     fullWidth
                                     id="returns"
                                     label="חזרה"
                                     name="returns"
-                                    autoFocus
                                     value={returnsType}
                                     onChange={handleSelectUserType}
                                 >
-                                    {types.map((type) => (
+                                    {returnsTypeOptions.map((type) => (
                                         <MenuItem key={type} value={type}>
                                             {type}
                                         </MenuItem>
@@ -255,8 +274,8 @@ function RemindersCreateForm(props) {
                                 </TextField>
                             </Grid>
                             {/*in case of repeat each few days*/}
-                            {returnsType == types[2] &&
-                                <Grid item xs={6}>
+                            {returnsType == returnsTypeOptions[2] &&
+                                <Grid item xs={4}>
                                     <TextField
                                         id="day number"
                                         label="מספר ימים"
@@ -271,8 +290,8 @@ function RemindersCreateForm(props) {
                                 </Grid>
                             }
                             {/*in case of repeat each few days*/}
-                            {returnsType == types[4] &&
-                                <Grid item xs={6}>
+                            {returnsType == returnsTypeOptions[4] &&
+                                <Grid item xs={4}>
                                     <TextField
                                         id="'week number'"
                                         label="מספר שבועות"
@@ -287,31 +306,76 @@ function RemindersCreateForm(props) {
                                 </Grid>
                             }
                             {/*in case of repeat each few or each week weeks*/}
-                            {(returnsType == types[3] || returnsType == types[4]) &&
+                            {(returnsType == returnsTypeOptions[3] || returnsType == returnsTypeOptions[4]) &&
                                 <div>
-                                    <FormControl sx={{ m: 1, width: 300 }}>
+                                    <FormControl sx={{m: 1, width: 300}}>
                                         <InputLabel id="demo-multiple-checkbox-label">בימים</InputLabel>
                                         <Select
                                             labelId="demo-multiple-checkbox-label"
                                             id="demo-multiple-checkbox"
                                             multiple
-                                            value={personName}
-                                            onChange={handleChange}
-                                            input={<OutlinedInput label="ימים בשבוע" />}
+                                            value={weekDaysSelected}
+                                            onChange={handleWeekDaysSelectedChange}
+                                            input={<OutlinedInput label="ימים בשבוע"/>}
                                             renderValue={(selected) => selected.join(', ')}
                                             MenuProps={MenuProps}
                                         >
-                                            {names.map((name) => (
+                                            {daysWeekOptions.map((name) => (
                                                 <MenuItem key={name} value={name}>
-                                                    <Checkbox checked={personName.indexOf(name) > -1} />
-                                                    <ListItemText primary={name} />
+                                                    <Checkbox checked={weekDaysSelected.indexOf(name) > -1}/>
+                                                    <ListItemText primary={name}/>
                                                 </MenuItem>
                                             ))}
                                         </Select>
                                     </FormControl>
                                 </div>
                             }
+                            {returnsType != returnsTypeOptions[0] &&
+                                <Grid item xs={8}>
+                                    <TextField
+                                        select
+                                        fullWidth
+                                        id="until"
+                                        label="חזור עד"
+                                        name="returns"
+                                        value={untilType}
+                                        onChange={handleUntilTypeChange}
+                                    >
+                                        {untilTypeOptions.map((type) => (
+                                            <MenuItem key={type} value={type}>
+                                                {type}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>}
+                            {returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[0] &&
+                                <Grid item xs={4}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            label="תאריך"
+                                            value={untilDate}
+                                            onChange={handleUntilDateChange}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                </Grid>
 
+                            }
+                            {returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[1] &&
+                                <Grid item xs={4}>
+                                    <TextField
+                                        id="reminders num"
+                                        label="כמות תזכורת (שנותרו)"
+                                        type="number"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={remindersRemain}
+                                        onChange={handleRemindersRemainChange}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            }
                             <Grid item xs={12}>
                                 <TextField
                                     required
