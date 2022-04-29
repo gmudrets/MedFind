@@ -1,4 +1,4 @@
-import {Box} from "@mui/material";
+import {Box, Divider, ThemeProvider} from "@mui/material";
 import {getThemeProps} from "@mui/system";
 import React, {useEffect, useState} from "react";
 import BarcodeScannerComponent from "react-qr-barcode-scanner";
@@ -28,9 +28,12 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {TimePicker} from "@mui/x-date-pickers/TimePicker";
 import {DatePicker} from "@mui/x-date-pickers";
+import {createTheme} from "@mui/material/styles";
+import {CacheProvider} from "@emotion/react";
 
 function RemindersCreateForm(props) {
     const maxTimes = 15;
+    const ltrTheme = createTheme({direction: 'ltr'});
 
     const returnsTypeOptions = [
         'לא חוזר',
@@ -56,6 +59,11 @@ function RemindersCreateForm(props) {
         const today = new Date().getDay();
         return [daysWeekOptions[today]];
     }
+    const getTomorow = () => {
+        let date = new Date();
+        date.setDate(date.getDate() + 1);
+        return date;
+    }
     const [stopStream, setStopStream] = useState(false);
     const [timesArray, setTimesArray] = useState([null]);
     const [name, setName] = React.useState("");
@@ -69,7 +77,7 @@ function RemindersCreateForm(props) {
     const [weekDaysSelected, setWeekDaysSelected] = React.useState(initilizeWeekDaysSelected());
     const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
     const [remindersRemain, setRemindersRemain] = React.useState(2);
-    const [untilDate, setUntilDate] = React.useState(new Date());
+    const [untilDate, setUntilDate] = React.useState(getTomorow);//tommorow
 
 
     const ITEM_HEIGHT = 48;
@@ -255,6 +263,7 @@ function RemindersCreateForm(props) {
                                 <IconButton onClick={handleAddTimeClick}
                                             disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
                             </Grid>
+                            <Grid item xs={12}><Divider/></Grid>
                             <Grid item xs={8}>
                                 <TextField
                                     select
@@ -307,7 +316,7 @@ function RemindersCreateForm(props) {
                             {/*in case of repeat each few or each week weeks*/}
                             {(returnsType == returnsTypeOptions[3] || returnsType == returnsTypeOptions[4]) &&
                                 <Grid item xs={12}>
-                                <FormControl  fullWidth>
+                                    <FormControl fullWidth>
                                         <InputLabel id="demo-multiple-checkbox-label">בימים</InputLabel>
                                         <Select
                                             labelId="demo-multiple-checkbox-label"
@@ -331,33 +340,44 @@ function RemindersCreateForm(props) {
                                 </Grid>
                             }
                             {returnsType != returnsTypeOptions[0] &&
-                                <Grid item xs={5}>
-                                    <TextField
-                                        select
-                                        fullWidth
-                                        id="until"
-                                        label="חזור עד"
-                                        name="returns"
-                                        value={untilType}
-                                        onChange={handleUntilTypeChange}
-                                    >
-                                        {untilTypeOptions.map((type) => (
-                                            <MenuItem key={type} value={type}>
-                                                {type}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                                </Grid>}
+                                <>
+                                    <Grid item xs={12}><Divider/></Grid>
+                                    <Grid item xs={5}>
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            id="until"
+                                            label="חזור עד"
+                                            name="returns"
+                                            value={untilType}
+                                            onChange={handleUntilTypeChange}
+                                        >
+                                            {untilTypeOptions.map((type) => (
+                                                <MenuItem key={type} value={type}>
+                                                    {type}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </>}
                             {returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[0] &&
                                 <Grid item xs={7}>
-                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <DatePicker
-                                            label="תאריך"
-                                            value={untilDate}
-                                            onChange={handleUntilDateChange}
-                                            renderInput={(params) => <TextField {...params} />}
 
-                                        />
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <ThemeProvider theme={ltrTheme}>
+                                            <DatePicker
+                                                label="תאריך (כולל)"
+                                                value={untilDate}
+                                                onChange={handleUntilDateChange}
+                                                views={["year", "month", "day"]}
+                                                inputFormat="dd/MM/yyyy"
+                                                minDate={new Date()}
+                                                renderInput={(params) => <TextField {...params}
+                                                />}
+
+                                            />
+                                        </ThemeProvider>
+
                                     </LocalizationProvider>
                                 </Grid>
 
