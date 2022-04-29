@@ -78,7 +78,6 @@ function RemindersCreateForm(props) {
         PaperProps: {
             style: {
                 maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                width: 250,
             },
         },
     };
@@ -307,8 +306,8 @@ function RemindersCreateForm(props) {
                             }
                             {/*in case of repeat each few or each week weeks*/}
                             {(returnsType == returnsTypeOptions[3] || returnsType == returnsTypeOptions[4]) &&
-                                <div>
-                                    <FormControl sx={{m: 1, width: 300}}>
+                                <Grid item xs={12}>
+                                <FormControl  fullWidth>
                                         <InputLabel id="demo-multiple-checkbox-label">בימים</InputLabel>
                                         <Select
                                             labelId="demo-multiple-checkbox-label"
@@ -319,6 +318,7 @@ function RemindersCreateForm(props) {
                                             input={<OutlinedInput label="ימים בשבוע"/>}
                                             renderValue={(selected) => selected.join(', ')}
                                             MenuProps={MenuProps}
+                                            fullWidth
                                         >
                                             {daysWeekOptions.map((name) => (
                                                 <MenuItem key={name} value={name}>
@@ -328,7 +328,7 @@ function RemindersCreateForm(props) {
                                             ))}
                                         </Select>
                                     </FormControl>
-                                </div>
+                                </Grid>
                             }
                             {returnsType != returnsTypeOptions[0] &&
                                 <Grid item xs={5}>
