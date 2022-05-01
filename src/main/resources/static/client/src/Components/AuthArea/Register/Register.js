@@ -18,6 +18,9 @@ import {postRequest} from "../../../Utils/AxiosRequests";
 import {ServerConsts} from "../../../Consts/apiPaths";
 import * as validations from "../Validators/Validators";
 import {Snackbar, Alert} from "@mui/material";
+import { auth, db } from "../../../Configs/FirebaseConfig";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 
 const theme = createTheme({direction: 'rtl'});
 
@@ -48,16 +51,40 @@ function Register() {
     setUserType(event.target.value);
   };
 
-  // performs POST request - adding a new user.
+  // checks if the user email is not in use and password meets requirements.
+  // if not, raise an error. else, register the user to firebase + saving user info in "users" collection firestore.
   const registerNewUser = async (data) => {
-    let res = await postRequest(ServerConsts.REGISTER, {
-      "userType" : data.get("userType"),
-      "userName" : data.get("userName"),
-      "firstName" : data.get("firstName"),
-      "lastName" : data.get("lastName"),
-      "email" : data.get("email"),
-      "password" : data.get("password")
-    });
+    await createUserWithEmailAndPassword(auth,
+        data.get("email").toString(),
+        data.get("password").toString())
+        .then(async (userCredential) => {
+          try{
+              await addDoc(collection(db,"users"),JSON.parse(JSON.stringify({
+              uid: userCredential.user.uid,
+              userName: data.get("userName").toString(),
+              email: data.get("email").toString(),
+              firstName: data.get("firstName").toString(),
+              lastName: data.get("lastName").toString(),
+              userType: data.get("userType").toString(),
+              allowExtraEmails: true
+            }))).then();
+          }
+          catch(error) {
+            console.log(error);
+          }
+          signOut(auth).then();
+          setRegisterSuccessMessage(true);
+        }).catch(error =>{ // server email and password validations' errors
+          if(error.code === 'auth/email-already-in-use'){
+            setEmailError("כתובת המייל שבחרת כבר קיימת במערכת. אנא הזן כתובת אחרת או עבור להתחברות.");
+            setRegisterErrorMessage(true);
+          }
+          if(error.code === 'auth/weak-password'){
+            setPasswordError("הסיסמא שבחרת חלשה מידי. אנא בחר סיסמא חזקה יותר.");
+            setRegisterErrorMessage(true);
+          }
+        })
+
   }
 
   const handleRegisterSuccess = () => {
@@ -68,12 +95,12 @@ function Register() {
     setRegisterErrorMessage(false);
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
 
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    let allValidationsPassed = true;
+    let formValidationsPassed = true;
 
     // setting all errors as false before validations.
     setUsernameError("");
@@ -82,62 +109,59 @@ function Register() {
     setFirstNameError("");
     setLastNameError("");
 
-
     // pass through all validations, setting the errors if exists.
     if(validations.usernameEmpty(data.get("userName"))){
       setUsernameError("נא הזן שם משתמש");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
     else if(!validations.usernameMinChars(data.get("userName"))){
       setUsernameError("שם המשתמש חייב להיות באורך 8 תווים לפחות")
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
     else if(!validations.usernameValid(data.get("userName"))){
       setUsernameError("אנא הזן תווים באנגלית וספרות בלבד");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
 
     if(validations.firstnameEmpty(data.get("firstName"))){
       setFirstNameError("נא הזן שם פרטי");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
 
     if(validations.lastnameEmpty(data.get("lastName"))){
       setLastNameError("נא הזן שם משפחה");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
 
     if(validations.emailEmpty(data.get("email"))){
       setEmailError("נא הזן כתובת אימייל");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
 
     else if(!validations.emailValid(data.get("email"))){
       setEmailError("כתובת אימייל לא תקינה");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
 
     if(validations.passwordEmpty(data.get("password"))){
       setPasswordError("נא הזן סיסמה");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
     else if(!validations.passwordMinChars(data.get("password"))){
       setPasswordError("סיסמה צריכה להכיל לפחות 8 תווים");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
     else if(!validations.passwordValid(data.get("password"))){
       setPasswordError("סיסמה יכולה להכיל תווים, ספרות וסמלים מיוחדים בלבד");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
     else if(!validations.passwordsMatches(data.get("password"), data.get("confirmPassword"))){
       setPasswordError("הסיסמאות לא זהות, אנא הזן שוב");
-      allValidationsPassed = false;
+      formValidationsPassed = false;
     }
 
-    if(allValidationsPassed){
-      registerNewUser(data).then( () => {
-        setRegisterSuccessMessage(true);
-      });
+    if(formValidationsPassed){
+     await registerNewUser(data);
     }
 
     else{
@@ -148,7 +172,7 @@ function Register() {
   return (
     <ThemeProvider theme={theme}>
       <Snackbar open={registerSuccessMessage}
-                autoHideDuration={3000}
+                autoHideDuration={1500}
                 onClose={handleRegisterSuccess}
                 anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
       >
@@ -158,7 +182,7 @@ function Register() {
       </Snackbar>
 
       <Snackbar open={registerErrorMessage}
-                autoHideDuration={3000}
+                autoHideDuration={1500}
                 onClose={handleRegisterError}
                 anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
       >
