@@ -12,7 +12,7 @@ function configureReduxStore() {
     module.hot.accept("./RootReducer", () => store.replaceReducer(rootReducer))
   }
   
-  return store
+  return store;
 }
 
 export default configureReduxStore;

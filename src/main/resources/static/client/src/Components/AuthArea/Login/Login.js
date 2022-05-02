@@ -17,6 +17,10 @@ import {useSelector, useDispatch} from 'react-redux';
 import {Actions} from "../../../Redux/Auth";
 import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
+import { auth } from "../../../Configs/FirebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth"
+import {Alert, Snackbar} from "@mui/material";
+import {useState} from "react";
 
 
 function Login() {
@@ -24,24 +28,69 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
+  const [signInErrorMessage, setSignInErrorMessage] = useState(false);
+
+  const handleSignInSuccess = () => {
+    navigate("/");
+  }
+
+  const handleSignInError = () => {
+    setSignInErrorMessage(false);
+  }
+
   const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    let user = data.get('username');
-    let pass = data.get('password');
-    console.log({
-      username: user,
-      password: pass,
-    });
-    dispatch(Actions.requestUserLogin(user, pass));
-    navigate("/");
-  };
+    let email = data.get('email').toString();
+    let password = data.get('password').toString();
 
+    signInWithEmailAndPassword(auth,
+        email,
+        password)
+        .then(userCredential => {
+          const user = userCredential.user;
+          console.log(userCredential);
+          dispatch(Actions.requestUserLogin(email));
+          setSignInSuccessMessage(true);
+        }).catch(error => {
+          console.log("error code: " + error.code + " and message: " + error.message);
+
+          if(error.code === 'auth/user-not-found' ||
+              error.code === 'auth/invalid-email' ||
+              error.code === 'auth/user-disabled' ||
+              error.code === 'auth/wrong-password'){
+            setSignInErrorMessage(true);
+          }
+        });
+  };
 
   return (
     <ThemeProvider theme={theme}>
+
+      <Snackbar open={signInSuccessMessage}
+                autoHideDuration={1500}
+                onClose={handleSignInSuccess}
+                anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
+      >
+        <Alert severity="success">
+          התחברת בהצלחה ! מיד תעבור לדף הבית !
+        </Alert>
+      </Snackbar>
+
+      <Snackbar open={signInErrorMessage}
+                autoHideDuration={1500}
+                onClose={handleSignInError}
+                anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
+      >
+        <Alert severity="error">
+        כתובת מייל או סיסמא שגויים. אנא נסה שנית.
+        </Alert>
+      </Snackbar>
+
+
       <Container component="main" maxWidth="xs">
         <CssBaseline/>
         <Box
@@ -63,10 +112,10 @@ function Login() {
               margin="normal"
               required
               fullWidth
-              id="username"
-              label="שם משתמש"
-              name="username"
-              autoComplete="username"
+              id="email"
+              label="כתובת מייל"
+              name="email"
+              autoComplete="email"
               autoFocus
             />
             <TextField

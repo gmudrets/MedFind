@@ -30,12 +30,12 @@ export default function authReducer(state = initialState.auth, action = {}) {
         ...initialState.auth,
       }
     default:
-      return state
+      return state;
   }
 }
 export const Actions = {}
-Actions.requestUserLogin = (username, password) => {
-  return { type: REQUEST_LOGIN, user: username }
+Actions.requestUserLogin = (email) => {
+  return { type: REQUEST_LOGIN, user: email }
 }
 Actions.logUserOut = () => {
   return { type: REQUEST_LOG_USER_OUT }
