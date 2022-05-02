@@ -65,11 +65,6 @@ function Login() {
             setSignInErrorMessage(true);
           }
         });
-
-    console.log({
-      email: email,
-      password: password
-    });
   };
 
   return (
