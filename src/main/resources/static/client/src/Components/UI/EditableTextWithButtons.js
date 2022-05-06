@@ -133,7 +133,6 @@ export default function EditableTextWithButtons(props) {
                             type={showPassword ? 'text' : 'password'}
                             variant={isEditMode ? "outlined" : "standard"}
                             onKeyPress={handleKeyPress}
-
                         />
                         : <FormControl variant="outlined" fullWidth>
                             <InputLabel

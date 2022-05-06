@@ -35,6 +35,16 @@ export default function Settings() {
     const phoneNum = "1111";//TODO:
     const mail = "a@gmail.com";//TODO:
     const password = "123456";//TODO
+    const firstName = "abc"//TODO
+    const lastName = "def"//TODO
+    const handleFirstNameSubmit = (s) => {
+        //TODO
+        return true;
+    }
+    const handleLastNameSubmit = (s) => {
+        //TODO
+        return true;
+    }
     const handleUserNameSubmit = (s) => {
         //TODO
         return true;
@@ -73,12 +83,19 @@ export default function Settings() {
         //TODO
         return true;
     }
+    const validateFirstName = (s) => {
+        //TODO
+        return true;
+    }
+    const validateLastName = (s) => {
+        //TODO
+        return true;
+    }
     const marginY = 2;
     const m = 3;
     return (
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
-                <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
                         <Grid container columnSpacing={5} rowSpacing={2}
                               sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {padding: "40px"}}>
@@ -90,12 +107,13 @@ export default function Settings() {
                                                          onSubmit={handleUserNameSubmit}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="שם פרטי" initVal={firstName} validate={validateFirstName}
-                                                         onSubmit={handleFir}/>
+                                <EditableTextWithButtons label="שם פרטי" initVal={firstName}
+                                                         validate={validateFirstName}
+                                                         onSubmit={handleFirstNameSubmit}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
-                                <EditableTextWithButtons label="שם משפחה" initVal={username} validate={validateName}
-                                                         onSubmit={handleUserNameSubmit}/>
+                                <EditableTextWithButtons label="שם משפחה" initVal={lastName} validate={validateLastName}
+                                                         onSubmit={handleLastNameSubmit}/>
                             </Grid>
                             <Grid item md={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="מייל" initVal={mail} validate={validateMail}
@@ -157,7 +175,6 @@ export default function Settings() {
                             </Grid>
                         </Grid>
                     </Box>
-                </React.Fragment>
 
             </ThemeProvider>
         </CacheProvider>
