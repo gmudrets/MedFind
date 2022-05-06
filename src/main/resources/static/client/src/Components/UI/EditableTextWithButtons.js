@@ -115,7 +115,7 @@ export default function EditableTextWithButtons(props) {
         <Box sx={{flexGrow: 1}}>
 
             <Grid container>
-                <Grid item md={9}>
+                <Grid item xs ={9}>
                     {(!props.password || !isEditMode) ?
                         <TextField
                             focused={isEditMode}
@@ -125,7 +125,7 @@ export default function EditableTextWithButtons(props) {
                             onChange={handleChange}
                             label={props.label}
                             id="outlined-start-adornment"
-                            fullWidth
+
                             value={currentText}
                             error={!currentlyValidated && isEditMode}
                             onClick={handleEditClick}
@@ -133,17 +133,18 @@ export default function EditableTextWithButtons(props) {
                             type={showPassword ? 'text' : 'password'}
                             variant={isEditMode ? "outlined" : "standard"}
                             onKeyPress={handleKeyPress}
+                            fullWidth
+                            sx = {{maxWidth:"500px",maxHeight:"30px"}}
                         />
-                        : <FormControl variant="outlined" fullWidth>
+                        : <FormControl variant="outlined" sx = {{maxWidth:"500px",maxHeight:"30px"}}>
                             <InputLabel
                                 htmlFor="outlined-adornment-password">{props.label}</InputLabel>
                             <OutlinedInput
                                 type={showPassword ? 'text' : 'password'}
-                                focused={isEditMode} S
+                                focused={isEditMode}
                                 onChange={handleChange}
                                 label={props.label}
                                 id="outlined-start-adornment"
-                                fullWidth
                                 value={currentText}
                                 error={!currentlyValidated && isEditMode}
                                 inputRef={passwordRef}
@@ -168,7 +169,7 @@ export default function EditableTextWithButtons(props) {
 
 
                 </Grid>
-                <Grid item md={3}>
+                <Grid item xs={3}>
                     <Stack>
 
                         <IconButton onClick={!isEditMode ? handleEditClick : myHandleSubmit}

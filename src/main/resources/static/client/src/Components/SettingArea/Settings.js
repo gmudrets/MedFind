@@ -102,29 +102,29 @@ export default function Settings() {
                             <Grid item xs={12} sx={{textAlign: "left"}}>
                                 <Typography component="h1" variant="subtitle1"> פרטי משתמש
                                 </Typography> </Grid>
-                            <Grid item md={3} sx={{textAlign: "center"}}>
+                            <Grid item xs={isMobile ?"":6} md ={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="שם משתמש" initVal={username} validate={validateName}
                                                          onSubmit={handleUserNameSubmit}/>
                             </Grid>
-                            <Grid item md={3} sx={{textAlign: "center"}}>
+                            <Grid item xs={isMobile ?"":6} md ={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="שם פרטי" initVal={firstName}
                                                          validate={validateFirstName}
                                                          onSubmit={handleFirstNameSubmit}/>
                             </Grid>
-                            <Grid item md={3} sx={{textAlign: "center"}}>
+                            <Grid item xs={isMobile ?"":6} md ={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="שם משפחה" initVal={lastName} validate={validateLastName}
                                                          onSubmit={handleLastNameSubmit}/>
                             </Grid>
-                            <Grid item md={3} sx={{textAlign: "center"}}>
+                            <Grid item xs={isMobile ?"":6} md ={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="מייל" initVal={mail} validate={validateMail}
                                                          onSubmit={handleMailSubmit}/>
 
                             </Grid>
-                            <Grid item md={3} sx={{textAlign: "center"}}>
+                            <Grid item xs={isMobile ?"":6} md ={3} sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons label="טלפון" initVal={phoneNum} validate={validatePhoneNum}
                                                          onSubmit={handlePhoneNumSubmit}/>
                             </Grid>
-                            <Grid item md={3} sx={{textAlign: "center"}}>
+                            <Grid item xs={isMobile ?"":6} md ={3}sx={{textAlign: "center"}}>
                                 <EditableTextWithButtons password={true} label="ססמא" initVal={password}
                                                          validate={validatePassword} onSubmit={handlePasswordSubmit}/>
 
