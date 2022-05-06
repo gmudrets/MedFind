@@ -98,7 +98,7 @@ export default function Settings() {
             <ThemeProvider theme={theme}>
                     <Box sx={{flexGrow: 1}}>
                         <Grid container columnSpacing={5} rowSpacing={2}
-                              sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {padding: "40px"}}>
+                              sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {paddingX: "15%",paddingY:"40px"}}>
                             <Grid item xs={12} sx={{textAlign: "left"}}>
                                 <Typography component="h1" variant="subtitle1"> פרטי משתמש
                                 </Typography> </Grid>
