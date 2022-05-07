@@ -4,6 +4,8 @@ import Login from '../../AuthArea/Login/Login';
 import Register from '../../AuthArea/Register/Register';
 import Logout from '../../AuthArea/Logout/Logout';
 import Settings from '../../SettingArea/Settings'
+import Test from "../../SettingArea/Test";
+import TitlebarImageList from "../../SettingArea/Test2";
 
 function Routing() {
 	return (
@@ -15,6 +17,7 @@ function Routing() {
 					<Route path="/login" element={<Login/>} />
 					<Route path="/logout" element={<Logout/>}/>
 					<Route path="/settings" element={<Settings/>}/>
+					<Route path="/test" element={<TitlebarImageList/>}/>
 				</Routes>
 
 		</div>
