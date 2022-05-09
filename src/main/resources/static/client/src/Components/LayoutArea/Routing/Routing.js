@@ -1,12 +1,10 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import {Route, Routes} from 'react-router-dom';
 import Home from '../../HomeArea/Home';
 import Login from '../../AuthArea/Login/Login';
 import Register from '../../AuthArea/Register/Register';
 import Logout from '../../AuthArea/Logout/Logout';
 import Settings from '../../SettingArea/Settings'
-import Test from "../../SettingArea/Test";
-import TitlebarImageList from "../../SettingArea/Test2";
-import Test3 from "../../SettingArea/Test3";
+import ProfilePicturePicker from "../../SettingArea/ProfilePicturePicker";
 
 function Routing() {
 	return (
@@ -18,8 +16,7 @@ function Routing() {
 					<Route path="/login" element={<Login/>} />
 					<Route path="/logout" element={<Logout/>}/>
 					<Route path="/settings" element={<Settings/>}/>
-					<Route path="/test" element={<TitlebarImageList/>}/>
-					<Route path="/test2" element={<Test3/>}/>
+					<Route path="/test" element={<ProfilePicturePicker/>}/>
 				</Routes>
 
 		</div>
