@@ -110,6 +110,13 @@ export default function Settings() {
     }
     const validateLastName = (s) => {
         //TODO
+        console.log(reRenderSomthing)
+        return true;
+    }
+    const handleNewProfPic = (src) => {
+        setReRenderSomthing(!reRenderSomthing);
+        console.log("tookPic");
+        forceUpdate();
         return true;
     }
     const marginY = 2;
@@ -121,8 +128,8 @@ export default function Settings() {
 
                     <Grid container columnSpacing={5} rowSpacing={2}
                           sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {paddingX: "15%", paddingY: "40px"}}>
-                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "right"}}>
-                            <ProfilePicturePicker/>
+                        <Grid item xs={12}>
+                            <ProfilePicturePicker onUpdateProfilePic={handleNewProfPic}/>
                         </Grid>
                         <Grid item xs={12}>
                             <Divider/>
@@ -135,9 +142,10 @@ export default function Settings() {
                                                      onSubmit={handleUserNameSubmit}/>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons label="שם פרטי" initVal={firstName}
+                            <EditableTextWithButtons key = {keyToRerender} label="שם פרטי" initVal={firstName}
                                                      validate={validateFirstName}
-                                                     onSubmit={handleFirstNameSubmit}/>
+                                                     onSubmit={handleFirstNameSubmit}
+                                                     reRednerOnChange={reRenderSomthing}/>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="שם משפחה" initVal={lastName} validate={validateLastName}
@@ -160,7 +168,7 @@ export default function Settings() {
                             <Typography component="h1" variant="subtitle1"> שינוי ססמא</Typography>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
-                            <PasswordShower password={true} label="ססמא" initVal={password}
+                            <PasswordShower password={true} label="ססמא" val={password}
                                             validate={validatePassword} onSubmit={handlePasswordSubmit}/>
 
                         </Grid>
