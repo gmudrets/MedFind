@@ -69,7 +69,7 @@ function Header() {
             >
             </MenuDrawer>
           </IconButton>
-          <Typography component="div" sx={{ flexGrow: 1 }}>
+          <Typography component="div" >
             <img src={logo} className="Logo" alt="logo" style={{ width: '20%' }} />
           </Typography>
           {auth && (

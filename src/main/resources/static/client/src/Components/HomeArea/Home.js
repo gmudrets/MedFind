@@ -6,19 +6,12 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-import Avatar from "@mui/material/Avatar";
 import { getSafe } from '../../Utils/Utils'
 import * as STATE_PATHS from '../../Consts/StatePaths'
 import {getRequest} from "../../Utils/AxiosRequests";
@@ -27,8 +20,7 @@ import TransitionsModal from '../UI/Modal/Modal';
 import BarcodeScanner from '../BarcodeScanner/BarcodeScanner';
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
 import icon from '../../Assets/Images/icon.png'
-import LoadingButton from '@mui/lab/LoadingButton';
-import ArticleIcon from '@mui/icons-material/Article';
+import DetailedCard from "../UI/DetailedCard/DetailedCard";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -40,7 +32,6 @@ function Home() {
   const [ scannerOpen, setScannerOpen ] = useState(false);
   const [ triggerSearch, setTriggerSearch ] = useState(false);
   const [ loading, setLoading ] = useState(false);
-  const [ brochureLoading, setBrochureLoading ] = useState(false);
 
   useEffect(() => {
     if (username === ''){
@@ -84,71 +75,6 @@ function Home() {
     }
     return url;
   }
-
-  const getImage = (url) => {
-      return (
-          <Avatar variant={"rounded"} alt="N/A" src={url} style={{
-            width: 200,
-            height: 200,
-          }} />
-      )
-  }
-
-  const getBrochure = async (drugRegNum) => {
-      setBrochureLoading(true);
-      let data = await getRequest(ServerConsts.GET_BROCHURE, { "drugRegNum" : drugRegNum});
-      let url = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
-
-      setBrochureLoading(false);
-      const link = document.createElement("a");
-      link.download = data["consumerBrochure"];
-      link.href = url;
-      link.click();
-  }
-
-  const getBrochureButton = (drugRegNum) => {
-      return (
-          <LoadingButton
-              variant="contained"
-              size="small"
-              endIcon={<ArticleIcon/>}
-              onClick={() => {getBrochure(drugRegNum);}}
-              loading={brochureLoading}
-              loadingPosition="end"
-          >
-              עלון לצרכן
-          </LoadingButton>
-      )
-
-  }
-
-  const getValue = (data) => {
-    if(data === "null") {
-      return ""
-    }
-    else if(data === true) {
-      return "כן";
-    }
-    else if(data === false) {
-      return "לא";
-    }
-
-    return data;
-  }
-
-  const nameMapping = {
-    "activeComponents" : "חומרים פעילים",
-    "barcodes" : "ברקוד",
-    "customerPrice" : "מחיר לצרכן",
-    "dosageForm" : "צורת צריכה",
-    "dragEnName" : "שם באנגלית",
-    "dragHebName" : "שם בעברית",
-    "health" : "בסל הבריאות",
-    "images" : "תמונות",
-    "prescription" : "צריך מרשם",
-    "secondarySymptom" : "השפעות",
-    "brochure" : "עלון לצרכן",
-  };
 
   const search = async () => {
       setLoading(true)
@@ -238,43 +164,20 @@ function Home() {
           </TransitionsModal>
         <CircularProgressBackdrop open={loading} toggle={setLoading}/>
         { tableRows.length > 0 ? (
-        <TableContainer component={Paper} sx={{ m: 2 }}>
-          <Table sx={{ minWidth: 650 }} aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="right">{nameMapping["images"]}</TableCell>
-                <TableCell align="right">{nameMapping["dragHebName"]}</TableCell>
-                <TableCell align="right">{nameMapping["dragEnName"]}</TableCell>
-                <TableCell align="right">{nameMapping["activeComponents"]}</TableCell>
-                <TableCell align="right">{nameMapping["customerPrice"]}</TableCell>
-                <TableCell align="right">{nameMapping["dosageForm"]}</TableCell>
-                <TableCell align="right">{nameMapping["health"]}</TableCell>
-                <TableCell align="right">{nameMapping["prescription"]}</TableCell>
-                <TableCell align="right">{nameMapping["secondarySymptom"]}</TableCell>
-                <TableCell align="right">{nameMapping["brochure"]}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tableRows.map((row) => (
-                <TableRow
-                  key={Math.random().toString(36)}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell align="right">{getImage(row.images)}</TableCell>
-                  <TableCell align="right">{row.dragHebName}</TableCell>
-                  <TableCell align="right">{row.dragEnName}</TableCell>
-                  <TableCell align="right">{row.activeComponents}</TableCell>
-                  <TableCell align="right">{row.customerPrice}</TableCell>
-                  <TableCell align="right">{getValue(row.dosageForm)}</TableCell>
-                  <TableCell align="right">{getValue(row.health)}</TableCell>
-                  <TableCell align="right">{getValue(row.prescription)}</TableCell>
-                  <TableCell align="right">{getValue(row.secondarySymptom)}</TableCell>
-                  <TableCell align="right">{getBrochureButton(row.brochure)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>) : (<p align="center"> אין מידע להצגה </p>) }
+            <Box
+                    marginTop='65px'
+                    marginBottom='45px'
+                    display='flex'
+                    flexDirection='column'
+                    justifyContent="center"
+                    alignItems='center'
+            >
+                {tableRows.map((row) => (
+                        <DetailedCard data={row}/>
+                    ))
+                }
+            </Box>
+        ) : (<p align="center"> אין מידע להצגה </p>) }
     </ThemeProvider>
   );
 }
