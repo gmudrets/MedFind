@@ -113,8 +113,8 @@ export default function Settings() {
                             <Divider/>
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
-                            <Typography component="h1" variant="subtitle1"> פרטי משתמש
-                            </Typography> </Grid>
+                            <Typography component="h1" variant="subtitle1"> פרטי משתמש</Typography>
+                        </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="שם משתמש" initVal={username} validate={validateName}
                                                      onSubmit={handleUserNameSubmit}/>
@@ -137,27 +137,35 @@ export default function Settings() {
                             <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum} validate={validatePhoneNum}
                                                      onSubmit={handlePhoneNumSubmit}/>
                         </Grid>
+
+                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
+                            <Divider/>
+                        </Grid>
+                        <Grid item xs={12} sx={{textAlign: "left"}}>
+                            <Typography component="h1" variant="subtitle1"> שינוי ססמא</Typography>
+                        </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons password={true} label="ססמא" initVal={password}
                                                      validate={validatePassword} onSubmit={handlePasswordSubmit}/>
 
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
-                            <Divider />
+                            <Divider/>
                         </Grid>
                         <Grid item xs={4} sx={{textAlign: "left"}}>
-                                <Typography component="h1" variant="subtitle1">קבלת התראות</Typography>
-                                <Grid container columnSpacing={2}>
-                                    <Grid item md={3} sx={{textAlign: "center"}}>
-                                        <SettingsCheckBox label="מייל"/>
-                                    </Grid>
-                                    <Grid item md={3} sx={{textAlign: "center"}}>
-                                        <SettingsCheckBox label="טלפון"/>
-                                    </Grid>
-                                    <Grid item md={3} sx={{textAlign: "center"}}>
-                                        <SettingsCheckBox label="דפדפן"/>
-                                    </Grid>
+                            <Typography component="h1" variant="subtitle1">קבלת התראות</Typography>
+                            <Grid container columnSpacing={2}>
+                                <Grid item md={3} sx={{textAlign: "center"}}>
+                                    <SettingsCheckBox label="מייל"/>
                                 </Grid>
+
+                                <Grid item md={3} sx={{textAlign: "center"}}>
+                                    <SettingsCheckBox label="טלפון"/>
+                                </Grid>
+                                <Grid item md={3} sx={{textAlign: "center"}}>
+                                    <SettingsCheckBox label="דפדפן"/>
+                                </Grid>
+                            </Grid>
                         </Grid>
                         <Grid item xs={4} sx={{textAlign: "left"}}>
                             <Box sx={{flexGrow: 1}}>

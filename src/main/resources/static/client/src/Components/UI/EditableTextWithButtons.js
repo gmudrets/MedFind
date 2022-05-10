@@ -18,8 +18,8 @@ import Box from "@mui/material/Box";
 
 export default function EditableTextWithButtons(props) {
     const inputRef = useRef();
-    const passwordRef = useRef();
     const buttonRef = useRef();
+    const showPasswordButtonRef = useRef();
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentlyValidated, setCurrentlyValidated] = useState(false);
     const [currentText, setCurrentText] = useState(props.initVal);
@@ -31,14 +31,15 @@ export default function EditableTextWithButtons(props) {
 
     useEffect(() => {
             if (isEditMode) {
-
-                if (!props.password)
-                    inputRef.current.focus();
-                else
-                    passwordRef.current.focus();
+                inputRef.current.focus();
             }
             document.addEventListener('mousedown', handleClickOutside);
-            return () => document.removeEventListener('mousedown', handleClickOutside);
+            document.addEventListener('click', handleClickInside);
+
+            console.log(showPassword);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            }
         }
 
         ,
@@ -53,15 +54,24 @@ export default function EditableTextWithButtons(props) {
     const clickOutside = (refrence, e) => {
         return refrence.current && !refrence.current.contains(e.target);
     }
+    const clickInside = (refrence, e) => {
+        return refrence.current && refrence.current.contains(e.target);
+    }
     const handleClickOutside = e => {
-        if (clickOutside(inputRef, e) && (!props.password || props.password && clickOutside(passwordRef, e)) && clickOutside(buttonRef, e)) {
+        if (clickOutside(inputRef, e) && (clickOutside(buttonRef, e))) {
             handleClearClick();
+        }
+    };
+    const handleClickInside = e => {
+        if (clickInside(inputRef, e) && ( !props.password || clickOutside(showPasswordButtonRef, e))) {
+            handleEditClick();
         }
     };
 
 
     const handleEditClick = () => {
         inputRef.current.focus();
+        props.onEditModeStart();
         setIsEditMode(true);
         if (props.password) {
             setShowPassword(true);
@@ -71,15 +81,15 @@ export default function EditableTextWithButtons(props) {
 
     const handleClearClick = () => {
         setIsEditMode(false);
+        props.beforeEditModeFinish();
         setCurrentText(lastSubmitted);
         if (props.password) {
             setShowPassword(false);
         }
     }
     const handleChange = (event) => {
-        setCurrentText(event.target.value)
-        setCurrentlyValidated(props.validate(event.target.value))
-
+        setCurrentText(event.target.value);
+        setCurrentlyValidated(props.validate(event.target.value));
     }
 
     const myHandleSubmit = () => {
@@ -92,6 +102,7 @@ export default function EditableTextWithButtons(props) {
             alert("Error Submiting " + props.label)
             setCurrentText(lastSubmitted);
         }
+        props.beforeEditModeFinish();
         setIsEditMode(false);
         setSubmitings(false);
         if (props.password) {
@@ -115,57 +126,42 @@ export default function EditableTextWithButtons(props) {
         <Box sx={{flexGrow: 1}}>
 
             <Grid container>
-                <Grid item xs ={9}>
-                    {(!props.password || !isEditMode) ?
-                        <TextField
-                            focused={isEditMode}
-                            InputProps={{
-                                readOnly: !isEditMode && !submiting,
-                            }}
-                            onChange={handleChange}
-                            label={props.label}
-                            id="outlined-start-adornment"
+                <Grid item xs={9}>
 
-                            value={currentText}
-                            error={!currentlyValidated && isEditMode}
-                            onClick={handleEditClick}
-                            inputRef={inputRef}
-                            type={showPassword ? 'text' : 'password'}
-                            variant={isEditMode ? "outlined" : "standard"}
-                            onKeyPress={handleKeyPress}
-                            fullWidth
-                            sx = {{maxWidth:"500px",maxHeight:"30px"}}
-                        />
-                        : <FormControl variant="outlined" sx = {{maxWidth:"500px",maxHeight:"30px"}}>
-                            <InputLabel
-                                htmlFor="outlined-adornment-password">{props.label}</InputLabel>
-                            <OutlinedInput
-                                type={showPassword ? 'text' : 'password'}
-                                focused={isEditMode}
-                                onChange={handleChange}
-                                label={props.label}
-                                id="outlined-start-adornment"
-                                value={currentText}
-                                error={!currentlyValidated && isEditMode}
-                                inputRef={passwordRef}
-                                onClick={handleEditClick}
-                                onKeyPress={handleKeyPress}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <VisibilityOff/> : <Visibility/>}
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                                variant={isEditMode ? "outlined" : "standard"}
+                    <TextField
+                        focused={isEditMode}
+                        InputProps={props.password ? {
+                            readOnly: !isEditMode && !submiting,
 
-                            />
-                        </FormControl>}
+                            endAdornment:
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                    ref={showPasswordButtonRef}
+                                >
+                                    {showPassword ? <VisibilityOff/> : <Visibility/>}
+                                </IconButton>
+
+                        } : {
+                            readOnly: !isEditMode && !submiting,
+                        }}
+                        onChange={handleChange}
+                        label={props.label}
+                        id="outlined-start-adornment"
+
+                        value={currentText}
+                        error={!currentlyValidated && isEditMode}
+                        inputRef={inputRef}
+                        type={showPassword ? 'text' : 'password'}
+                        variant={isEditMode ? "outlined" : "standard"}
+                        onKeyPress={handleKeyPress}
+                        fullWidth
+                        sx={{maxWidth: "500px", maxHeight: "30px"}}
+                        onClick={handleClickInside}
+
+                    />
 
 
                 </Grid>
@@ -200,9 +196,16 @@ EditableTextWithButtons.defaultProps = {
     label: "field",
     //handle submition return true if everything was ok
     handleSubmit: (s) => {
-        return true
+        return true;
     },
-    //is passwor
+    //called on edit mode
+    beforeEditModeStart: ()=>{
+        return true;
+    },
+    beforeEditModeFinish: ()=>{
+        return true;
+    },
+    //is password
     password: false
 
 }
