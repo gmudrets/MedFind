@@ -21,6 +21,7 @@ import {useRef} from "react";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import {Image} from "@mui/icons-material";
 import ProfilePicturePicker from "./ProfilePicturePicker";
+import Divider from "@mui/material/Divider";
 
 
 // Create rtl cache
@@ -108,6 +109,9 @@ export default function Settings() {
                         <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "right"}}>
                             <ProfilePicturePicker/>
                         </Grid>
+                        <Grid item xs={12}>
+                            <Divider/>
+                        </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
                             <Typography component="h1" variant="subtitle1"> פרטי משתמש
                             </Typography> </Grid>
@@ -138,9 +142,10 @@ export default function Settings() {
                                                      validate={validatePassword} onSubmit={handlePasswordSubmit}/>
 
                         </Grid>
-
-                        <Grid item xs={4} sx={{textAlign: "left", marginTop: "30px"}}>
-                            <Box sx={{flexGrow: 1}} xs={6} sx={{textAlign: "left"}}>
+                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
+                            <Divider />
+                        </Grid>
+                        <Grid item xs={4} sx={{textAlign: "left"}}>
                                 <Typography component="h1" variant="subtitle1">קבלת התראות</Typography>
                                 <Grid container columnSpacing={2}>
                                     <Grid item md={3} sx={{textAlign: "center"}}>
@@ -153,9 +158,8 @@ export default function Settings() {
                                         <SettingsCheckBox label="דפדפן"/>
                                     </Grid>
                                 </Grid>
-                            </Box>
                         </Grid>
-                        <Grid item xs={4} sx={{textAlign: "left", marginTop: "30px"}}>
+                        <Grid item xs={4} sx={{textAlign: "left"}}>
                             <Box sx={{flexGrow: 1}}>
                                 <Typography component="h1" variant="subtitle1">סוג התראות</Typography>
                                 <Grid container>

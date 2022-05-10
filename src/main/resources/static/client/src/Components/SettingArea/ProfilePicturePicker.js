@@ -84,29 +84,29 @@ export default function ProfilePicturePicker(props) {
     return (
         <>
             <TransitionsModal open={cameraOpen} toggleModal={toggleCamerOpen}>
-                <Stack style={{width:"fit-content"}}>
+                <Stack style={{width: "fit-content"}}>
                     <Webcam
                         audio={false}
                         height={"200px"}
                         screenshotFormat="image/jpeg"
                         width={"280px"}
                         videoConstraints={videoConstraints}
-                        ref = {webcamRef}
+                        ref={webcamRef}
                     />
 
 
-                <IconButton
-                    onClick={capture}
-                    onPointerEnter={handlePointerEnterCameraTake}
-                    onPointerLeave={handlePointerLeaveCameraTake}
-                    color={pointerInCameraTake ? "primary" : "default"}
+                    <IconButton
+                        onClick={capture}
+                        onPointerEnter={handlePointerEnterCameraTake}
+                        onPointerLeave={handlePointerLeaveCameraTake}
+                        color={pointerInCameraTake ? "primary" : "default"}
 
-                >
-                    <PhotoCameraIcon/>
-                </IconButton>
+                    >
+                        <PhotoCameraIcon/>
+                    </IconButton>
                 </Stack>
             </TransitionsModal>
-            <ImageList >
+            <ImageList>
                 <ImageListItem key={img}
                                sx={{
                                    maxWidth: "150px",
