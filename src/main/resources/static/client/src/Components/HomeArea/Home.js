@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
@@ -18,14 +18,17 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-import CircularProgress from '@mui/material/CircularProgress';
+import Avatar from "@mui/material/Avatar";
 import { getSafe } from '../../Utils/Utils'
 import * as STATE_PATHS from '../../Consts/StatePaths'
 import {getRequest} from "../../Utils/AxiosRequests";
-import {ServerConsts} from "../../Consts/apiPaths";
+import {ServerConsts, External} from "../../Consts/apiPaths";
 import TransitionsModal from '../UI/Modal/Modal';
 import BarcodeScanner from '../BarcodeScanner/BarcodeScanner';
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
+import icon from '../../Assets/Images/icon.png'
+import LoadingButton from '@mui/lab/LoadingButton';
+import ArticleIcon from '@mui/icons-material/Article';
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -37,6 +40,7 @@ function Home() {
   const [ scannerOpen, setScannerOpen ] = useState(false);
   const [ triggerSearch, setTriggerSearch ] = useState(false);
   const [ loading, setLoading ] = useState(false);
+  const [ brochureLoading, setBrochureLoading ] = useState(false);
 
   useEffect(() => {
     if (username === ''){
@@ -51,12 +55,10 @@ function Home() {
     }
   }, [triggerSearch]);
 
-
-
   const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
-                      dragHebName, health, images, prescription, secondarySymptom) => {
+                      dragHebName, health, images, prescription, secondarySymptom, brochure) => {
       return { activeComponents, barcodes, customerPrice, dosageForm, dragEnName, dragHebName, health,
-                  images, prescription, secondarySymptom };
+                  images, prescription, secondarySymptom, brochure };
   }
 
   const generateMultiField = (data) => {
@@ -70,6 +72,54 @@ function Home() {
 
     // Remove last character
     return final.slice(0, -1);
+  }
+
+  const getImageURL = (data) => {
+    let url = External.EXTERNAL_FILES_URL;
+    if (data[0] === undefined){
+        url = icon;
+    }
+    else {
+        url += data[0];
+    }
+    return url;
+  }
+
+  const getImage = (url) => {
+      return (
+          <Avatar variant={"rounded"} alt="N/A" src={url} style={{
+            width: 200,
+            height: 200,
+          }} />
+      )
+  }
+
+  const getBrochure = async (drugRegNum) => {
+      setBrochureLoading(true);
+      let data = await getRequest(ServerConsts.GET_BROCHURE, { "drugRegNum" : drugRegNum});
+      let url = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
+
+      setBrochureLoading(false);
+      const link = document.createElement("a");
+      link.download = data["consumerBrochure"];
+      link.href = url;
+      link.click();
+  }
+
+  const getBrochureButton = (drugRegNum) => {
+      return (
+          <LoadingButton
+              variant="contained"
+              size="small"
+              endIcon={<ArticleIcon/>}
+              onClick={() => {getBrochure(drugRegNum);}}
+              loading={brochureLoading}
+              loadingPosition="end"
+          >
+              עלון לצרכן
+          </LoadingButton>
+      )
+
   }
 
   const getValue = (data) => {
@@ -97,12 +147,13 @@ function Home() {
     "images" : "תמונות",
     "prescription" : "צריך מרשם",
     "secondarySymptom" : "השפעות",
+    "brochure" : "עלון לצרכן",
   };
 
   const search = async () => {
       setLoading(true)
     let rows = [];
-    let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "true", "pageIndex" : "1" });
+    let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "false", "pageIndex" : "1" });
 
     data["results"].forEach(
       (d) => {
@@ -114,9 +165,10 @@ function Home() {
           d["dragEnName"],
           d["dragHebName"],
           d["health"],
-          generateMultiField(d["images"]),
+          getImageURL(d["images"]),
           d["prescription"],
           d["secondarySymptom"],
+          d["dragRegNum"],
           ))
       }
     );
@@ -154,7 +206,7 @@ function Home() {
                 sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
                 >
                 <IconButton sx={{ p: '10px' }} aria-label="menu">
-                    <MenuIcon />
+                    <MenuIcon/>
                 </IconButton>
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
@@ -190,6 +242,7 @@ function Home() {
           <Table sx={{ minWidth: 650 }} aria-label="sticky table">
             <TableHead>
               <TableRow>
+                <TableCell align="right">{nameMapping["images"]}</TableCell>
                 <TableCell align="right">{nameMapping["dragHebName"]}</TableCell>
                 <TableCell align="right">{nameMapping["dragEnName"]}</TableCell>
                 <TableCell align="right">{nameMapping["activeComponents"]}</TableCell>
@@ -198,14 +251,16 @@ function Home() {
                 <TableCell align="right">{nameMapping["health"]}</TableCell>
                 <TableCell align="right">{nameMapping["prescription"]}</TableCell>
                 <TableCell align="right">{nameMapping["secondarySymptom"]}</TableCell>
+                <TableCell align="right">{nameMapping["brochure"]}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {tableRows.map((row) => (
                 <TableRow
-                  key={row.name}
+                  key={Math.random().toString(36)}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
+                  <TableCell align="right">{getImage(row.images)}</TableCell>
                   <TableCell align="right">{row.dragHebName}</TableCell>
                   <TableCell align="right">{row.dragEnName}</TableCell>
                   <TableCell align="right">{row.activeComponents}</TableCell>
@@ -214,6 +269,7 @@ function Home() {
                   <TableCell align="right">{getValue(row.health)}</TableCell>
                   <TableCell align="right">{getValue(row.prescription)}</TableCell>
                   <TableCell align="right">{getValue(row.secondarySymptom)}</TableCell>
+                  <TableCell align="right">{getBrochureButton(row.brochure)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

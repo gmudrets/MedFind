@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosConfig = {
     // Tomcat dev url
-    baseURL: 'http://localhost:8080/',
+    baseURL: 'https://localhost:8080/',
     timeout: 30000,
 };
 

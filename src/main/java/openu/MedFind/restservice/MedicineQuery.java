@@ -2,7 +2,9 @@ package openu.MedFind.restservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import openu.MedFind.dto.BrochureResults;
 import openu.MedFind.dto.MedicineResults;
+import openu.MedFind.dto.RequestBrochureByDrugRegNum;
 import openu.MedFind.dto.RequestMedicineByName;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,13 +23,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
 // To allow access to nodejs local instance for development purposes
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://localhost:3000")
 @RestController
 public class MedicineQuery {
 
     private static final Duration WEB_CLIENT_TIMEOUT = Duration.of(1, ChronoUnit.MINUTES);
     private static final String HEALTH_MINISTRY_SITE = "https://israeldrugs.health.gov.il/GovServiceList/IDRServer";
     private static final String SEARCH_BY_NAME_ENDPOINT = "/SearchByName";
+    private static final String GET_SPECIFIC_DRUG_ENDPOINT = "/GetSpecificDrug";
 
 
     private <T> String webClientRestCall(String url, String uri, Mono<T> body, Class<T> clazz) {
@@ -38,7 +41,7 @@ public class MedicineQuery {
                 .build();
 
         UriSpec<RequestBodySpec> uriSpec = client.post();
-        RequestBodySpec bodySpec = uriSpec.uri(SEARCH_BY_NAME_ENDPOINT);
+        RequestBodySpec bodySpec = uriSpec.uri(uri);
         RequestHeadersSpec<?> headersSpec = bodySpec.body(body, clazz);
 
         return headersSpec.retrieve().bodyToMono(String.class).block(WEB_CLIENT_TIMEOUT);
@@ -57,6 +60,19 @@ public class MedicineQuery {
         );
 
         return new ObjectMapper().readValue(response, MedicineResults.class);
+    }
+
+    @GetMapping("/api/GetBrochure")
+    public BrochureResults GetBrochure(@RequestParam String drugRegNum) throws JsonProcessingException {
+
+        String response = webClientRestCall(
+                HEALTH_MINISTRY_SITE,
+                GET_SPECIFIC_DRUG_ENDPOINT,
+                Mono.just(new RequestBrochureByDrugRegNum(drugRegNum)),
+                RequestBrochureByDrugRegNum.class
+        );
+
+        return new ObjectMapper().readValue(response, BrochureResults.class);
     }
 }
 
