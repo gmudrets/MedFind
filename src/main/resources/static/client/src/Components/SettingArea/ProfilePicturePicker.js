@@ -39,7 +39,7 @@ export default function ProfilePicturePicker(props) {
     }
     const handleNewPicture = (picture) => {
         if (picture) {
-            props.updateProfilePic(picture);
+            props.onUpdateProfilePic(picture);
             setCameraOpen(false);
             setImg(picture);
             setPointerInCameraTake(false);
@@ -173,8 +173,8 @@ export default function ProfilePicturePicker(props) {
     );
 }
 ProfilePicturePicker.defaultProps = {
-    updateProfilePic: (src) => {
-        return true
+    onUpdateProfilePic: (src) => {
+        return true;
     }
 
 }

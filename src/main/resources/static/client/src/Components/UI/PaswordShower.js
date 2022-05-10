@@ -104,7 +104,7 @@ export default function PasswordShower(props) {
                         label={props.label}
                         id="outlined-start-adornment"
                         focused={false}
-                        value={props.initVal}
+                        value={props.val}
                         inputRef={inputRef}
                         type={showPassword ? 'text' : 'password'}
                         variant={"standard"}
@@ -140,15 +140,12 @@ export default function PasswordShower(props) {
 
 PasswordShower.defaultProps = {
     //the initial value of the field
-    initVal: "",
+    val: "",
     //validation function for the field
     validate: (s) => true,
     //label of field
     label: "field",
-    //handle submition return true if everything was ok
-    handleSubmit: (s) => {
-        return true;
-    },
+
     //called before edit mode starts
     beforeEditModeStart: () => {
         return true;
@@ -161,9 +158,6 @@ PasswordShower.defaultProps = {
     onCancel: () => {
         return true;
     },
-    //is password
-    password: false,
-    //is mobile
-    isMobile: false
+
 
 }

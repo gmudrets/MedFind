@@ -17,12 +17,17 @@ import Typography from "@mui/material/Typography";
 import SettingsCheckBox from "../UI/SettingsCheckBox";
 import {isMobile} from "react-device-detect";
 import {prefixer} from 'stylis';
-import {useRef} from "react";
+import {useEffect, useReducer, useRef, useState} from "react";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import {Image, Password} from "@mui/icons-material";
 import ProfilePicturePicker from "./ProfilePicturePicker";
 import Divider from "@mui/material/Divider";
 import PasswordShower from "../UI/PaswordShower";
+
+function useForceUpdate() {
+    const [value, setValue] = useState(0); // integer state
+    return () => setValue(value => value + 1); // update the state to force render
+}
 
 
 // Create rtl cache
@@ -39,11 +44,20 @@ export default function Settings() {
     const profilePictureRef = useRef();
     const theme = createTheme({direction: 'rtl'});
     const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+    const [reRenderSomthing, setReRenderSomthing] = useState(false);
+    const [keyToRerender, forceUpdate] = useReducer(x => x + 1, 0);
+
     const phoneNum = "1111";//TODO:
     const mail = "a@gmail.com";//TODO:
     const password = "123456";//TODO
     const firstName = "abc"//TODO
     const lastName = "def"//TODO
+
+    useEffect(() => {
+            console.log(reRenderSomthing);
+        },
+        []
+    );
     const handleFirstNameSubmit = (s) => {
         //TODO
         return true;
@@ -202,6 +216,5 @@ export default function Settings() {
         </CacheProvider>
 
 
-    )
-        ;
+    );
 }
