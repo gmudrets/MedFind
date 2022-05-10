@@ -19,9 +19,10 @@ import {isMobile} from "react-device-detect";
 import {prefixer} from 'stylis';
 import {useRef} from "react";
 import * as STATE_PATHS from "../../Consts/StatePaths";
-import {Image} from "@mui/icons-material";
+import {Image, Password} from "@mui/icons-material";
 import ProfilePicturePicker from "./ProfilePicturePicker";
 import Divider from "@mui/material/Divider";
+import PasswordShower from "../UI/PaswordShower";
 
 
 // Create rtl cache
@@ -145,8 +146,8 @@ export default function Settings() {
                             <Typography component="h1" variant="subtitle1"> שינוי ססמא</Typography>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons password={true} label="ססמא" initVal={password}
-                                                     validate={validatePassword} onSubmit={handlePasswordSubmit}/>
+                            <PasswordShower password={true} label="ססמא" initVal={password}
+                                            validate={validatePassword} onSubmit={handlePasswordSubmit}/>
 
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>

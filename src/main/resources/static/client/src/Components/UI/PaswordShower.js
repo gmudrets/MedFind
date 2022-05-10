@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import TextField from '@mui/material/TextField';
 import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
 import Grid from "@mui/material/Grid";
 import {Stack} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
@@ -13,32 +13,25 @@ import Visibility from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
 
 
-export default function EditableTextWithButtons(props) {
+export default function PasswordShower(props) {
     const inputRef = useRef();
     const buttonRef = useRef();
     const showPasswordButtonRef = useRef();
     const [isEditMode, setIsEditMode] = useState(false);
-    const [currentlyValidated, setCurrentlyValidated] = useState(false);
-    const [currentText, setCurrentText] = useState(props.initVal);
-    const [lastSubmitted, setLastSubmitted] = useState(props.initVal);
-    const [submiting, setSubmitings] = useState(false);
-    const [showPassword, setShowPassword] = useState(!props.password);
+    const [showPassword, setShowPassword] = useState(false);
     const [pointerInButton, setPointerInButton] = React.useState(false);
 
 
     useEffect(() => {
-            if (isEditMode) {
-                inputRef.current.focus();
-            }
-            document.addEventListener('mousedown', handleClickOutside);
 
+            document.addEventListener('mousedown', handleClickOutside);
             return () => {
                 document.removeEventListener('mousedown', handleClickOutside);
             }
         }
 
         ,
-        [isEditMode]
+        []
     )
     const handlePointerEnterButton = () => {
         setPointerInButton(true);
@@ -54,62 +47,31 @@ export default function EditableTextWithButtons(props) {
     }
     const handleClickOutside = e => {
         if (clickOutside(inputRef, e) && (clickOutside(buttonRef, e))) {
-            handleClearClick();
+            handleCancelClick();
         }
     };
     const handleClickInside = e => {
-        if (clickInside(inputRef, e) && ( !props.password || clickOutside(showPasswordButtonRef, e))) {
-            handleEditClick();
+        e.preventDefault();
+        if (clickInside(inputRef, e) && (clickOutside(showPasswordButtonRef, e))) {
+            handleClickShowPassword();
         }
     };
 
 
     const handleEditClick = () => {
-        inputRef.current.focus();
         props.beforeEditModeStart();
         setIsEditMode(true);
-        if (props.password) {
-            setShowPassword(true);
-        }
-        setCurrentlyValidated(props.validate(lastSubmitted));
     }
 
-    const handleClearClick = () => {
+    const handleCancelClick = () => {
         props.beforeEditModeFinish();
+        props.onCancel()
         setIsEditMode(false);
-        setCurrentText(lastSubmitted);
-        if (props.password) {
-            setShowPassword(false);
-        }
-    }
-    const handleChange = (event) => {
-        setCurrentText(event.target.value);
-        setCurrentlyValidated(props.validate(event.target.value));
-    }
-
-    const myHandleSubmit = () => {
-        const currentTextInField = currentText;
-        setSubmitings(true);
-        if (props.onSubmit(currentTextInField)) {
-            setLastSubmitted(currentTextInField);
-            setCurrentText(currentTextInField);
-        } else {
-            alert("Error Submiting " + props.label)
-            setCurrentText(lastSubmitted);
-        }
-        props.beforeEditModeFinish();
-        setIsEditMode(false);
-        setSubmitings(false);
-        if (props.password) {
-            setShowPassword(false);
-        }
+        setShowPassword(false);
 
     }
-    const handleKeyPress = (event) => {
-        if (currentlyValidated && event.code === "Enter") {
-            myHandleSubmit();
-        }
-    }
+
+
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -124,9 +86,8 @@ export default function EditableTextWithButtons(props) {
                 <Grid item xs={9}>
 
                     <TextField
-                        focused={isEditMode}
-                        InputProps={props.password ? {
-                            readOnly: !isEditMode && !submiting,
+                        InputProps={{
+                            readOnly: true,
 
                             endAdornment:
                                 <IconButton
@@ -139,19 +100,14 @@ export default function EditableTextWithButtons(props) {
                                     {showPassword ? <VisibilityOff/> : <Visibility/>}
                                 </IconButton>
 
-                        } : {
-                            readOnly: !isEditMode && !submiting,
                         }}
-                        onChange={handleChange}
                         label={props.label}
                         id="outlined-start-adornment"
-
-                        value={currentText}
-                        error={!currentlyValidated && isEditMode}
+                        focused={false}
+                        value={props.initVal}
                         inputRef={inputRef}
                         type={showPassword ? 'text' : 'password'}
-                        variant={isEditMode ? "outlined" : "standard"}
-                        onKeyPress={handleKeyPress}
+                        variant={"standard"}
                         fullWidth
                         sx={{maxWidth: "500px", maxHeight: "30px"}}
                         onClick={handleClickInside}
@@ -163,14 +119,14 @@ export default function EditableTextWithButtons(props) {
                 <Grid item xs={3}>
                     <Stack>
 
-                        <IconButton onClick={!isEditMode ? handleEditClick : myHandleSubmit}
+                        <IconButton onClick={!isEditMode ? handleEditClick : handleCancelClick}
                                     color={(!isEditMode && !pointerInButton) ? 'default' : "primary"}
                                     style={{maxWidth: "45px"}}
                                     ref={buttonRef}
                                     onPointerEnter={handlePointerEnterButton}
                                     onPointerLeave={handlePointerLeaveButton}
                         >
-                            {!isEditMode ? <EditIcon/> : <CheckIcon/>}
+                            {!isEditMode ? <EditIcon/> : <ClearIcon/>}
                         </IconButton>
 
                     </Stack>
@@ -182,7 +138,7 @@ export default function EditableTextWithButtons(props) {
 
 }
 
-EditableTextWithButtons.defaultProps = {
+PasswordShower.defaultProps = {
     //the initial value of the field
     initVal: "",
     //validation function for the field
@@ -194,14 +150,20 @@ EditableTextWithButtons.defaultProps = {
         return true;
     },
     //called before edit mode starts
-    beforeEditModeStart: ()=>{
+    beforeEditModeStart: () => {
         return true;
     },
     //called before edit mode ends
-    beforeEditModeFinish: ()=>{
+    beforeEditModeFinish: () => {
+        return true;
+    },
+    //onCancel
+    onCancel: () => {
         return true;
     },
     //is password
     password: false,
+    //is mobile
+    isMobile: false
 
 }
