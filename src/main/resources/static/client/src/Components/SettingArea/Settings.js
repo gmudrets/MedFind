@@ -41,23 +41,30 @@ function RTL(props) {
 }
 
 export default function Settings() {
-    const profilePictureRef = useRef();
-    const theme = createTheme({direction: 'rtl'});
-    const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
-    const [reRenderSomthing, setReRenderSomthing] = useState(false);
-    const [keyToRerender, forceUpdate] = useReducer(x => x + 1, 0);
-
     const phoneNum = "1111";//TODO:
     const mail = "a@gmail.com";//TODO:
     const password = "123456";//TODO
     const firstName = "abc"//TODO
     const lastName = "def"//TODO
 
-    useEffect(() => {
-            console.log(reRenderSomthing);
-        },
-        []
-    );
+    const profilePictureRef = useRef();
+    const theme = createTheme({direction: 'rtl'});
+    const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+    const [keyToRerender, forceUpdate] = useReducer(x => x + 1, 0);
+    const [editPasswordMode, setEditPasswordMode] = React.useState(false);
+    const [firstNewPassword, setFirstNewPassword] = React.useState("");
+    const [secondNewPassword, setSecondNewPassword] = React.useState("");
+    const [newPassword, setNewPassword] = React.useState("");
+
+    const [curPassword, setCurPassword] = React.useState(password);
+
+
+    const startEditPasswordMode = () => {
+        setEditPasswordMode(true);
+    }
+    const closeEditPasswordMode = () => {
+        setEditPasswordMode(false);
+    }
     const handleFirstNameSubmit = (s) => {
         //TODO
         return true;
@@ -80,7 +87,7 @@ export default function Settings() {
         return true;
 
     }
-    const handlePasswordSubmit = (s) => {
+    const handleFirstPasswordSubmit = (s) => {
         //TODO
         return true;
     }
@@ -108,15 +115,19 @@ export default function Settings() {
         //TODO
         return true;
     }
-    const validateLastName = (s) => {
+    const validateSecondPassword = (s) => {
         //TODO
-        console.log(reRenderSomthing)
+        return true;
+    }
+    const handleSecondPasswordSubmit = () => {
+
+        return true;
+    }
+    const validateLastName = (s) => {
+
         return true;
     }
     const handleNewProfPic = (src) => {
-        setReRenderSomthing(!reRenderSomthing);
-        console.log("tookPic");
-        forceUpdate();
         return true;
     }
     const marginY = 2;
@@ -128,35 +139,37 @@ export default function Settings() {
 
                     <Grid container columnSpacing={5} rowSpacing={2}
                           sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {paddingX: "15%", paddingY: "40px"}}>
+
                         <Grid item xs={12}>
                             <ProfilePicturePicker onUpdateProfilePic={handleNewProfPic}/>
                         </Grid>
+
                         <Grid item xs={12}>
                             <Divider/>
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
                             <Typography component="h1" variant="subtitle1"> פרטי משתמש</Typography>
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="שם משתמש" initVal={username} validate={validateName}
                                                      onSubmit={handleUserNameSubmit}/>
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons key = {keyToRerender} label="שם פרטי" initVal={firstName}
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                            <EditableTextWithButtons key={keyToRerender} label="שם פרטי" initVal={firstName}
                                                      validate={validateFirstName}
                                                      onSubmit={handleFirstNameSubmit}
-                                                     reRednerOnChange={reRenderSomthing}/>
+                            />
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="שם משפחה" initVal={lastName} validate={validateLastName}
                                                      onSubmit={handleLastNameSubmit}/>
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="כתובת מייל" initVal={mail} validate={validateMail}
                                                      onSubmit={handleMailSubmit}/>
 
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum} validate={validatePhoneNum}
                                                      onSubmit={handlePhoneNumSubmit}/>
                         </Grid>
@@ -167,11 +180,35 @@ export default function Settings() {
                         <Grid item xs={12} sx={{textAlign: "left"}}>
                             <Typography component="h1" variant="subtitle1"> שינוי ססמא</Typography>
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "center"}}>
-                            <PasswordShower password={true} label="ססמא" val={password}
-                                            validate={validatePassword} onSubmit={handlePasswordSubmit}/>
-
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                            <PasswordShower label="ססמא" val={curPassword}
+                                            validate={validatePassword} beforeEditModeStarts={startEditPasswordMode}
+                                            onCancel={closeEditPasswordMode}
+                            />
                         </Grid>
+                        {editPasswordMode &&
+                            <>
+                                <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                                    <EditableTextWithButtons label="ססמא חדשה" val={password}
+                                                             validate={validatePassword}
+                                                             onSubmit={handleFirstPasswordSubmit}
+                                                             password
+                                                             startsOnEdit
+                                    />
+
+                                </Grid>
+                                <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                                    <EditableTextWithButtons label="ודא ססמא" val={password}
+                                                             validate={validateSecondPassword}
+                                                             onSubmit={handleSecondPasswordSubmit}
+                                                             password
+                                                             saveButton
+                                    />
+
+                                </Grid>
+                            </>
+                        }
+
                         <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
                             <Divider/>
                         </Grid>

@@ -22,17 +22,7 @@ export default function PasswordShower(props) {
     const [pointerInButton, setPointerInButton] = React.useState(false);
 
 
-    useEffect(() => {
 
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            }
-        }
-
-        ,
-        []
-    )
     const handlePointerEnterButton = () => {
         setPointerInButton(true);
     }
@@ -59,12 +49,11 @@ export default function PasswordShower(props) {
 
 
     const handleEditClick = () => {
-        props.beforeEditModeStart();
+        props.beforeEditModeStarts();
         setIsEditMode(true);
     }
 
     const handleCancelClick = () => {
-        props.beforeEditModeFinish();
         props.onCancel()
         setIsEditMode(false);
         setShowPassword(false);
@@ -120,7 +109,7 @@ export default function PasswordShower(props) {
                     <Stack>
 
                         <IconButton onClick={!isEditMode ? handleEditClick : handleCancelClick}
-                                    color={(!isEditMode && !pointerInButton) ? 'default' : "primary"}
+                                    color={(!pointerInButton) ? 'default' : "primary"}
                                     style={{maxWidth: "45px"}}
                                     ref={buttonRef}
                                     onPointerEnter={handlePointerEnterButton}
@@ -150,10 +139,7 @@ PasswordShower.defaultProps = {
     beforeEditModeStart: () => {
         return true;
     },
-    //called before edit mode ends
-    beforeEditModeFinish: () => {
-        return true;
-    },
+
     //onCancel
     onCancel: () => {
         return true;

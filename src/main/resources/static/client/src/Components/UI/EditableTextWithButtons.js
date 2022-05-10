@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import Grid from "@mui/material/Grid";
 import {Stack} from "@mui/material";
+import SaveIcon from '@mui/icons-material/Save';
 import {useEffect, useRef, useState} from "react";
 
 import IconButton from "@mui/material/IconButton";
@@ -17,8 +18,8 @@ export default function EditableTextWithButtons(props) {
     const inputRef = useRef();
     const buttonRef = useRef();
     const showPasswordButtonRef = useRef();
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [currentlyValidated, setCurrentlyValidated] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(props.startsOnEdit);
+    const [currentlyValidated, setCurrentlyValidated] = useState(props.validate(props.initVal));
     const [currentText, setCurrentText] = useState(props.initVal);
     const [lastSubmitted, setLastSubmitted] = useState(props.initVal);
     const [submiting, setSubmitings] = useState(false);
@@ -163,14 +164,16 @@ export default function EditableTextWithButtons(props) {
                 <Grid item xs={3}>
                     <Stack>
 
-                        <IconButton onClick={!isEditMode ? handleEditClick : myHandleSubmit}
+                        <IconButton
+                                    onClick={!isEditMode ? handleEditClick : myHandleSubmit}
                                     color={(!isEditMode && !pointerInButton) ? 'default' : "primary"}
                                     style={{maxWidth: "45px"}}
                                     ref={buttonRef}
                                     onPointerEnter={handlePointerEnterButton}
                                     onPointerLeave={handlePointerLeaveButton}
+                                    disabled={isEditMode &&!currentlyValidated}
                         >
-                            {!isEditMode ? <EditIcon/> : <CheckIcon/>}
+                            {!isEditMode ? <EditIcon/> : (props.saveButton?<SaveIcon/>:<CheckIcon/>)}
                         </IconButton>
 
                     </Stack>
@@ -185,7 +188,7 @@ export default function EditableTextWithButtons(props) {
 EditableTextWithButtons.defaultProps = {
     //the initial value of the field
     initVal: "",
-    //validation function for the field
+    //validation function for the field called on each edit
     validate: (s) => true,
     //label of field
     label: "field",
@@ -203,5 +206,10 @@ EditableTextWithButtons.defaultProps = {
     },
     //is password
     password: false,
+    //contains show password button
+    saveButton: false,
+    //is starting on edit mode
+    startsOnEdit:false
+
 
 }
