@@ -23,6 +23,7 @@ import {Image, Password} from "@mui/icons-material";
 import ProfilePicturePicker from "./ProfilePicturePicker";
 import Divider from "@mui/material/Divider";
 import PasswordShower from "../UI/PaswordShower";
+import {useNavigate} from "react-router-dom";
 
 
 
@@ -46,6 +47,8 @@ export default function Settings() {
 
     const profilePictureRef = useRef();
     const secondPasswordRef = useRef();
+    const navigate = useNavigate();
+
     const theme = createTheme({direction: 'rtl'});
     const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     const [keyToRerenderPass2, forceUpdatePass2] = useReducer(x => x + 1, 0);
@@ -53,9 +56,9 @@ export default function Settings() {
 
     const [editPasswordMode, setEditPasswordMode] = React.useState(false);
     const [firstNewPassword, setFirstNewPassword] = React.useState("");
-    const [newPassword, setNewPassword] = React.useState("");
     const [secondPasswordFocus, setSecondPasswordFocus] = React.useState(false);
-
+    const [somthingEdited,setSomthingEdited] = React.useState(false);
+    
 
     const [curPassword, setCurPassword] = React.useState(password);
 
@@ -137,6 +140,10 @@ export default function Settings() {
         console.log("hey")
         setSecondPasswordFocus(prevState => !prevState);
         return true;
+    }
+    const handleGoBackPress = () => {
+        //TODO
+        navigate("/");
     }
 
     const marginY = 2;
@@ -228,7 +235,7 @@ export default function Settings() {
                             <Divider/>
                         </Grid>
                         <Grid item xs={4} sx={{textAlign: "left"}}>
-                            <Typography component="h1" variant="subtitle1">קבלת התראות</Typography>
+                            <Typography component="h1" variant="subtitle1">אופן קבלת התראות</Typography>
                             <Grid container columnSpacing={2}>
                                 <Grid item md={3} sx={{textAlign: "center"}}>
                                     <SettingsCheckBox label="מייל"/>
@@ -244,7 +251,7 @@ export default function Settings() {
                         </Grid>
                         <Grid item xs={4} sx={{textAlign: "left"}}>
                             <Box sx={{flexGrow: 1}}>
-                                <Typography component="h1" variant="subtitle1">סוג התראות</Typography>
+                                <Typography component="h1" variant="subtitle1">סוגי התראות שברצוני לקבל</Typography>
                                 <Grid container>
                                     <Grid item md={5} sx={{textAlign: "center"}}>
                                         <SettingsCheckBox label="לקיחת תרופה"/>
@@ -262,8 +269,7 @@ export default function Settings() {
                                 <Typography component="h1" variant="subtitle1">ניווט</Typography>
                                 <Grid container>
                                     <Grid item md={6} sx={{textAlign: "center"}}>
-                                        <Button variant={"outlined"} startIcon={<ArrowForwardIcon/>}>חזור
-                                            לחיפוש</Button>
+                                        <Button variant={"outlined"} onClick={handleGoBackPress} startIcon={<ArrowForwardIcon/>}>חזור לחיפוש</Button>
                                     </Grid>
 
                                 </Grid>
