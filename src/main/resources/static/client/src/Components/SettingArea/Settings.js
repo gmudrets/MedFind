@@ -254,7 +254,7 @@ export default function Settings() {
                                 <Typography component="h1" variant="subtitle1">סוגי התראות שברצוני לקבל</Typography>
                                 <Grid container>
                                     <Grid item md={5} sx={{textAlign: "center"}}>
-                                        <SettingsCheckBox label="לקיחת תרופה"/>
+                                        <SettingsCheckBox label="תזכורת נטילת תרופה"/>
                                     </Grid>
                                     <Grid item md={5} sx={{textAlign: "center"}}>
                                         <SettingsCheckBox label="סיום תוקף"/>
