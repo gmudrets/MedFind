@@ -92,7 +92,7 @@ export default function DetailedCard(props) {
                     component="img"
                     height="300"
                     image={props.data.images}
-                    alt="Paella dish"
+                    alt="N/A"
                 />
                 <CardContent>
                     <Typography variant="body2" color="text.secondary">
@@ -100,7 +100,7 @@ export default function DetailedCard(props) {
                     </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
-                    <IconButton aria-label="add to favorites">
+                    <IconButton aria-label="add to my medicine">
                         <AddCardIcon />
                     </IconButton>
                     <ExpandMore
