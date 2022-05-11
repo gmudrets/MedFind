@@ -24,10 +24,6 @@ import ProfilePicturePicker from "./ProfilePicturePicker";
 import Divider from "@mui/material/Divider";
 import PasswordShower from "../UI/PaswordShower";
 
-function useForceUpdate() {
-    const [value, setValue] = useState(0); // integer state
-    return () => setValue(value => value + 1); // update the state to force render
-}
 
 
 // Create rtl cache
@@ -47,14 +43,19 @@ export default function Settings() {
     const firstName = "abc"//TODO
     const lastName = "def"//TODO
 
+
     const profilePictureRef = useRef();
+    const secondPasswordRef = useRef();
     const theme = createTheme({direction: 'rtl'});
     const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
-    const [keyToRerender, forceUpdate] = useReducer(x => x + 1, 0);
+    const [keyToRerenderPass2, forceUpdatePass2] = useReducer(x => x + 1, 0);
+    const [keyToRerenderShowPass,  forceUpdateShowPass] = useReducer(x => x + 1, 0);
+
     const [editPasswordMode, setEditPasswordMode] = React.useState(false);
     const [firstNewPassword, setFirstNewPassword] = React.useState("");
-    const [secondNewPassword, setSecondNewPassword] = React.useState("");
     const [newPassword, setNewPassword] = React.useState("");
+    const [secondPasswordFocus, setSecondPasswordFocus] = React.useState(false);
+
 
     const [curPassword, setCurPassword] = React.useState(password);
 
@@ -64,6 +65,7 @@ export default function Settings() {
     }
     const closeEditPasswordMode = () => {
         setEditPasswordMode(false);
+        setSecondPasswordFocus(false);
     }
     const handleFirstNameSubmit = (s) => {
         //TODO
@@ -88,7 +90,9 @@ export default function Settings() {
 
     }
     const handleFirstPasswordSubmit = (s) => {
-        //TODO
+        forceUpdatePass2();
+        setSecondPasswordFocus(true);
+        setFirstNewPassword(s);
         return true;
     }
     const validateName = (s) => {
@@ -116,11 +120,13 @@ export default function Settings() {
         return true;
     }
     const validateSecondPassword = (s) => {
-        //TODO
-        return true;
+        return firstNewPassword === s;
     }
-    const handleSecondPasswordSubmit = () => {
-
+    const handleSecondPasswordSubmit = (s) => {
+        //TODO
+        setCurPassword(s);
+        closeEditPasswordMode();
+        forceUpdateShowPass();
         return true;
     }
     const validateLastName = (s) => {
@@ -128,8 +134,11 @@ export default function Settings() {
         return true;
     }
     const handleNewProfPic = (src) => {
+        console.log("hey")
+        setSecondPasswordFocus(prevState => !prevState);
         return true;
     }
+
     const marginY = 2;
     const m = 3;
     return (
@@ -155,7 +164,7 @@ export default function Settings() {
                                                      onSubmit={handleUserNameSubmit}/>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons key={keyToRerender} label="שם פרטי" initVal={firstName}
+                            <EditableTextWithButtons key={keyToRerenderPass2} label="שם פרטי" initVal={firstName}
                                                      validate={validateFirstName}
                                                      onSubmit={handleFirstNameSubmit}
                             />
@@ -181,7 +190,7 @@ export default function Settings() {
                             <Typography component="h1" variant="subtitle1"> שינוי ססמא</Typography>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <PasswordShower label="ססמא" val={curPassword}
+                            <PasswordShower key={keyToRerenderShowPass} label="ססמא" val={curPassword}
                                             validate={validatePassword} beforeEditModeStarts={startEditPasswordMode}
                                             onCancel={closeEditPasswordMode}
                             />
@@ -194,15 +203,21 @@ export default function Settings() {
                                                              onSubmit={handleFirstPasswordSubmit}
                                                              password
                                                              startsOnEdit
+                                                             clearOnOutsideClick={false}
+
                                     />
 
                                 </Grid>
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                                    <EditableTextWithButtons label="ודא ססמא" val={password}
+                                    <EditableTextWithButtons key={keyToRerenderPass2}
+                                                             label="ודא ססמא" val={password}
                                                              validate={validateSecondPassword}
                                                              onSubmit={handleSecondPasswordSubmit}
                                                              password
                                                              saveButton
+                                                             startsOnEdit={secondPasswordFocus}
+                                                             clearOnOutsideClick={false}
+
                                     />
 
                                 </Grid>

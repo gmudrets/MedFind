@@ -36,6 +36,7 @@ export default function EditableTextWithButtons(props) {
             return () => {
                 document.removeEventListener('mousedown', handleClickOutside);
             }
+
         }
 
         ,
@@ -55,11 +56,17 @@ export default function EditableTextWithButtons(props) {
     }
     const handleClickOutside = e => {
         if (clickOutside(inputRef, e) && (clickOutside(buttonRef, e))) {
-            handleClearClick();
+            if(props.trySubmitOnOutsideClick && currentlyValidated){
+                myHandleSubmit();
+            }
+            else if(props.clearOnOutsideClick){
+                handleClearClick();
+
+            }
         }
     };
     const handleClickInside = e => {
-        if (clickInside(inputRef, e) && ( !props.password || clickOutside(showPasswordButtonRef, e))) {
+        if (clickInside(inputRef, e) && (!props.password || clickOutside(showPasswordButtonRef, e))) {
             handleEditClick();
         }
     };
@@ -136,6 +143,7 @@ export default function EditableTextWithButtons(props) {
                                     onMouseDown={handleMouseDownPassword}
                                     edge="end"
                                     ref={showPasswordButtonRef}
+
                                 >
                                     {showPassword ? <VisibilityOff/> : <Visibility/>}
                                 </IconButton>
@@ -165,15 +173,15 @@ export default function EditableTextWithButtons(props) {
                     <Stack>
 
                         <IconButton
-                                    onClick={!isEditMode ? handleEditClick : myHandleSubmit}
-                                    color={(!isEditMode && !pointerInButton) ? 'default' : "primary"}
-                                    style={{maxWidth: "45px"}}
-                                    ref={buttonRef}
-                                    onPointerEnter={handlePointerEnterButton}
-                                    onPointerLeave={handlePointerLeaveButton}
-                                    disabled={isEditMode &&!currentlyValidated}
+                            onClick={!isEditMode ? handleEditClick : myHandleSubmit}
+                            color={(!isEditMode && !pointerInButton) ? 'default' : "primary"}
+                            style={{maxWidth: "45px"}}
+                            ref={buttonRef}
+                            onPointerEnter={handlePointerEnterButton}
+                            onPointerLeave={handlePointerLeaveButton}
+                            disabled={isEditMode && !currentlyValidated}
                         >
-                            {!isEditMode ? <EditIcon/> : (props.saveButton?<SaveIcon/>:<CheckIcon/>)}
+                            {!isEditMode ? <EditIcon/> : (props.saveButton ? <SaveIcon/> : <CheckIcon/>)}
                         </IconButton>
 
                     </Stack>
@@ -197,11 +205,11 @@ EditableTextWithButtons.defaultProps = {
         return true;
     },
     //called before edit mode starts
-    beforeEditModeStart: ()=>{
+    beforeEditModeStart: () => {
         return true;
     },
     //called before edit mode ends
-    beforeEditModeFinish: ()=>{
+    beforeEditModeFinish: () => {
         return true;
     },
     //is password
@@ -209,7 +217,11 @@ EditableTextWithButtons.defaultProps = {
     //contains show password button
     saveButton: false,
     //is starting on edit mode
-    startsOnEdit:false
+    startsOnEdit: false,
+    ///should try to submit on outsideClick?
+    trySubmitOnOutsideClick: false,
+    //should clear on outside click
+    clearOnOutsideClick: true
 
 
 }

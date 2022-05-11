@@ -22,7 +22,6 @@ export default function PasswordShower(props) {
     const [pointerInButton, setPointerInButton] = React.useState(false);
 
 
-
     const handlePointerEnterButton = () => {
         setPointerInButton(true);
     }
@@ -109,7 +108,7 @@ export default function PasswordShower(props) {
                     <Stack>
 
                         <IconButton onClick={!isEditMode ? handleEditClick : handleCancelClick}
-                                    color={(!pointerInButton) ? 'default' : "primary"}
+                                    color={isEditMode ? "warning" : (!pointerInButton) ? 'default' : "primary"}
                                     style={{maxWidth: "45px"}}
                                     ref={buttonRef}
                                     onPointerEnter={handlePointerEnterButton}
