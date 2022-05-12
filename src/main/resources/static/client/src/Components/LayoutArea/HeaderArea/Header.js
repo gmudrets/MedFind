@@ -24,7 +24,7 @@ function Header() {
   const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
   useEffect(() => {
-    if (username == ''){
+    if (username === ''){
         setAuth(false);
     }
     else {

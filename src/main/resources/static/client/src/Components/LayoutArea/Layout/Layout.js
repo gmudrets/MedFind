@@ -7,6 +7,7 @@ import rootReducer from "../../../Redux/RootReducer";
 import {applyMiddleware, createStore} from "redux";
 import thunk from "redux-thunk";
 import {composeWithDevTools} from "redux-devtools-extension";
+import './Layout.css';
 
 const store = configureReduxStore();
 
