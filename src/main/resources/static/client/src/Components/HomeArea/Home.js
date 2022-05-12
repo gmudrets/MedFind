@@ -21,17 +21,22 @@ import BarcodeScanner from '../BarcodeScanner/BarcodeScanner';
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
 import icon from '../../Assets/Images/icon.png'
 import DetailedCard from "../UI/DetailedCard/DetailedCard";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import LoadingButton from "@mui/lab/LoadingButton";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
   const navigate = useNavigate();
   const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
 
-  const [ tableRows, setTableRows ] = useState([]);
+  const [ items, setItems ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
   const [ scannerOpen, setScannerOpen ] = useState(false);
   const [ triggerSearch, setTriggerSearch ] = useState(false);
   const [ loading, setLoading ] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [page, setPage] = useState(1);
+  const [HasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     if (username === ''){
@@ -41,7 +46,7 @@ function Home() {
 
   useEffect(() => {
     if (triggerSearch && searchValue !== ''){
-        search()
+        search(true);
         setTriggerSearch(!triggerSearch);
     }
   }, [triggerSearch]);
@@ -76,10 +81,18 @@ function Home() {
     return url;
   }
 
-  const search = async () => {
-      setLoading(true)
+  const search = async (newSearch) => {
+    let pageNum = page;
+    setIsFetching(true);
+    if (newSearch)
+    {
+        setLoading(true);
+        setItems([]);
+        pageNum = 1;
+        setPage(pageNum);
+    }
     let rows = [];
-    let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "false", "pageIndex" : "1" });
+    let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
 
     data["results"].forEach(
       (d) => {
@@ -99,7 +112,12 @@ function Home() {
       }
     );
 
-    setTableRows(rows);
+    setItems((prevRows) => {
+        return [...new Set([...prevRows, ...rows])];
+    });
+    setPage((prevPageNumber) => prevPageNumber + 1);
+    setHasMore(rows.length > 0);
+    setIsFetching(false);
     setLoading(false);
   }
 
@@ -111,7 +129,7 @@ function Home() {
     setScannerOpen(!scannerOpen);
   }
 
-  const searchBarcode = (data) =>{
+  const searchBarcode = (data) => {
       setSearchValue(data);
   }
 
@@ -143,13 +161,13 @@ function Home() {
                     onKeyDown={
                         (e) => {
                             if (e.key === 'Enter') {
-                                search();
+                                search(true);
                                 e.preventDefault();
                             }
                         }
                     }
                 />
-                <IconButton sx={{ p: '10px' }} aria-label="search" onClick={search}>
+                <IconButton sx={{ p: '10px' }} aria-label="search" onClick={() => {search(true)}}>
                     <SearchIcon />
                 </IconButton>
                 <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
@@ -163,20 +181,43 @@ function Home() {
             <BarcodeScanner setScannedData={searchBarcode} triggerSearch={setTriggerSearch} closeModal={toggleScanner}/>
           </TransitionsModal>
         <CircularProgressBackdrop open={loading} toggle={setLoading}/>
-        { tableRows.length > 0 ? (
-            <Box
-                    marginTop='65px'
-                    marginBottom='45px'
-                    display='flex'
-                    flexDirection='column'
-                    justifyContent="center"
-                    alignItems='center'
-            >
-                {tableRows.map((row) => (
-                        <DetailedCard data={row}/>
-                    ))
-                }
-            </Box>
+        { items.length > 0 ? (
+            <>
+            {items.map((item,index) => (
+                    <Box
+                        key={index}
+                        marginTop='65px'
+                        marginBottom='45px'
+                        display='flex'
+                        flexDirection='column'
+                        justifyContent="center"
+                        alignItems='center'
+                    >
+                        <DetailedCard data={item} type='drug' title={item.dragHebName} subheader={item.dragEnName} image={item.images} body={item.secondarySymptom} expandData={item}/>
+                    </Box>
+            ))}
+            {HasMore && (
+                <Box
+                    sx={{
+                        marginBottom: 8,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
+                >
+                    <LoadingButton
+                        variant="contained"
+                        size="small"
+                        endIcon={<KeyboardArrowDownIcon style={{marginRight: 12}}/>}
+                        onClick={() => {search(false)}}
+                        loading={isFetching}
+                        loadingPosition="end"
+                    >
+                        תוצאות נוספות
+                    </LoadingButton>
+                </Box>
+            )}
+            </>
         ) : (<p align="center"> אין מידע להצגה </p>) }
     </ThemeProvider>
   );

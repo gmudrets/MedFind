@@ -32,6 +32,14 @@ const ExpandMore = styled((props) => {
 }));
 
 export default function DetailedCard(props) {
+    const {
+        type,
+        title,
+        subheader,
+        image,
+        body,
+        expandData,
+    } = props;
     const theme = createTheme({direction: 'rtl'});
 
     const [ expanded, setExpanded ] = useState(false);
@@ -85,73 +93,76 @@ export default function DetailedCard(props) {
         <ThemeProvider theme={theme}>
             <Card sx={{ maxWidth: 600, width: '90%', marginBottom: 2 }}>
                 <CardHeader
-                    title={props.data.dragHebName}
-                    subheader={props.data.dragEnName}
+                    title={title}
+                    subheader={subheader}
                 />
                 <CardMedia
                     component="img"
                     height="300"
-                    image={props.data.images}
+                    image={image}
                     alt="N/A"
                 />
                 <CardContent>
                     <Typography variant="body2" color="text.secondary">
-                        {getValue(props.data.secondarySymptom)}
+                        {getValue(body)}
                     </Typography>
                 </CardContent>
-                <CardActions disableSpacing>
-                    <IconButton aria-label="add to my medicine">
-                        <AddCardIcon />
-                    </IconButton>
-                    <ExpandMore
-                        expand={expanded}
-                        onClick={handleExpandClick}
-                        aria-expanded={expanded}
-                        aria-label="show more"
-                    >
-                        <ExpandMoreIcon />
-                    </ExpandMore>
-                </CardActions>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <CardContent>
-                        <Typography paragraph>פרטים נוספים:</Typography>
-                        <Typography paragraph>
-                            <Table size="small" style={{marginBottom:15}}>
-                                <TableRow>
-                                    <TableCell variant="head" align="right">{nameMapping["activeComponents"]}</TableCell>
-                                    <TableCell align="right">{props.data.activeComponents}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell variant="head" align="right">{nameMapping["customerPrice"]}</TableCell>
-                                    <TableCell align="right">{props.data.customerPrice} &#8362;</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell variant="head" align="right">{nameMapping["dosageForm"]}</TableCell>
-                                    <TableCell align="right">{getValue(props.data.dosageForm)}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell variant="head" align="right">{nameMapping["health"]}</TableCell>
-                                    <TableCell align="right">{getValue(props.data.health)}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell variant="head" align="right">{nameMapping["prescription"]}</TableCell>
-                                    <TableCell align="right">{getValue(props.data.prescription)}</TableCell>
-                                </TableRow>
-                            </Table>
-                            <LoadingButton
-                                variant="contained"
-                                size="small"
-                                endIcon={<ArticleIcon style={{marginRight: 12}}/>}
-                                onClick={() => {getBrochure(props.data.brochure);}}
-                                loading={brochureLoading}
-                                loadingPosition="end"
+                {type === 'drug' && (
+                    <>
+                        <CardActions disableSpacing>
+                            <IconButton aria-label="add to my medicine">
+                                <AddCardIcon />
+                            </IconButton>
+                            <ExpandMore
+                                expand={expanded}
+                                onClick={handleExpandClick}
+                                aria-expanded={expanded}
+                                aria-label="show more"
                             >
-                                עלון לצרכן
-                            </LoadingButton>
-                        </Typography>
-
-                    </CardContent>
-                </Collapse>
+                                <ExpandMoreIcon />
+                            </ExpandMore>
+                        </CardActions>
+                        <Collapse in={expanded} timeout="auto" unmountOnExit>
+                            <CardContent>
+                                <Typography paragraph>פרטים נוספים:</Typography>
+                                <Typography paragraph>
+                                    <Table size="small" style={{marginBottom:15}}>
+                                        <TableRow>
+                                            <TableCell variant="head" align="right">{nameMapping["activeComponents"]}</TableCell>
+                                            <TableCell align="right">{expandData.activeComponents}</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell variant="head" align="right">{nameMapping["customerPrice"]}</TableCell>
+                                            <TableCell align="right">{expandData.customerPrice} &#8362;</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell variant="head" align="right">{nameMapping["dosageForm"]}</TableCell>
+                                            <TableCell align="right">{getValue(expandData.dosageForm)}</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell variant="head" align="right">{nameMapping["health"]}</TableCell>
+                                            <TableCell align="right">{getValue(expandData.health)}</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell variant="head" align="right">{nameMapping["prescription"]}</TableCell>
+                                            <TableCell align="right">{getValue(expandData.prescription)}</TableCell>
+                                        </TableRow>
+                                    </Table>
+                                    <LoadingButton
+                                        variant="contained"
+                                        size="small"
+                                        endIcon={<ArticleIcon style={{marginRight: 12}}/>}
+                                        onClick={() => {getBrochure(expandData.brochure);}}
+                                        loading={brochureLoading}
+                                        loadingPosition="end"
+                                    >
+                                        עלון לצרכן
+                                    </LoadingButton>
+                                </Typography>
+                            </CardContent>
+                        </Collapse>
+                    </>
+                )}
             </Card>
         </ThemeProvider>
     );
