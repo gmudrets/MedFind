@@ -78,10 +78,6 @@ export default function Settings() {
         //TODO
         return true;
     }
-    const handleUserNameSubmit = (s) => {
-        //TODO
-        return true;
-    }
     const handleMailSubmit = (s) => {
         //TODO
         return true;
@@ -164,11 +160,7 @@ export default function Settings() {
                             <Divider/>
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
-                            <Typography component="h1" variant="subtitle1"> פרטי משתמש</Typography>
-                        </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons label="שם משתמש" initVal={username} validate={validateName}
-                                                     onSubmit={handleUserNameSubmit}/>
+                            <Typography component="h1" variant="h6" marginBottom={'5px'}> פרטי משתמש</Typography>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons key={keyToRerenderPass2} label="שם פרטי" initVal={firstName}
@@ -194,10 +186,10 @@ export default function Settings() {
                             <Divider/>
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
-                            <Typography component="h1" variant="subtitle1"> שינוי ססמא</Typography>
+                            <Typography component="h1" variant="h6" marginBottom={'5px'}> שינוי סיסמא</Typography>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <PasswordShower key={keyToRerenderShowPass} label="ססמא" val={curPassword}
+                            <PasswordShower key={keyToRerenderShowPass} label="הקלד סיסמא נוכחית" val={curPassword}
                                             validate={validatePassword} beforeEditModeStarts={startEditPasswordMode}
                                             onCancel={closeEditPasswordMode}
                             />
@@ -205,7 +197,7 @@ export default function Settings() {
                         {editPasswordMode &&
                             <>
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                                    <EditableTextWithButtons label="ססמא חדשה" val={password}
+                                    <EditableTextWithButtons label="סיסמא חדשה" val={password}
                                                              validate={validatePassword}
                                                              onSubmit={handleFirstPasswordSubmit}
                                                              password
@@ -217,7 +209,7 @@ export default function Settings() {
                                 </Grid>
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                                     <EditableTextWithButtons key={keyToRerenderPass2}
-                                                             label="ודא ססמא" val={password}
+                                                             label="ודא סיסמא חדשה" val={password}
                                                              validate={validateSecondPassword}
                                                              onSubmit={handleSecondPasswordSubmit}
                                                              password
@@ -235,7 +227,7 @@ export default function Settings() {
                             <Divider/>
                         </Grid>
                         <Grid item xs={4} sx={{textAlign: "left"}}>
-                            <Typography component="h1" variant="subtitle1">אופן קבלת התראות</Typography>
+                            <Typography component="h1" variant="h6" marginBottom={'5px'}>אופן קבלת התראות</Typography>
                             <Grid container columnSpacing={2}>
                                 <Grid item md={3} sx={{textAlign: "center"}}>
                                     <SettingsCheckBox label="מייל"/>
@@ -249,11 +241,14 @@ export default function Settings() {
                                 </Grid>
                             </Grid>
                         </Grid>
+                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
+                            <Divider/>
+                        </Grid>
                         <Grid item xs={4} sx={{textAlign: "left"}}>
                             <Box sx={{flexGrow: 1}}>
-                                <Typography component="h1" variant="subtitle1">סוגי התראות שברצוני לקבל</Typography>
+                                <Typography component="h1" variant="h6" marginBottom={'5px'}>סוגי התראות שברצוני לקבל</Typography>
                                 <Grid container>
-                                    <Grid item md={5} sx={{textAlign: "center"}}>
+                                    <Grid item md={6} sx={{textAlign: "center"}}>
                                         <SettingsCheckBox label="תזכורת נטילת תרופה"/>
                                     </Grid>
                                     <Grid item md={5} sx={{textAlign: "center"}}>
@@ -266,7 +261,6 @@ export default function Settings() {
                         <Box width="100%"/>
                         <Grid item md={4} xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
                             <Box sx={{flexGrow: 1}}>
-                                <Typography component="h1" variant="subtitle1">ניווט</Typography>
                                 <Grid container>
                                     <Grid item md={6} sx={{textAlign: "center"}}>
                                         <Button variant={"outlined"} onClick={handleGoBackPress} startIcon={<ArrowForwardIcon/>}>חזור לחיפוש</Button>

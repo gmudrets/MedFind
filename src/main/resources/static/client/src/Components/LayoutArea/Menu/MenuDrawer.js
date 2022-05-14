@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {Actions} from "../../../Redux/UI"
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
@@ -17,20 +17,34 @@ import MedicationIcon from '@mui/icons-material/Medication';
 import SearchIcon from '@mui/icons-material/Search';
 import {ListItemButton} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import * as STATE_PATHS from "../../../Consts/StatePaths";
+import {getSafe} from "../../../Utils/Utils";
 
-export default function MenuDrawer(props) {
+export default function MenuDrawer() {
+
+  const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
 
   const drawerWidth = 250;
   const anchor='right';
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {
-    setIsMenuOpen(props.isMenuOpen);
+  const dispatch = useDispatch();
 
-  }, [props.isMenuOpen])
+  const toggleMenu = () => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    if (!isMenuOpen) {
+      dispatch(Actions.openMenu());
+    }
+    else {
+      dispatch(Actions.closeMenu());
+    }
+  };
+
   const handleSettingClick = ()=>{
     navigate("/settings");
   }
+
   const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -44,8 +58,8 @@ export default function MenuDrawer(props) {
     <Box
       sx={{ width: drawerWidth }}
       role="presentation"
-      onClick={props.toggleMenu()}
-      onKeyDown={props.toggleMenu()}
+      onClick={toggleMenu()}
+      onKeyDown={toggleMenu()}
     >
       <List>
           <ListItemButton key='search'>
@@ -91,10 +105,10 @@ export default function MenuDrawer(props) {
           <Drawer
             anchor={anchor}
             open={isMenuOpen}
-            onClose={props.toggleMenu()}
+            onClose={toggleMenu()}
           >
             <DrawerHeader>
-              <IconButton onClick={props.toggleMenu()}>
+              <IconButton onClick={toggleMenu()}>
                 {anchor === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </IconButton>
             </DrawerHeader>

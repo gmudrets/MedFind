@@ -1,4 +1,4 @@
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 import configureReduxStore from '../../../Redux/Store';
 import Header from '../HeaderArea/Header'
 import Routing from '../Routing/Routing';
