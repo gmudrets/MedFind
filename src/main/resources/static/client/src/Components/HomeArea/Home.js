@@ -23,6 +23,8 @@ import icon from '../../Assets/Images/icon.png'
 import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoadingButton from "@mui/lab/LoadingButton";
+import UpcomingAlerts from "./UpcomingAlerts";
+import SystemMessages from "./SystemMessages";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -218,7 +220,12 @@ function Home() {
                 </Box>
             )}
             </>
-        ) : (<p align="center"> אין מידע להצגה </p>) }
+        ) : (
+            <>
+                <UpcomingAlerts/>
+                <SystemMessages/>
+            </>
+        ) }
     </ThemeProvider>
   );
 }

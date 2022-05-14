@@ -96,12 +96,14 @@ export default function DetailedCard(props) {
                     title={title}
                     subheader={subheader}
                 />
-                <CardMedia
+                {image && (
+                    <CardMedia
                     component="img"
                     height="300"
                     image={image}
                     alt="N/A"
-                />
+                    />
+                )}
                 <CardContent>
                     <Typography variant="body2" color="text.secondary">
                         {getValue(body)}
