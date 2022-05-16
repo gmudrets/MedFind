@@ -3,29 +3,28 @@ import configureReduxStore from '../../../Redux/Store';
 import Header from '../HeaderArea/Header'
 import Routing from '../Routing/Routing';
 import Footer from '../Footer/Footer';
-import rootReducer from "../../../Redux/RootReducer";
-import {applyMiddleware, createStore} from "redux";
-import thunk from "redux-thunk";
-import {composeWithDevTools} from "redux-devtools-extension";
+import {PersistGate} from 'redux-persist/integration/react'
 import './Layout.css';
 
-const store = configureReduxStore();
+const {store, persistor} = configureReduxStore();
 
 
 function Layout() {
 	return (
 		<Provider store={store}>
-			<div className="Layout">
-				<header>
-					<Header />
-				</header>
-				<main>
-					<Routing />
-				</main>
-				<footer>
-					<Footer />
-				</footer>
-			</div>
+			<PersistGate loading={null} persistor={persistor}>
+				<div className="Layout">
+					<header>
+						<Header />
+					</header>
+					<main>
+						<Routing />
+					</main>
+					<footer>
+						<Footer />
+					</footer>
+				</div>
+			</PersistGate>
 		</Provider>
 	);
 }

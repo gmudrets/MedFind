@@ -51,9 +51,7 @@ function Login() {
         email,
         password)
         .then(userCredential => {
-          const user = userCredential.user;
-          console.log(userCredential);
-          dispatch(Actions.requestUserLogin(email));
+            dispatch(Actions.requestUserLogin(userCredential.user));
           setSignInSuccessMessage(true);
         }).catch(error => {
           console.log("error code: " + error.code + " and message: " + error.message);
