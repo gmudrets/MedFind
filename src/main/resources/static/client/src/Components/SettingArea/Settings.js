@@ -9,7 +9,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Grid from "@mui/material/Grid";
 import rtlPlugin from 'stylis-plugin-rtl';
 import createCache from '@emotion/cache';
-import {Button} from "@mui/material";
+import {Button, Dialog} from "@mui/material";
 import EditableTextWithButtons from "../UI/EditableTextWithButtons";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
@@ -24,6 +24,8 @@ import ProfilePicturePicker from "./ProfilePicturePicker";
 import Divider from "@mui/material/Divider";
 import PasswordShower from "../UI/PaswordShower";
 import {useNavigate} from "react-router-dom";
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
 
 
 
@@ -47,19 +49,20 @@ export default function Settings() {
 
     const profilePictureRef = useRef();
     const secondPasswordRef = useRef();
+    const goBackButtonRef = useRef();
     const navigate = useNavigate();
 
     const theme = createTheme({direction: 'rtl'});
     const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     const [keyToRerenderPass2, forceUpdatePass2] = useReducer(x => x + 1, 0);
-    const [keyToRerenderShowPass,  forceUpdateShowPass] = useReducer(x => x + 1, 0);
+    const [keyToRerenderShowPass, forceUpdateShowPass] = useReducer(x => x + 1, 0);
 
     const [editPasswordMode, setEditPasswordMode] = React.useState(false);
     const [firstNewPassword, setFirstNewPassword] = React.useState("");
     const [secondPasswordFocus, setSecondPasswordFocus] = React.useState(false);
-    const [somthingEdited,setSomthingEdited] = React.useState(false);
-    
-
+    const [somthingEdited, setSomthingEdited] = React.useState(false);
+    const [fieldsOnEditMode, setFieldsOnEditMode] = React.useState([]);
+    const [goBackDialogOpen,setGoBackDialogOpen] = React.useState(false);
     const [curPassword, setCurPassword] = React.useState(password);
 
 
@@ -99,7 +102,24 @@ export default function Settings() {
         return true;
 
     }
-
+    const onFieldEnterEditMode = (id) => {
+        setFieldsOnEditMode(prevState => {
+            if (!prevState.includes(id)) {
+                return [...prevState, id];
+            }
+            return prevState;
+        })
+    }
+    const onFieldExitEditMode = (id) => {
+        setFieldsOnEditMode(prevState => {
+            if (prevState.includes(id)) {
+                const next = [...prevState];
+                next.splice(next.indexOf(id), 1);
+                return next;
+            }
+            return prevState;
+        })
+    }
     const validateMail = (s) => {
         //TODO
         return true;
@@ -121,6 +141,7 @@ export default function Settings() {
     const validateSecondPassword = (s) => {
         return firstNewPassword === s;
     }
+
     const handleSecondPasswordSubmit = (s) => {
         //TODO
         setCurPassword(s);
@@ -133,15 +154,25 @@ export default function Settings() {
         return true;
     }
     const handleNewProfPic = (src) => {
-        console.log("hey")
+        console.log(fieldsOnEditMode);
         setSecondPasswordFocus(prevState => !prevState);
         return true;
     }
     const handleGoBackPress = () => {
-        //TODO
+        if (fieldsOnEditMode.length=== 0) {
+            console.log(fieldsOnEditMode);
+            console.log(fieldsOnEditMode.length)
+            navigateBack();
+        }else{
+            setGoBackDialogOpen(true);
+        }
+    }
+    const handleCloseGoBackDialog= ()=>{
+        setGoBackDialogOpen(false);
+    }
+    const navigateBack = () => {
         navigate("/");
     }
-
     const marginY = 2;
     const m = 3;
     return (
@@ -163,23 +194,41 @@ export default function Settings() {
                             <Typography component="h1" variant="h6" marginBottom={'5px'}> פרטי משתמש</Typography>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons key={keyToRerenderPass2} label="שם פרטי" initVal={firstName}
+                            <EditableTextWithButtons label="שם פרטי" initVal={firstName}
                                                      validate={validateFirstName}
                                                      onSubmit={handleFirstNameSubmit}
+                                                     notOutsideRef={goBackButtonRef}
+                                                     beforeEditModeStart = {onFieldEnterEditMode}
+                                                     beforeEditModeFinish = {onFieldExitEditMode}
+                                                     id="firstName"
                             />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="שם משפחה" initVal={lastName} validate={validateLastName}
-                                                     onSubmit={handleLastNameSubmit}/>
+                                                     onSubmit={handleLastNameSubmit}
+                                                     notOutsideRef={goBackButtonRef}
+                                                     beforeEditModeStart = {onFieldEnterEditMode}
+                                                     beforeEditModeFinish = {onFieldExitEditMode}
+                                                     id="secondName"
+                            />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="כתובת מייל" initVal={mail} validate={validateMail}
-                                                     onSubmit={handleMailSubmit}/>
+                                                     onSubmit={handleMailSubmit}
+                                                     notOutsideRef={goBackButtonRef}
+                                                     beforeEditModeStart = {onFieldEnterEditMode}
+                                                     beforeEditModeFinish = {onFieldExitEditMode}
+                                                     id="mailAdrres"
+                            />
 
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum} validate={validatePhoneNum}
-                                                     onSubmit={handlePhoneNumSubmit}/>
+                                                     onSubmit={handlePhoneNumSubmit}
+                                                     notOutsideRef={goBackButtonRef}
+                                                     beforeEditModeStart = {onFieldEnterEditMode}
+                                                     beforeEditModeFinish = {onFieldExitEditMode}
+                                                     id="phoneNum"/>
                         </Grid>
 
                         <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
@@ -203,6 +252,8 @@ export default function Settings() {
                                                              password
                                                              startsOnEdit
                                                              clearOnOutsideClick={false}
+                                                             notOutsideRef={goBackButtonRef}
+
 
                                     />
 
@@ -216,6 +267,7 @@ export default function Settings() {
                                                              saveButton
                                                              startsOnEdit={secondPasswordFocus}
                                                              clearOnOutsideClick={false}
+                                                             notOutsideRef={goBackButtonRef}
 
                                     />
 
@@ -246,7 +298,8 @@ export default function Settings() {
                         </Grid>
                         <Grid item xs={4} sx={{textAlign: "left"}}>
                             <Box sx={{flexGrow: 1}}>
-                                <Typography component="h1" variant="h6" marginBottom={'5px'}>סוגי התראות שברצוני לקבל</Typography>
+                                <Typography component="h1" variant="h6" marginBottom={'5px'}>סוגי התראות שברצוני
+                                    לקבל</Typography>
                                 <Grid container>
                                     <Grid item md={6} sx={{textAlign: "center"}}>
                                         <SettingsCheckBox label="תזכורת נטילת תרופה"/>
@@ -262,7 +315,7 @@ export default function Settings() {
                         <Grid item md={4} xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
                             <Box sx={{flexGrow: 1}}>
                                 <Grid container>
-                                    <Grid item md={6} sx={{textAlign: "center"}}>
+                                    <Grid item md={6} sx={{textAlign: "center"}} ref={goBackButtonRef}>
                                         <Button variant={"outlined"} onClick={handleGoBackPress} startIcon={<ArrowForwardIcon/>}>חזור לחיפוש</Button>
                                     </Grid>
 
@@ -271,7 +324,23 @@ export default function Settings() {
                         </Grid>
                     </Grid>
                 </Box>
+                <Dialog
+                    open={goBackDialogOpen}
+                    onClose={handleCloseGoBackDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"ישנם שינויים שלא נשמרו, האם אתה בטוח שברצונך לחזור?"}
+                    </DialogTitle>
 
+                    <DialogActions>
+                        <Button onClick={handleCloseGoBackDialog}>בטל חזרה</Button>
+                        <Button onClick={navigateBack} autoFocus>
+                            חזור לחיפוש
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </ThemeProvider>
         </CacheProvider>
 

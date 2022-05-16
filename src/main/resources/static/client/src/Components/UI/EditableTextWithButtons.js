@@ -55,7 +55,7 @@ export default function EditableTextWithButtons(props) {
         return refrence.current && refrence.current.contains(e.target);
     }
     const handleClickOutside = e => {
-        if (clickOutside(inputRef, e) && (clickOutside(buttonRef, e))) {
+        if (clickOutside(inputRef, e) && clickOutside(buttonRef, e) && (clickOutside(props.notOutsideRef, e))) {
             if(props.trySubmitOnOutsideClick && currentlyValidated){
                 myHandleSubmit();
             }
@@ -74,7 +74,7 @@ export default function EditableTextWithButtons(props) {
 
     const handleEditClick = () => {
         inputRef.current.focus();
-        props.beforeEditModeStart();
+        props.beforeEditModeStart(props.id);
         setIsEditMode(true);
         if (props.password) {
             setShowPassword(true);
@@ -83,7 +83,7 @@ export default function EditableTextWithButtons(props) {
     }
 
     const handleClearClick = () => {
-        props.beforeEditModeFinish();
+        props.beforeEditModeFinish(props.id);
         setIsEditMode(false);
         setCurrentText(lastSubmitted);
         if (props.password) {
@@ -105,7 +105,7 @@ export default function EditableTextWithButtons(props) {
             alert("Error Submiting " + props.label)
             setCurrentText(lastSubmitted);
         }
-        props.beforeEditModeFinish();
+        props.beforeEditModeFinish(props.id);
         setIsEditMode(false);
         setSubmitings(false);
         if (props.password) {
@@ -153,7 +153,6 @@ export default function EditableTextWithButtons(props) {
                         }}
                         onChange={handleChange}
                         label={props.label}
-                        id="outlined-start-adornment"
 
                         value={currentText}
                         error={!currentlyValidated && isEditMode}
@@ -205,11 +204,11 @@ EditableTextWithButtons.defaultProps = {
         return true;
     },
     //called before edit mode starts
-    beforeEditModeStart: () => {
+    beforeEditModeStart: (id) => {
         return true;
     },
     //called before edit mode ends
-    beforeEditModeFinish: () => {
+    beforeEditModeFinish: (id) => {
         return true;
     },
     //is password
@@ -221,7 +220,9 @@ EditableTextWithButtons.defaultProps = {
     ///should try to submit on outsideClick?
     trySubmitOnOutsideClick: false,
     //should clear on outside click
-    clearOnOutsideClick: true
+    clearOnOutsideClick: true,
+    //refrence for elemnt that dosent count as ouside
+    notOutsideRef:null
 
 
 }
