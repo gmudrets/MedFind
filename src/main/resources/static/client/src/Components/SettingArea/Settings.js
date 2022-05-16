@@ -28,7 +28,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 
 
-
 // Create rtl cache
 const cacheRtl = createCache({
     key: 'muirtl',
@@ -62,7 +61,7 @@ export default function Settings() {
     const [secondPasswordFocus, setSecondPasswordFocus] = React.useState(false);
     const [somthingEdited, setSomthingEdited] = React.useState(false);
     const [fieldsOnEditMode, setFieldsOnEditMode] = React.useState([]);
-    const [goBackDialogOpen,setGoBackDialogOpen] = React.useState(false);
+    const [goBackDialogOpen, setGoBackDialogOpen] = React.useState(false);
     const [curPassword, setCurPassword] = React.useState(password);
 
 
@@ -159,15 +158,15 @@ export default function Settings() {
         return true;
     }
     const handleGoBackPress = () => {
-        if (fieldsOnEditMode.length=== 0) {
+        if (fieldsOnEditMode.length === 0) {
             console.log(fieldsOnEditMode);
             console.log(fieldsOnEditMode.length)
             navigateBack();
-        }else{
+        } else {
             setGoBackDialogOpen(true);
         }
     }
-    const handleCloseGoBackDialog= ()=>{
+    const handleCloseGoBackDialog = () => {
         setGoBackDialogOpen(false);
     }
     const navigateBack = () => {
@@ -198,8 +197,8 @@ export default function Settings() {
                                                      validate={validateFirstName}
                                                      onSubmit={handleFirstNameSubmit}
                                                      notOutsideRef={goBackButtonRef}
-                                                     beforeEditModeStart = {onFieldEnterEditMode}
-                                                     beforeEditModeFinish = {onFieldExitEditMode}
+                                                     beforeEditModeStart={onFieldEnterEditMode}
+                                                     beforeEditModeFinish={onFieldExitEditMode}
                                                      id="firstName"
                             />
                         </Grid>
@@ -207,8 +206,8 @@ export default function Settings() {
                             <EditableTextWithButtons label="שם משפחה" initVal={lastName} validate={validateLastName}
                                                      onSubmit={handleLastNameSubmit}
                                                      notOutsideRef={goBackButtonRef}
-                                                     beforeEditModeStart = {onFieldEnterEditMode}
-                                                     beforeEditModeFinish = {onFieldExitEditMode}
+                                                     beforeEditModeStart={onFieldEnterEditMode}
+                                                     beforeEditModeFinish={onFieldExitEditMode}
                                                      id="secondName"
                             />
                         </Grid>
@@ -216,8 +215,8 @@ export default function Settings() {
                             <EditableTextWithButtons label="כתובת מייל" initVal={mail} validate={validateMail}
                                                      onSubmit={handleMailSubmit}
                                                      notOutsideRef={goBackButtonRef}
-                                                     beforeEditModeStart = {onFieldEnterEditMode}
-                                                     beforeEditModeFinish = {onFieldExitEditMode}
+                                                     beforeEditModeStart={onFieldEnterEditMode}
+                                                     beforeEditModeFinish={onFieldExitEditMode}
                                                      id="mailAdrres"
                             />
 
@@ -226,8 +225,8 @@ export default function Settings() {
                             <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum} validate={validatePhoneNum}
                                                      onSubmit={handlePhoneNumSubmit}
                                                      notOutsideRef={goBackButtonRef}
-                                                     beforeEditModeStart = {onFieldEnterEditMode}
-                                                     beforeEditModeFinish = {onFieldExitEditMode}
+                                                     beforeEditModeStart={onFieldEnterEditMode}
+                                                     beforeEditModeFinish={onFieldExitEditMode}
                                                      id="phoneNum"/>
                         </Grid>
 
@@ -278,45 +277,47 @@ export default function Settings() {
                         <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
                             <Divider/>
                         </Grid>
-                        <Grid item xs={4} sx={{textAlign: "left"}}>
+                        <Grid item xs={12} sx={{textAlign: "left"}}>
                             <Typography component="h1" variant="h6" marginBottom={'5px'}>אופן קבלת התראות</Typography>
-                            <Grid container columnSpacing={2}>
-                                <Grid item md={3} sx={{textAlign: "center"}}>
-                                    <SettingsCheckBox label="מייל"/>
-                                </Grid>
+                        </Grid>
+                        <Grid item container xs={12} sx={{textAlign: "left"}}>
 
-                                <Grid item md={3} sx={{textAlign: "center"}}>
-                                    <SettingsCheckBox label="טלפון"/>
-                                </Grid>
-                                <Grid item md={3} sx={{textAlign: "center"}}>
-                                    <SettingsCheckBox label="דפדפן"/>
-                                </Grid>
+                            <Grid item sx={{textAlign: "center"}}>
+                                <SettingsCheckBox label="מייל"/>
                             </Grid>
+
+                            <Grid item sx={{textAlign: "center"}}>
+                                <SettingsCheckBox label="טלפון"/>
+                            </Grid>
+                            <Grid item sx={{textAlign: "center"}}>
+                                <SettingsCheckBox label="דפדפן"/>
+                            </Grid>
+
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
                             <Divider/>
                         </Grid>
-                        <Grid item xs={4} sx={{textAlign: "left"}}>
-                            <Box sx={{flexGrow: 1}}>
-                                <Typography component="h1" variant="h6" marginBottom={'5px'}>סוגי התראות שברצוני
-                                    לקבל</Typography>
-                                <Grid container>
-                                    <Grid item md={6} sx={{textAlign: "center"}}>
-                                        <SettingsCheckBox label="תזכורת נטילת תרופה"/>
-                                    </Grid>
-                                    <Grid item md={5} sx={{textAlign: "center"}}>
-                                        <SettingsCheckBox label="סיום תוקף"/>
-                                    </Grid>
+                        <Grid item xs={12} sx={{textAlign: "left"}}>
+                            <Typography component="h1" variant="h6" marginBottom={'5px'}>סוגי התראות שברצוני
+                                לקבל</Typography>
+                        </Grid>
+                        <Grid item container xs={12} sx={{textAlign: "left"}}>
 
-                                </Grid>
-                            </Box>
+                            <Grid item sx={{textAlign: "center"}}>
+                                <SettingsCheckBox label="תזכורת נטילת תרופה"/>
+                            </Grid>
+                            <Grid item sx={{textAlign: "center"}}>
+                                <SettingsCheckBox label="סיום תוקף"/>
+                            </Grid>
+
                         </Grid>
                         <Box width="100%"/>
                         <Grid item md={4} xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
                             <Box sx={{flexGrow: 1}}>
                                 <Grid container>
                                     <Grid item md={6} sx={{textAlign: "center"}} ref={goBackButtonRef}>
-                                        <Button variant={"outlined"} onClick={handleGoBackPress} startIcon={<ArrowForwardIcon/>}>חזור לחיפוש</Button>
+                                        <Button variant={"outlined"} onClick={handleGoBackPress}
+                                                startIcon={<ArrowForwardIcon/>}>חזור לחיפוש</Button>
                                     </Grid>
 
                                 </Grid>
@@ -345,5 +346,6 @@ export default function Settings() {
         </CacheProvider>
 
 
-    );
+    )
+        ;
 }
