@@ -12,6 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
+import {clear} from "@testing-library/user-event/dist/clear";
 
 
 export default function EditableTextWithButtons(props) {
@@ -33,6 +34,7 @@ export default function EditableTextWithButtons(props) {
             }
             document.addEventListener('mousedown', handleClickOutside);
 
+
             return () => {
                 document.removeEventListener('mousedown', handleClickOutside);
             }
@@ -40,7 +42,7 @@ export default function EditableTextWithButtons(props) {
         }
 
         ,
-        [isEditMode]
+        [isEditMode,props.clearOnOutsideClick]
     )
     const handlePointerEnterButton = () => {
         setPointerInButton(true);
@@ -55,15 +57,21 @@ export default function EditableTextWithButtons(props) {
         return refrence.current && refrence.current.contains(e.target);
     }
     const handleClickOutside = e => {
+
         if (clickOutside(inputRef, e) && clickOutside(buttonRef, e) && (clickOutside(props.notOutsideRef, e))) {
-            if(props.trySubmitOnOutsideClick && currentlyValidated){
+            if (props.trySubmitOnOutsideClick && currentlyValidated) {
                 myHandleSubmit();
-            }
-            else if(props.clearOnOutsideClick){
+            } else if (props.clearOnOutsideClick) {
+                console.log("clear")
                 handleClearClick();
 
+            } else {
+                console.log("not clear")
             }
+        } else {
+            console.log("not clear")
         }
+
     };
     const handleClickInside = e => {
         if (clickInside(inputRef, e) && (!props.password || clickOutside(showPasswordButtonRef, e))) {
@@ -222,7 +230,7 @@ EditableTextWithButtons.defaultProps = {
     //should clear on outside click
     clearOnOutsideClick: true,
     //refrence for elemnt that dosent count as ouside
-    notOutsideRef:null
+    notOutsideRef: null
 
 
 }

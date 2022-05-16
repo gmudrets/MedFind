@@ -199,7 +199,9 @@ export default function Settings() {
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
+                                                     clearOnOutsideClick = {!goBackDialogOpen}
                                                      id="firstName"
+
                             />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
@@ -208,6 +210,7 @@ export default function Settings() {
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
+                                                     clearOnOutsideClick = {!goBackDialogOpen}
                                                      id="secondName"
                             />
                         </Grid>
@@ -217,6 +220,7 @@ export default function Settings() {
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
+                                                     clearOnOutsideClick = {!goBackDialogOpen}
                                                      id="mailAdrres"
                             />
 
@@ -227,6 +231,7 @@ export default function Settings() {
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
+                                                     clearOnOutsideClick = {!goBackDialogOpen}
                                                      id="phoneNum"/>
                         </Grid>
 
