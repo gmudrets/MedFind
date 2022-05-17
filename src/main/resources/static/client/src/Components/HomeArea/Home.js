@@ -108,11 +108,9 @@ function Home() {
     }
     if (data["results"].length === 0){
         setNoResultsFound(true);
-        setLoading(false);
     }
-    else{
-        populateData(data);
-    }
+
+    populateData(data);
   }
 
     const populateData = (data) => {
