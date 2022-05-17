@@ -66,9 +66,14 @@ public class MedicineQuery {
     }
 
     @GetMapping("/api/GetBrochure")
-    public BrochureResults GetBrochure(@RequestParam String drugRegNum) throws JsonProcessingException {
+    public BrochureResults GetBrochure(@RequestHeader(name = "idToken", required = true) String idToken,
+                                       @RequestParam(required = true) String drugRegNum) throws JsonProcessingException, TokenException {
 
-        String response = webClientRestCall(
+        if(!FirebaseValidator.isIdTokenValid(idToken)){
+            throw new TokenException("User not found.");
+        }
+
+        var response = webClientRestCall(
                 HEALTH_MINISTRY_SITE,
                 GET_SPECIFIC_DRUG_ENDPOINT,
                 Mono.just(new RequestBrochureByDrugRegNum(drugRegNum)),
