@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useReducer, useRef} from 'react';
 import Box from '@mui/material/Box';
 
 import {createTheme} from "@mui/material/styles";
@@ -17,17 +18,17 @@ import Typography from "@mui/material/Typography";
 import SettingsCheckBox from "../UI/SettingsCheckBox";
 import {isMobile} from "react-device-detect";
 import {prefixer} from 'stylis';
-import {useEffect, useReducer, useRef, useState} from "react";
 import * as STATE_PATHS from "../../Consts/StatePaths";
-import {Image, Password} from "@mui/icons-material";
 import ProfilePicturePicker from "./ProfilePicturePicker";
 import Divider from "@mui/material/Divider";
-import PasswordShower from "../UI/PaswordShower";
 import {useNavigate} from "react-router-dom";
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import PasswordIcon from '@mui/icons-material/Password';
 import ClearIcon from '@mui/icons-material/Clear';
+import TextField from '@mui/material/TextField';
+import {MenuItem} from '@mui/material';
+
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -40,13 +41,18 @@ function RTL(props) {
 }
 
 export default function Settings() {
+    const userTypeArr = [
+        'משתמש רגיל',
+        'חבר צוות רפואי',
+        'רופא',]
     const phoneNum = "1111";//TODO:
     const mail = "a@gmail.com";//TODO:
     const password = "123456";//TODO
     const firstName = "abc"//TODO
     const lastName = "def"//TODO
-
-
+    const city = "Tel Aviv"//TODO
+    const initUserType = userTypeArr[0];//TODO
+    const initialyValidatedtionList= ['משתמש רגיל'];//TODO List of all the validation for the use
     const profilePictureRef = useRef();
     const secondPasswordRef = useRef();
     const goBackButtonRef = useRef();
@@ -56,7 +62,6 @@ export default function Settings() {
     const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     const [keyToRerenderPass2, forceUpdatePass2] = useReducer(x => x + 1, 0);
     const [keyToRerenderShowPass, forceUpdateShowPass] = useReducer(x => x + 1, 0);
-    const [retypePasswordMode,setRetypePasswordMode] = React.useState(null);
     const [newPasswordEditMode, setNewPasswordEditMode] = React.useState(false);
     const [oldPasswordEditMode, setOldPasswordEditMode] = React.useState(false);
     const [firstNewPassword, setFirstNewPassword] = React.useState("");
@@ -65,9 +70,15 @@ export default function Settings() {
     const [fieldsOnEditMode, setFieldsOnEditMode] = React.useState([]);
     const [goBackDialogOpen, setGoBackDialogOpen] = React.useState(false);
     const [curPassword, setCurPassword] = React.useState(password);
+    const [userType, setUserType] = React.useState(userTypeArr[0]);
+    const [userTypeValidationList,setUserTypeValidated] = React.useState(initialyValidatedtionList);
 
+    
 
-
+    const handleUserTypeChange = (event) => {
+        setUserType(event.target.value);
+        //TODO open change user type form in case that not normal user
+    }
     const startEditPasswordMode = () => {
         onFieldEnterEditMode("password")
         setOldPasswordEditMode(true);
@@ -98,13 +109,18 @@ export default function Settings() {
         return true;
 
     }
-    const handleOldPasswordSubmit = (s)=>{
+    const handleCitySubmit = (s) => {
+        //TODO
+        return true;
+
+    }
+    const handleOldPasswordSubmit = (s) => {
         //TODO (load old password)
-        if(curPassword===s){
+        if (curPassword === s) {
             setOldPasswordEditMode(false);
             setNewPasswordEditMode(true);
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -138,6 +154,11 @@ export default function Settings() {
         })
     }
     const validateMail = (s) => {
+        //TODO
+        return true;
+
+    }
+    const validateCity = (s) => {
         //TODO
         return true;
 
@@ -223,7 +244,8 @@ export default function Settings() {
                             />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons label="שם משפחה" initVal={lastName} periodicValidate={validateLastName}
+                            <EditableTextWithButtons label="שם משפחה" initVal={lastName}
+                                                     periodicValidate={validateLastName}
                                                      onSubmit={handleLastNameSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
@@ -232,19 +254,20 @@ export default function Settings() {
                                                      id="secondName"
                             />
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons label="כתובת מייל להתראות" initVal={mail} periodicValidate={validateMail}
-                                                     onSubmit={handleMailSubmit}
-                                                     notOutsideRef={goBackButtonRef}
-                                                     beforeEditModeStart={onFieldEnterEditMode}
-                                                     beforeEditModeFinish={onFieldExitEditMode}
-                                                     clearOnOutsideClick={!goBackDialogOpen}
-                                                     id="mailAdrres"
-                            />
+                        {/*<Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>*/}
+                        {/*    <EditableTextWithButtons label="כתובת מייל להתראות" initVal={mail} periodicValidate={validateMail}*/}
+                        {/*                             onSubmit={handleMailSubmit}*/}
+                        {/*                             notOutsideRef={goBackButtonRef}*/}
+                        {/*                             beforeEditModeStart={onFieldEnterEditMode}*/}
+                        {/*                             beforeEditModeFinish={onFieldExitEditMode}*/}
+                        {/*                             clearOnOutsideClick={!goBackDialogOpen}*/}
+                        {/*                             id="mailAdrres"*/}
+                        {/*    />*/}
+                        {/*</Grid>*/}
 
-                        </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum} periodicValidate={validatePhoneNum}
+                            <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum}
+                                                     periodicValidate={validatePhoneNum}
                                                      onSubmit={handlePhoneNumSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
@@ -252,15 +275,45 @@ export default function Settings() {
                                                      clearOnOutsideClick={!goBackDialogOpen}
                                                      id="phoneNum"/>
                         </Grid>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                            <EditableTextWithButtons label="עיר מגורים" initVal={city}
+                                                     periodicValidate={validateCity}
+                                                     onSubmit={handleCitySubmit}
+                                                     notOutsideRef={goBackButtonRef}
+                                                     beforeEditModeStart={onFieldEnterEditMode}
+                                                     beforeEditModeFinish={onFieldExitEditMode}
+                                                     clearOnOutsideClick={!goBackDialogOpen}
+                                                     id="city"
+                            />
+                        </Grid>
+                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "left"}}>
+                            <TextField
+                                select
+                                fullWidth
+                                id="until"
+                                label="סוג משתמש"
+                                name="returns"
+                                value={userType}
+                                onChange={handleUserTypeChange}
+                                helperText={userTypeValidationList.includes(userType)?" ":"מחכה לאישור מנהל" }
+                            >
+                                {userTypeArr.map((type) => (
+                                    <MenuItem key={type} value={type}>
+                                        {type}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
 
-                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
+
+                        </Grid>
+                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "20px"}}>
                             <Divider/>
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
                             <Typography component="h1" variant="h6" marginBottom={'5px'}> שינוי סיסמא</Typography>
                         </Grid>
                         <Grid item md={2.2} sx={{textAlign: "left"}}>
-                            {!(newPasswordEditMode||oldPasswordEditMode)?
+                            {!(newPasswordEditMode || oldPasswordEditMode) ?
                                 <Button variant={"outlined"} onClick={startEditPasswordMode}
                                         endIcon={<PasswordIcon/>}>שנה ססמא</Button>
                                 :
@@ -271,15 +324,14 @@ export default function Settings() {
                         </Grid>
                         {oldPasswordEditMode &&
                             <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "right"}}>
-                                <EditableTextWithButtons label="הקלד ססמא נוכחית" val={password}
+                                <EditableTextWithButtons label="הקלד ססמא נוכחית"
                                                          onSubmit={handleOldPasswordSubmit}
                                                          password
                                                          startsOnEdit
                                                          clearOnOutsideClick={false}
                                                          notOutsideRef={goBackButtonRef}
                                                          periodicValidateOnlyOnSubmit
-                                                         errorHint = "טעות בססמא"
-
+                                                         errorHint="טעות בססמא"
 
 
                                 />
@@ -288,7 +340,7 @@ export default function Settings() {
                         {newPasswordEditMode &&
                             <>
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                                    <EditableTextWithButtons label="סיסמא חדשה" val={password}
+                                    <EditableTextWithButtons label="סיסמא חדשה"
                                                              periodicValidate={validatePassword}
                                                              onSubmit={handleFirstPasswordSubmit}
                                                              password
@@ -302,7 +354,7 @@ export default function Settings() {
                                 </Grid>
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                                     <EditableTextWithButtons key={keyToRerenderPass2}
-                                                             label="ודא סיסמא חדשה" val={password}
+                                                             label="ודא סיסמא חדשה"
                                                              periodicValidate={validateSecondPassword}
                                                              onSubmit={handleSecondPasswordSubmit}
                                                              password
