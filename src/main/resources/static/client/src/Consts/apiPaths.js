@@ -1,6 +1,7 @@
 module.exports = {
     ServerConsts : {
         SEARCH_MEDICINE : "/api/SearchMedicine",
+        SEARCH_GENERIC : "/api/SearchGeneric",
         GET_BROCHURE: "/api/GetBrochure",
         REGISTER : "/api/User/Register"
     },

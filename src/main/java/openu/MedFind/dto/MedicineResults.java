@@ -22,6 +22,7 @@ public record MedicineResults(List<Result> results) {
                          double customerPrice,
                          boolean health,
                          String activeComponentsDisplayName,
+                         String activeComponentsCompareName,
                          String barcodes,
                          boolean prescription,
                          String secondarySymptom) {

@@ -2,10 +2,7 @@ package openu.MedFind.restservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import openu.MedFind.dto.BrochureResults;
-import openu.MedFind.dto.MedicineResults;
-import openu.MedFind.dto.RequestBrochureByDrugRegNum;
-import openu.MedFind.dto.RequestMedicineByName;
+import openu.MedFind.dto.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,6 +27,7 @@ public class MedicineQuery {
     private static final Duration WEB_CLIENT_TIMEOUT = Duration.of(1, ChronoUnit.MINUTES);
     private static final String HEALTH_MINISTRY_SITE = "https://israeldrugs.health.gov.il/GovServiceList/IDRServer";
     private static final String SEARCH_BY_NAME_ENDPOINT = "/SearchByName";
+    private static final String SEARCH_GENERIC = "/SearchGeneric";
     private static final String GET_SPECIFIC_DRUG_ENDPOINT = "/GetSpecificDrug";
 
 
@@ -73,6 +71,21 @@ public class MedicineQuery {
         );
 
         return new ObjectMapper().readValue(response, BrochureResults.class);
+    }
+
+    @GetMapping("/api/SearchGeneric")
+    public MedicineResults SearchGeneric(@RequestParam String val,
+                                         @RequestParam String name,
+                                         @RequestParam int pageIndex) throws JsonProcessingException {
+
+        String response = webClientRestCall(
+                HEALTH_MINISTRY_SITE,
+                SEARCH_GENERIC,
+                Mono.just(new RequestGenericMedicine(val, name, null, null, null, pageIndex, 1)),
+                RequestGenericMedicine.class
+        );
+        String results = "{\"results\":" +response+ "}";
+        return new ObjectMapper().readValue(results, MedicineResults.class);
     }
 }
 

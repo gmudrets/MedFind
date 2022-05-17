@@ -23,6 +23,7 @@ import icon from '../../Assets/Images/icon.png'
 import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoadingButton from "@mui/lab/LoadingButton";
+import Typography from "@mui/material/Typography";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -37,8 +38,12 @@ function Home() {
   const [isFetching, setIsFetching] = useState(false);
   const [page, setPage] = useState(1);
   const [HasMore, setHasMore] = useState(true);
+  const [ isGeneric, setIsGeneric ] = useState(false);
+  const [ genericSearchValue, setGenericSearchValue ] = useState({activeIngredient: null, hebName: null})
+  const [ noResultsFound, setNoResultsFound ] = useState(false);
 
-  useEffect(() => {
+
+    useEffect(() => {
     if (username === ''){
         navigate("/login");
     }
@@ -52,9 +57,9 @@ function Home() {
   }, [triggerSearch]);
 
   const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
-                      dragHebName, health, images, prescription, secondarySymptom, brochure) => {
+                      dragHebName, health, images, prescription, secondarySymptom, brochure, activeComponentsCompareName) => {
       return { activeComponents, barcodes, customerPrice, dosageForm, dragEnName, dragHebName, health,
-                  images, prescription, secondarySymptom, brochure };
+                  images, prescription, secondarySymptom, brochure, activeComponentsCompareName };
   }
 
   const generateMultiField = (data) => {
@@ -81,7 +86,7 @@ function Home() {
     return url;
   }
 
-  const search = async (newSearch) => {
+  const search = async (newSearch, generic) => {
     let pageNum = page;
     setIsFetching(true);
     if (newSearch)
@@ -91,35 +96,54 @@ function Home() {
         pageNum = 1;
         setPage(pageNum);
     }
-    let rows = [];
-    let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
 
-    data["results"].forEach(
-      (d) => {
-        rows.push(createData(
-          generateMultiField(d["activeComponents"]),
-          d["barcodes"],
-          d["customerPrice"],
-          d["dosageForm"],
-          d["dragEnName"],
-          d["dragHebName"],
-          d["health"],
-          getImageURL(d["images"]),
-          d["prescription"],
-          d["secondarySymptom"],
-          d["dragRegNum"],
-          ))
-      }
-    );
-
-    setItems((prevRows) => {
-        return [...new Set([...prevRows, ...rows])];
-    });
-    setPage((prevPageNumber) => prevPageNumber + 1);
-    setHasMore(rows.length > 0);
-    setIsFetching(false);
-    setLoading(false);
+    let data;
+    if (generic){
+        setIsGeneric(true);
+        data = await getRequest(ServerConsts.SEARCH_GENERIC, { "val" : genericSearchValue.activeIngredient, "name" : genericSearchValue.hebName, "pageIndex" : page });
+    }
+    else{
+        setIsGeneric(false);
+        data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
+    }
+    if (data["results"].length === 0){
+        setNoResultsFound(true);
+        setLoading(false);
+    }
+    else{
+        populateData(data);
+    }
   }
+
+    const populateData = (data) => {
+        let rows = [];
+        data["results"].forEach(
+            (d) => {
+                rows.push(createData(
+                    generateMultiField(d["activeComponents"]),
+                    d["barcodes"],
+                    d["customerPrice"],
+                    d["dosageForm"],
+                    d["dragEnName"],
+                    d["dragHebName"],
+                    d["health"],
+                    getImageURL(d["images"]),
+                    d["prescription"],
+                    d["secondarySymptom"],
+                    d["dragRegNum"],
+                    d["activeComponentsCompareName"],
+                ))
+            }
+        );
+
+        setItems((prevRows) => {
+            return [...new Set([...prevRows, ...rows])];
+        });
+        setPage((prevPageNumber) => prevPageNumber + 1);
+        setHasMore(rows.length > 0);
+        setIsFetching(false);
+        setLoading(false);
+    }
 
   const handleSearchValueChange = (eventData) => {
     setSearchValue(eventData.target.value);
@@ -131,6 +155,10 @@ function Home() {
 
   const searchBarcode = (data) => {
       setSearchValue(data);
+  }
+
+  const toggleNoResults = () => {
+    setNoResultsFound(!noResultsFound);
   }
 
   return (
@@ -180,6 +208,11 @@ function Home() {
           <TransitionsModal open={scannerOpen} toggleModal={toggleScanner}>
             <BarcodeScanner setScannedData={searchBarcode} triggerSearch={setTriggerSearch} closeModal={toggleScanner}/>
           </TransitionsModal>
+        <TransitionsModal open={noResultsFound} toggleModal={toggleNoResults}>
+            <Typography sx={{ mt: 2 }} align={"center"}>
+                לא נמצאו תוצאות
+            </Typography>
+        </TransitionsModal>
         <CircularProgressBackdrop open={loading} toggle={setLoading}/>
         { items.length > 0 ? (
             <>
@@ -193,7 +226,7 @@ function Home() {
                         justifyContent="center"
                         alignItems='center'
                     >
-                        <DetailedCard data={item} type='drug' title={item.dragHebName} subheader={item.dragEnName} image={item.images} body={item.secondarySymptom} expandData={item}/>
+                        <DetailedCard data={item} type='drug' title={item.dragHebName} subheader={item.dragEnName} image={item.images} body={item.secondarySymptom} expandData={item} prescription={item.prescription} searchGeneric={search} setGenericSearchValue={setGenericSearchValue}/>
                     </Box>
             ))}
             {HasMore && (
@@ -209,7 +242,7 @@ function Home() {
                         variant="contained"
                         size="small"
                         endIcon={<KeyboardArrowDownIcon style={{marginRight: 12}}/>}
-                        onClick={() => {search(false)}}
+                        onClick={() => {search(false, isGeneric)}}
                         loading={isFetching}
                         loadingPosition="end"
                     >

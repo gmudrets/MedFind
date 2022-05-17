@@ -44,6 +44,7 @@ public class MedicineResultsDeserializer extends StdDeserializer<MedicineResults
                         objNode.get("customerPrice").asDouble(),
                         objNode.get("health").asBoolean(),
                         objNode.get("activeComponentsDisplayName").asText(),
+                        objNode.get("activeComponentsCompareName").asText(),
                         objNode.get("barcodes").asText(),
                         objNode.get("prescription").asBoolean(),
                         objNode.get("secondarySymptom").asText()
