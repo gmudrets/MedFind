@@ -259,7 +259,7 @@ export default function Settings() {
                         <Grid item xs={12} sx={{textAlign: "left"}}>
                             <Typography component="h1" variant="h6" marginBottom={'5px'}> שינוי סיסמא</Typography>
                         </Grid>
-                        <Grid item xs={2.2} sx={{textAlign: "left"}}>
+                        <Grid item md={2.2} sx={{textAlign: "left"}}>
                             {!(newPasswordEditMode||oldPasswordEditMode)?
                                 <Button variant={"outlined"} onClick={startEditPasswordMode}
                                         endIcon={<PasswordIcon/>}>שנה ססמא</Button>
@@ -270,7 +270,7 @@ export default function Settings() {
 
                         </Grid>
                         {oldPasswordEditMode &&
-                            <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                            <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "right"}}>
                                 <EditableTextWithButtons label="הקלד ססמא נוכחית" val={password}
                                                          onSubmit={handleOldPasswordSubmit}
                                                          password
