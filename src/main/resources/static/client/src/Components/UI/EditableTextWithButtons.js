@@ -20,10 +20,10 @@ export default function EditableTextWithButtons(props) {
     const buttonRef = useRef();
     const showPasswordButtonRef = useRef();
     const [isEditMode, setIsEditMode] = useState(props.startsOnEdit);
-    const [currentlyValidated, setCurrentlyValidated] = useState(props.validate(props.initVal));
+    const [currentlyValidated, setCurrentlyValidated] = useState(props.periodicValidate(props.initVal));
     const [currentText, setCurrentText] = useState(props.initVal);
     const [lastSubmitted, setLastSubmitted] = useState(props.initVal);
-    const [submiting, setSubmitings] = useState(false);
+    const [submiting, setSubmiting] = useState(false);
     const [showPassword, setShowPassword] = useState(!props.password);
     const [pointerInButton, setPointerInButton] = React.useState(false);
 
@@ -33,8 +33,6 @@ export default function EditableTextWithButtons(props) {
                 inputRef.current.focus();
             }
             document.addEventListener('mousedown', handleClickOutside);
-
-
             return () => {
                 document.removeEventListener('mousedown', handleClickOutside);
             }
@@ -62,14 +60,10 @@ export default function EditableTextWithButtons(props) {
             if (props.trySubmitOnOutsideClick && currentlyValidated) {
                 myHandleSubmit();
             } else if (props.clearOnOutsideClick) {
-                console.log("clear")
                 handleClearClick();
 
             } else {
-                console.log("not clear")
             }
-        } else {
-            console.log("not clear")
         }
 
     };
@@ -87,7 +81,7 @@ export default function EditableTextWithButtons(props) {
         if (props.password) {
             setShowPassword(true);
         }
-        setCurrentlyValidated(props.validate(lastSubmitted));
+        setCurrentlyValidated(props.periodicValidate(lastSubmitted));
     }
 
     const handleClearClick = () => {
@@ -100,25 +94,33 @@ export default function EditableTextWithButtons(props) {
     }
     const handleChange = (event) => {
         setCurrentText(event.target.value);
-        setCurrentlyValidated(props.validate(event.target.value));
+        if(!props.validateOnlyOnSubmit) {
+            setCurrentlyValidated(props.periodicValidate(event.target.value));
+        }else {
+            setCurrentlyValidated(true);
+        }
     }
 
     const myHandleSubmit = () => {
         const currentTextInField = currentText;
-        setSubmitings(true);
+        setSubmiting(true);
         if (props.onSubmit(currentTextInField)) {
             setLastSubmitted(currentTextInField);
             setCurrentText(currentTextInField);
+            props.beforeEditModeFinish(props.id);
+            setIsEditMode(false);
+            if (props.password) {
+                setShowPassword(false);
+            }
         } else {
-            alert("Error Submiting " + props.label)
-            setCurrentText(lastSubmitted);
+            if (props.validateOnlyOnSubmit) {
+                alert("Error Submiting " + props.label)
+                setCurrentText(lastSubmitted);
+            }else{
+                setCurrentlyValidated(false);
+            }
         }
-        props.beforeEditModeFinish(props.id);
-        setIsEditMode(false);
-        setSubmitings(false);
-        if (props.password) {
-            setShowPassword(false);
-        }
+        setSubmiting(false);
 
     }
     const handleKeyPress = (event) => {
@@ -171,6 +173,7 @@ export default function EditableTextWithButtons(props) {
                         fullWidth
                         sx={{maxWidth: "500px", maxHeight: "30px"}}
                         onClick={handleClickInside}
+                        helperText={!currentlyValidated? props.errorHint: ""}
 
                     />
 
@@ -204,7 +207,7 @@ EditableTextWithButtons.defaultProps = {
     //the initial value of the field
     initVal: "",
     //validation function for the field called on each edit
-    validate: (s) => true,
+    periodicValidate: (s) => true,
     //label of field
     label: "field",
     //handle submition return true if everything was ok
@@ -230,7 +233,11 @@ EditableTextWithButtons.defaultProps = {
     //should clear on outside click
     clearOnOutsideClick: true,
     //refrence for elemnt that dosent count as ouside
-    notOutsideRef: null
+    notOutsideRef: null,
+    //validate only on submit by function handle submit returning false
+    validateOnlyOnSubmit:false,
+    //hint on error
+    errorHint:""
 
 
 }

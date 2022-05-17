@@ -26,7 +26,8 @@ import PasswordShower from "../UI/PaswordShower";
 import {useNavigate} from "react-router-dom";
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
-
+import PasswordIcon from '@mui/icons-material/Password';
+import ClearIcon from '@mui/icons-material/Clear';
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -55,8 +56,9 @@ export default function Settings() {
     const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     const [keyToRerenderPass2, forceUpdatePass2] = useReducer(x => x + 1, 0);
     const [keyToRerenderShowPass, forceUpdateShowPass] = useReducer(x => x + 1, 0);
-
-    const [editPasswordMode, setEditPasswordMode] = React.useState(false);
+    const [retypePasswordMode,setRetypePasswordMode] = React.useState(null);
+    const [newPasswordEditMode, setNewPasswordEditMode] = React.useState(false);
+    const [oldPasswordEditMode, setOldPasswordEditMode] = React.useState(false);
     const [firstNewPassword, setFirstNewPassword] = React.useState("");
     const [secondPasswordFocus, setSecondPasswordFocus] = React.useState(false);
     const [somthingEdited, setSomthingEdited] = React.useState(false);
@@ -65,12 +67,18 @@ export default function Settings() {
     const [curPassword, setCurPassword] = React.useState(password);
 
 
+
     const startEditPasswordMode = () => {
-        setEditPasswordMode(true);
+        onFieldEnterEditMode("password")
+        setOldPasswordEditMode(true);
     }
     const closeEditPasswordMode = () => {
-        setEditPasswordMode(false);
+        onFieldExitEditMode("password")
+        setNewPasswordEditMode(false);
+        setOldPasswordEditMode(false);
         setSecondPasswordFocus(false);
+
+
     }
     const handleFirstNameSubmit = (s) => {
         //TODO
@@ -89,6 +97,16 @@ export default function Settings() {
         //TODO
         return true;
 
+    }
+    const handleOldPasswordSubmit = (s)=>{
+        //TODO (load old password)
+        if(curPassword===s){
+            setOldPasswordEditMode(false);
+            setNewPasswordEditMode(true);
+            return true;
+        }else{
+            return false;
+        }
     }
     const handleFirstPasswordSubmit = (s) => {
         forceUpdatePass2();
@@ -194,44 +212,44 @@ export default function Settings() {
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="שם פרטי" initVal={firstName}
-                                                     validate={validateFirstName}
+                                                     periodicValidate={validateFirstName}
                                                      onSubmit={handleFirstNameSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
-                                                     clearOnOutsideClick = {!goBackDialogOpen}
+                                                     clearOnOutsideClick={!goBackDialogOpen}
                                                      id="firstName"
 
                             />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons label="שם משפחה" initVal={lastName} validate={validateLastName}
+                            <EditableTextWithButtons label="שם משפחה" initVal={lastName} periodicValidate={validateLastName}
                                                      onSubmit={handleLastNameSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
-                                                     clearOnOutsideClick = {!goBackDialogOpen}
+                                                     clearOnOutsideClick={!goBackDialogOpen}
                                                      id="secondName"
                             />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons label="כתובת מייל" initVal={mail} validate={validateMail}
+                            <EditableTextWithButtons label="כתובת מייל להתראות" initVal={mail} periodicValidate={validateMail}
                                                      onSubmit={handleMailSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
-                                                     clearOnOutsideClick = {!goBackDialogOpen}
+                                                     clearOnOutsideClick={!goBackDialogOpen}
                                                      id="mailAdrres"
                             />
 
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum} validate={validatePhoneNum}
+                            <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum} periodicValidate={validatePhoneNum}
                                                      onSubmit={handlePhoneNumSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
-                                                     clearOnOutsideClick = {!goBackDialogOpen}
+                                                     clearOnOutsideClick={!goBackDialogOpen}
                                                      id="phoneNum"/>
                         </Grid>
 
@@ -241,17 +259,37 @@ export default function Settings() {
                         <Grid item xs={12} sx={{textAlign: "left"}}>
                             <Typography component="h1" variant="h6" marginBottom={'5px'}> שינוי סיסמא</Typography>
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
-                            <PasswordShower key={keyToRerenderShowPass} label="הקלד סיסמא נוכחית" val={curPassword}
-                                            validate={validatePassword} beforeEditModeStarts={startEditPasswordMode}
-                                            onCancel={closeEditPasswordMode}
-                            />
+                        <Grid item xs={2.2} sx={{textAlign: "left"}}>
+                            {!(newPasswordEditMode||oldPasswordEditMode)?
+                                <Button variant={"outlined"} onClick={startEditPasswordMode}
+                                        endIcon={<PasswordIcon/>}>שנה ססמא</Button>
+                                :
+                                <Button variant={"outlined"} onClick={closeEditPasswordMode}
+                                        endIcon={<ClearIcon/>}>בטל שינוי</Button>
+                            }
+
                         </Grid>
-                        {editPasswordMode &&
+                        {oldPasswordEditMode &&
+                            <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                                <EditableTextWithButtons label="הקלד ססמא נוכחית" val={password}
+                                                         onSubmit={handleOldPasswordSubmit}
+                                                         password
+                                                         startsOnEdit
+                                                         clearOnOutsideClick={false}
+                                                         notOutsideRef={goBackButtonRef}
+                                                         periodicValidateOnlyOnSubmit
+                                                         errorHint = "טעות בססמא"
+
+
+
+                                />
+
+                            </Grid>}
+                        {newPasswordEditMode &&
                             <>
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                                     <EditableTextWithButtons label="סיסמא חדשה" val={password}
-                                                             validate={validatePassword}
+                                                             periodicValidate={validatePassword}
                                                              onSubmit={handleFirstPasswordSubmit}
                                                              password
                                                              startsOnEdit
@@ -265,13 +303,14 @@ export default function Settings() {
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                                     <EditableTextWithButtons key={keyToRerenderPass2}
                                                              label="ודא סיסמא חדשה" val={password}
-                                                             validate={validateSecondPassword}
+                                                             periodicValidate={validateSecondPassword}
                                                              onSubmit={handleSecondPasswordSubmit}
                                                              password
                                                              saveButton
                                                              startsOnEdit={secondPasswordFocus}
                                                              clearOnOutsideClick={false}
                                                              notOutsideRef={goBackButtonRef}
+
 
                                     />
 
