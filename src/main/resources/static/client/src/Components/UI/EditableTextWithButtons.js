@@ -124,7 +124,7 @@ export default function EditableTextWithButtons(props) {
 
     }
     const handleKeyPress = (event) => {
-        if (currentlyValidated && event.code === "Enter") {
+        if (currentlyValidated && (event.code === "Enter"||event.code === "Return"|| event.code === "Go"||event.code === "")) {
             myHandleSubmit();
         }
     }
