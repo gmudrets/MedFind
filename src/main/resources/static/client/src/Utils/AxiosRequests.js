@@ -22,12 +22,13 @@ const buildAPIPath = (basePath, parameters) => {
     return result;
 };
 
-export const getRequest = async (apiPath, params = {}, config = {}) => {
+export const getRequest = async (idToken, apiPath, params = {}, config = {}) => {
     try {
         if (process.env.NODE_ENV !== "production") {
             config = axiosConfig;
         }
 
+        config['headers'] = {'idToken' : idToken};
         let pathWithParams = buildAPIPath(apiPath, params);
         let response = await axios.get(pathWithParams, config);
         if (Object.keys(response.data).includes('error')) {
@@ -39,12 +40,13 @@ export const getRequest = async (apiPath, params = {}, config = {}) => {
     }
 };
 
-export const postRequest = async (apiPath, data, config = {}) => {
+export const postRequest = async (idToken, apiPath, data, config = {}) => {
     try {
         if (process.env.NODE_ENV !== "production") {
             config = axiosConfig;
         }
 
+        config['headers'] = {'idToken' : idToken};
         let response = await axios.post(apiPath, data, config);
         if (Object.keys(response.data).includes('error')) {
             throw Error(response.data);

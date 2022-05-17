@@ -1,1 +1,1 @@
-export const USERNAME = ['auth', 'user'];
+export const USERNAME = ['auth', 'userDetails'];

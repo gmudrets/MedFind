@@ -8,7 +8,6 @@ import './Layout.css';
 
 const {store, persistor} = configureReduxStore();
 
-
 function Layout() {
 	return (
 		<Provider store={store}>

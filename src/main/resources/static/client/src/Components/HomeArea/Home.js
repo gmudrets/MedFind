@@ -92,7 +92,9 @@ function Home() {
         setPage(pageNum);
     }
     let rows = [];
-    let data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
+    let data = await getRequest(username.stsTokenManager.accessToken,
+        ServerConsts.SEARCH_MEDICINE,
+        { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
 
     data["results"].forEach(
       (d) => {
