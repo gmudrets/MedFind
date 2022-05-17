@@ -1,15 +1,23 @@
 .Layout {
-	height: 100%;
-	background-color: #E7EBF0;
+	display: flex;
+	min-height: calc(100vh - 20px);
+	flex-direction: column;
 }
 
 .Layout,
 .Layout > * {
 }
 
-.Layout > header,
+.Layout > header {
+	padding: 10px;
+}
 .Layout > footer {
+	padding: 10px;
+	height: 20px;
 }
 
 .Layout > main {
+	padding: 20px;
+	background: #E7EBF0;
+	flex: 1;
 }
