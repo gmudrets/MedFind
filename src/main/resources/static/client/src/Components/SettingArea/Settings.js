@@ -218,7 +218,7 @@ export default function Settings() {
             <ThemeProvider theme={theme}>
                 <Box sx={{flexGrow: 1}}>
 
-                    <Grid container columnSpacing={5} rowSpacing={2}
+                    <Grid container columnSpacing={5} rowSpacing={2.8}
                           sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {paddingX: "15%", paddingY: "40px"}}>
 
                         <Grid item xs={12}>
@@ -306,7 +306,7 @@ export default function Settings() {
 
 
                         </Grid>
-                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "20px"}}>
+                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "5px"}}>
                             <Divider/>
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
@@ -370,7 +370,7 @@ export default function Settings() {
                             </>
                         }
 
-                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
+                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "15px"}}>
                             <Divider/>
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
@@ -390,7 +390,7 @@ export default function Settings() {
                             </Grid>
 
                         </Grid>
-                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
+                        <Grid item xs={12} sx={{textAlign: "left", marginTop: "15px"}}>
                             <Divider/>
                         </Grid>
                         <Grid item xs={12} sx={{textAlign: "left"}}>
@@ -408,7 +408,7 @@ export default function Settings() {
 
                         </Grid>
                         <Box width="100%"/>
-                        <Grid item md={4} xs={12} sx={{textAlign: "left", marginTop: "30px"}}>
+                        <Grid item md={4} xs={12} sx={{textAlign: "left", marginTop: "15px"}}>
                             <Box sx={{flexGrow: 1}}>
                                 <Grid container>
                                     <Grid item md={6} sx={{textAlign: "center"}} ref={goBackButtonRef}>
