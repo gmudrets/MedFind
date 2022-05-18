@@ -9,7 +9,6 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: persistReducer({ ...persistConfig, storage }, authReducer),
-  // other reducers will go here later
 })
 
 export default rootReducer
