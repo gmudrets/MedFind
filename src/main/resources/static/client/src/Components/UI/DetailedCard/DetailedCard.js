@@ -43,8 +43,8 @@ export default function DetailedCard(props) {
         body,
         expandData,
         prescription,
-        searchGeneric,
         setGenericSearchValue,
+        triggerSearch,
     } = props;
     const theme = createTheme({direction: 'rtl'});
 
@@ -137,8 +137,8 @@ export default function DetailedCard(props) {
                                 component="button"
                                 variant="body2"
                                 onClick={() => {
-                                    setGenericSearchValue({activeIngredient: expandData.activeComponentsCompareName, hebName: title})
-                                    searchGeneric(true, true, expandData.activeComponentsCompareName, title);
+                                    setGenericSearchValue({activeIngredient: expandData.activeComponentsCompareName, hebName: title});
+                                    triggerSearch(true);
                                 }}
                             >
                                 חפש תכשירים עם חומר פעיל זהה

@@ -34,12 +34,13 @@ function Home() {
   const [ searchValue, setSearchValue ] = useState("");
   const [ scannerOpen, setScannerOpen ] = useState(false);
   const [ triggerSearch, setTriggerSearch ] = useState(false);
+  const [ triggerGenericSearch, setTriggerGenericSearch ] = useState(false);
   const [ loading, setLoading ] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [page, setPage] = useState(1);
   const [HasMore, setHasMore] = useState(true);
   const [ isGeneric, setIsGeneric ] = useState(false);
-  const [ genericSearchValue, setGenericSearchValue ] = useState({activeIngredient: null, hebName: null})
+  const [ genericSearchValue, setGenericSearchValue ] = useState(null)
   const [ noResultsFound, setNoResultsFound ] = useState(false);
 
 
@@ -55,6 +56,13 @@ function Home() {
         setTriggerSearch(!triggerSearch);
     }
   }, [triggerSearch]);
+
+    useEffect(() => {
+        if (triggerGenericSearch && genericSearchValue !== null){
+            search(true, true);
+            setTriggerGenericSearch(!triggerGenericSearch);
+        }
+    }, [triggerGenericSearch]);
 
   const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
                       dragHebName, health, images, prescription, secondarySymptom, brochure, activeComponentsCompareName) => {
@@ -100,7 +108,7 @@ function Home() {
     let data;
     if (generic){
         setIsGeneric(true);
-        data = await getRequest(ServerConsts.SEARCH_GENERIC, { "val" : genericSearchValue.activeIngredient, "name" : genericSearchValue.hebName, "pageIndex" : page });
+        data = await getRequest(ServerConsts.SEARCH_GENERIC, { "val" : genericSearchValue.activeIngredient, "name" : genericSearchValue.hebName, "pageIndex" : pageNum });
     }
     else{
         setIsGeneric(false);
@@ -224,7 +232,7 @@ function Home() {
                         justifyContent="center"
                         alignItems='center'
                     >
-                        <DetailedCard data={item} type='drug' title={item.dragHebName} subheader={item.dragEnName} image={item.images} body={item.secondarySymptom} expandData={item} prescription={item.prescription} searchGeneric={search} setGenericSearchValue={setGenericSearchValue}/>
+                        <DetailedCard data={item} type='drug' title={item.dragHebName} subheader={item.dragEnName} image={item.images} body={item.secondarySymptom} expandData={item} prescription={item.prescription} setGenericSearchValue={setGenericSearchValue} triggerSearch={setTriggerGenericSearch}/>
                     </Box>
             ))}
             {HasMore && (
