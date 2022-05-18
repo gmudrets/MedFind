@@ -5,9 +5,6 @@ import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
 
-
-//const persistedReducer = persistReducer(persistConfig,rootReducer);
-
 function configureReduxStore() {
   const store = configureStore({
     reducer: rootReducer,
