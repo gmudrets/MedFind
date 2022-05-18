@@ -83,9 +83,13 @@ export default function DetailedCard(props) {
         return data;
     }
 
+    const userDetails = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+
     const getBrochure = async (drugRegNum) => {
         setBrochureLoading(true);
-        let data = await getRequest(ServerConsts.GET_BROCHURE, { "drugRegNum" : drugRegNum});
+        let data = await getRequest(userDetails.stsTokenManager.accessToken,
+            ServerConsts.GET_BROCHURE,
+            { "drugRegNum" : drugRegNum});
         let url = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
 
         const link = document.createElement("a");
