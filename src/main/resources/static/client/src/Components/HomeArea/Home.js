@@ -44,7 +44,7 @@ function Home() {
   const [ noResultsFound, setNoResultsFound ] = useState(false);
 
 
-    useEffect(() => {
+  useEffect(() => {
     if (username === ''){
         navigate("/login");
     }
@@ -57,12 +57,12 @@ function Home() {
     }
   }, [triggerSearch]);
 
-    useEffect(() => {
-        if (triggerGenericSearch && genericSearchValue !== null){
-            search(true, true);
-            setTriggerGenericSearch(!triggerGenericSearch);
-        }
-    }, [triggerGenericSearch]);
+  useEffect(() => {
+    if (triggerGenericSearch && genericSearchValue !== null){
+        search(true, true);
+        setTriggerGenericSearch(!triggerGenericSearch);
+    }
+  }, [triggerGenericSearch]);
 
   const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
                       dragHebName, health, images, prescription, secondarySymptom, brochure, activeComponentsCompareName) => {
@@ -108,11 +108,15 @@ function Home() {
     let data;
     if (generic){
         setIsGeneric(true);
-        data = await getRequest(ServerConsts.SEARCH_GENERIC, { "val" : genericSearchValue.activeIngredient, "name" : genericSearchValue.hebName, "pageIndex" : pageNum });
+        data = await getRequest(username.stsTokenManager.accessToken,
+        ServerConsts.SEARCH_GENERIC,
+            { "val" : genericSearchValue.activeIngredient, "name" : genericSearchValue.hebName, "pageIndex" : pageNum });
     }
     else{
         setIsGeneric(false);
-        data = await getRequest(ServerConsts.SEARCH_MEDICINE, { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
+        data = await getRequest(username.stsTokenManager.accessToken,
+            ServerConsts.SEARCH_MEDICINE,
+            { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
     }
     if (data["results"].length === 0){
         setNoResultsFound(true);

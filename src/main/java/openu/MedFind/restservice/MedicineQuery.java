@@ -82,9 +82,14 @@ public class MedicineQuery {
     }
 
     @GetMapping("/api/SearchGeneric")
-    public MedicineResults SearchGeneric(@RequestParam String val,
+    public MedicineResults SearchGeneric(@RequestHeader(name = "idToken", required = true) String idToken,
+                                         @RequestParam String val,
                                          @RequestParam String name,
-                                         @RequestParam int pageIndex) throws JsonProcessingException {
+                                         @RequestParam int pageIndex) throws JsonProcessingException, TokenException {
+
+        if(!FirebaseValidator.isIdTokenValid(idToken)){
+            throw new TokenException("User not found.");
+        }
 
         String response = webClientRestCall(
                 HEALTH_MINISTRY_SITE,
