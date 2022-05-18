@@ -19,6 +19,9 @@ import {TableCell} from "@mui/material";
 import TableRow from "@mui/material/TableRow";
 import Table from "@mui/material/Table";
 import {ThemeProvider} from "@emotion/react";
+import {useSelector} from "react-redux";
+import {getSafe} from "../../../Utils/Utils";
+import * as STATE_PATHS from "../../../Consts/StatePaths";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -77,9 +80,13 @@ export default function DetailedCard(props) {
         return data;
     }
 
+    const userDetails = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+
     const getBrochure = async (drugRegNum) => {
         setBrochureLoading(true);
-        let data = await getRequest(ServerConsts.GET_BROCHURE, { "drugRegNum" : drugRegNum});
+        let data = await getRequest(userDetails.stsTokenManager.accessToken,
+            ServerConsts.GET_BROCHURE,
+            { "drugRegNum" : drugRegNum});
         let url = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
 
         const link = document.createElement("a");
