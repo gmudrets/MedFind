@@ -10,12 +10,12 @@ import {Stack} from "@mui/material";
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import TransitionsModal from "../UI/Modal/Modal";
 import Webcam from "react-webcam";
-import Box from "@mui/material/Box";
+import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png'
 
 
 export default function ProfilePicturePicker(props) {
     const fileInput = createRef();
-    const [img, setImg] = React.useState('https://images.unsplash.com/photo-1551963831-b3b1ca40c98e');//TODO
+    const [img, setImg] = React.useState(defualtProfPic);
     const [pointerInUpload, setPointerInUpload] = React.useState(false);
     const [pointerInTake, setPointerInTake] = React.useState(false);
     const [cameraOpen, setCameraOpen] = React.useState(false);
