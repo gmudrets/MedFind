@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {Actions} from "../../../Redux/UI"
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
@@ -15,18 +15,36 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import ShareIcon from '@mui/icons-material/Share';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SearchIcon from '@mui/icons-material/Search';
+import {ListItemButton} from "@mui/material";
+import {useNavigate} from "react-router-dom";
+import * as STATE_PATHS from "../../../Consts/StatePaths";
+import {getSafe} from "../../../Utils/Utils";
 
-export default function MenuDrawer(props) {
+export default function MenuDrawer() {
+
+  const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
 
   const drawerWidth = 250;
   const anchor='right';
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    setIsMenuOpen(props.isMenuOpen);
+  const toggleMenu = () => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    if (!isMenuOpen) {
+      dispatch(Actions.openMenu());
+    }
+    else {
+      dispatch(Actions.closeMenu());
+    }
+  };
 
-  }, [props.isMenuOpen])
-  
+  const handleSettingClick = ()=>{
+    navigate("/settings");
+  }
+
   const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -40,43 +58,43 @@ export default function MenuDrawer(props) {
     <Box
       sx={{ width: drawerWidth }}
       role="presentation"
-      onClick={props.toggleMenu()}
-      onKeyDown={props.toggleMenu()}
+      onClick={toggleMenu()}
+      onKeyDown={toggleMenu()}
     >
       <List>
-          <ListItem button key='search'>
+          <ListItemButton key='search'>
             <ListItemIcon>
               <SearchIcon />
             </ListItemIcon>
             <ListItemText primary='חיפוש תרופה' />
-          </ListItem>
-          <ListItem button key='myMeds'>
+          </ListItemButton>
+          <ListItemButton key='myMeds'>
             <ListItemIcon>
               <MedicationIcon/>
             </ListItemIcon>
             <ListItemText primary='התרופות שלי' />
-          </ListItem>
-          <ListItem button key='myShares'>
+          </ListItemButton>
+          <ListItemButton key='myShares'>
             <ListItemIcon>
               <ShareIcon/>
             </ListItemIcon>
             <ListItemText primary='השיתופים שלי' />
-          </ListItem>
+          </ListItemButton>
       </List>
       <Divider />
       <List>
-          <ListItem button key='reminders'>
+          <ListItemButton key='reminders'>
             <ListItemIcon>
               <NotificationsActiveIcon />
             </ListItemIcon>
             <ListItemText primary='תזכורות' />
-          </ListItem>
-          <ListItem button key='settings'>
+          </ListItemButton>
+          <ListItemButton onClick= {handleSettingClick} key='settings'>
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
             <ListItemText primary='הגדרות' />
-          </ListItem>
+          </ListItemButton>
       </List>
     </Box>
   );
@@ -87,10 +105,10 @@ export default function MenuDrawer(props) {
           <Drawer
             anchor={anchor}
             open={isMenuOpen}
-            onClose={props.toggleMenu()}
+            onClose={toggleMenu()}
           >
             <DrawerHeader>
-              <IconButton onClick={props.toggleMenu()}>
+              <IconButton onClick={toggleMenu()}>
                 {anchor === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </IconButton>
             </DrawerHeader>

@@ -11,16 +11,17 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import logo from '../../../Assets/Images/logo.png'
-import MenuDrawer from '../Menu/MenuDrawer';
 import { getSafe } from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
+import {Actions} from "../../../Redux/UI";
 
 function Header() {
 //   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [auth, setAuth] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+  const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
   const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
   useEffect(() => {
@@ -47,7 +48,12 @@ function Header() {
       return;
     }
 
-    setIsMenuOpen(!isMenuOpen);
+    if (!isMenuOpen) {
+      dispatch(Actions.openMenu());
+    }
+    else {
+      dispatch(Actions.closeMenu())
+    }
   };
 
   return (
@@ -63,11 +69,6 @@ function Header() {
             sx={{ mr: 2 }}
           >
             <MenuIcon />
-            <MenuDrawer
-                toggleMenu={toggleMenu}
-                isMenuOpen={isMenuOpen}
-            >
-            </MenuDrawer>
           </IconButton>
           <Typography component="div" sx={{ flexGrow: 1 }}>
             <img src={logo} className="Logo" alt="logo" style={{ maxWidth: '115px' }} />
