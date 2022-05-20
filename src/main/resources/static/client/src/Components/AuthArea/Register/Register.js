@@ -151,7 +151,7 @@ function Register() {
       setPasswordError("סיסמה צריכה להכיל לפחות 8 תווים");
       formValidationsPassed = false;
     }
-    else if(!validations.passwordValid(data.get("password"))){
+    else if(validations.passwordValid(data.get("password"))){
       setPasswordError("סיסמה יכולה להכיל תווים, ספרות וסמלים מיוחדים בלבד");
       formValidationsPassed = false;
     }
