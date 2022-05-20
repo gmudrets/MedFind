@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from "react-router-dom";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -20,19 +19,19 @@ function Header() {
   const dispatch = useDispatch();
   const [auth, setAuth] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
-  const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+  const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
   const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
   const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
   useEffect(() => {
-    if (username === ''){
+    if (currentUser === ''){
         setAuth(false);
     }
     else {
         setAuth(true);
     }
   
-  }, [username])
+  }, [currentUser])
 
   const handleUserMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -60,7 +59,7 @@ function Header() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="grey">
         <Toolbar>
-          <IconButton
+          {auth && <IconButton
             size="large"
             edge="start"
             color="inherit"
@@ -69,7 +68,7 @@ function Header() {
             sx={{ mr: 2 }}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton>}
           <Typography component="div" sx={{ flexGrow: 1 }}>
             <img src={logo} className="Logo" alt="logo" style={{ maxWidth: '115px' }} />
           </Typography>

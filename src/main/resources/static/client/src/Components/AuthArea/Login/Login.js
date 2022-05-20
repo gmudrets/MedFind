@@ -20,13 +20,37 @@ import * as STATE_PATHS from '../../../Consts/StatePaths'
 import { auth } from "../../../Configs/FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth"
 import {Alert, Snackbar} from "@mui/material";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import createCache from "@emotion/cache";
+import {prefixer} from "stylis";
+import rtlPlugin from "stylis-plugin-rtl";
+import {CacheProvider} from "@emotion/react";
 
 
 function Login() {
   const theme = createTheme({direction: 'rtl'});
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const cacheRtl = createCache({
+      key: 'muirtl',
+      stylisPlugins: [prefixer, rtlPlugin],
+  });
+
+  function RTL(props) {
+      return <CacheProvider value={cacheRtl}>{props.children}</CacheProvider>;
+  }
+
+
+  const [isSignedInAlready, setIsSignedinAlready] = useState(true);
+
+  const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+
+    useEffect(() => {
+        if (currentUser !== '' && isSignedInAlready){
+            navigate("/");
+        }
+    }, [currentUser]);
 
   const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
   const [signInErrorMessage, setSignInErrorMessage] = useState(false);
@@ -39,8 +63,6 @@ function Login() {
     setSignInErrorMessage(false);
   }
 
-  const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
-
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -51,6 +73,7 @@ function Login() {
         email,
         password)
         .then(userCredential => {
+          setIsSignedinAlready(false);
           dispatch(Actions.requestUserLogin(userCredential.user));
           setSignInSuccessMessage(true);
         }).catch(error => {
@@ -66,7 +89,9 @@ function Login() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+      <CacheProvider value={cacheRtl}>
+
+      <ThemeProvider theme={theme}>
 
       <Snackbar open={signInSuccessMessage}
                 autoHideDuration={1500}
@@ -157,6 +182,7 @@ function Login() {
         </Box>
       </Container>
     </ThemeProvider>
+    </CacheProvider>
   );
 }
 
