@@ -18,7 +18,7 @@ import * as validations from "../Validators/Validators";
 import {Snackbar, Alert} from "@mui/material";
 import { auth, db } from "../../../Configs/FirebaseConfig";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, setDoc,doc } from "firebase/firestore";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../../Utils/Utils";
 import * as STATE_PATHS from "../../../Consts/StatePaths";
@@ -81,7 +81,7 @@ function Register() {
         data.get("password").toString())
         .then(async (userCredential) => {
           try{
-              await addDoc(collection(db,"users"),JSON.parse(JSON.stringify({
+            await setDoc(doc(collection(db,"users"),userCredential.user.uid),JSON.parse(JSON.stringify({
               uid: userCredential.user.uid,
               email: data.get("email").toString(),
               firstName: data.get("firstName").toString(),
@@ -89,8 +89,7 @@ function Register() {
               userType: data.get("userType").toString(),
               telephone: data.get("telephone").toString(),
               city: data.get("city").toString(),
-              allowExtraEmails: true
-            }))).then();
+              allowExtraEmails: true}))).then();
           }
           catch(error) {
             console.log(error);
