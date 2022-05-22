@@ -28,7 +28,7 @@ import Typography from "@mui/material/Typography";
 function Home() {
   const theme = createTheme({direction: 'rtl'});
   const navigate = useNavigate();
-  const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+  const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
 
   const [ items, setItems ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
@@ -43,12 +43,11 @@ function Home() {
   const [ genericSearchValue, setGenericSearchValue ] = useState(null)
   const [ noResultsFound, setNoResultsFound ] = useState(false);
 
-
   useEffect(() => {
-    if (username === ''){
+    if (currentUser === ''){
         navigate("/login");
     }
-  }, [username]);
+  }, [currentUser]);
 
   useEffect(() => {
     if (triggerSearch && searchValue !== ''){
@@ -108,13 +107,13 @@ function Home() {
     let data;
     if (generic){
         setIsGeneric(true);
-        data = await getRequest(username.stsTokenManager.accessToken,
+        data = await getRequest(currentUser.stsTokenManager.accessToken,
         ServerConsts.SEARCH_GENERIC,
             { "val" : genericSearchValue.activeIngredient, "name" : genericSearchValue.hebName, "pageIndex" : pageNum });
     }
     else{
         setIsGeneric(false);
-        data = await getRequest(username.stsTokenManager.accessToken,
+        data = await getRequest(currentUser.stsTokenManager.accessToken,
             ServerConsts.SEARCH_MEDICINE,
             { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
     }

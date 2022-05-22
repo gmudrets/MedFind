@@ -7,6 +7,7 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -41,8 +42,16 @@ export default function MenuDrawer() {
     }
   };
 
-  const handleSettingClick = ()=>{
+  const handleSettingClick = () => {
     navigate("/settings");
+  }
+
+  const handleSearchClick = () => {
+    navigate("/");
+  }
+
+  const handleLogoutClick = () => {
+    navigate("/logout");
   }
 
   const DrawerHeader = styled('div')(({ theme }) => ({
@@ -62,7 +71,7 @@ export default function MenuDrawer() {
       onKeyDown={toggleMenu()}
     >
       <List>
-          <ListItemButton key='search'>
+          <ListItemButton key='search' onClick={handleSearchClick}>
             <ListItemIcon>
               <SearchIcon />
             </ListItemIcon>
@@ -96,6 +105,16 @@ export default function MenuDrawer() {
             <ListItemText primary='הגדרות' />
           </ListItemButton>
       </List>
+      <Divider />
+      <List>
+        <ListItemButton key='logout' onClick={handleLogoutClick}>
+          <ListItemIcon>
+            <LogoutIcon/>
+          </ListItemIcon>
+          <ListItemText primary='התנתק מהמערכת' />
+        </ListItemButton>
+      </List>
+
     </Box>
   );
 

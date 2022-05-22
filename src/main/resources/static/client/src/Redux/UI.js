@@ -1,6 +1,6 @@
 import initialState from "./InitialState"
 export const REQUEST_MENU_OPEN = "@@ui/REQUEST_MENU_OPEN"
-export const REQUEST_MENU_CLOSE = "@@auth/REQUEST_MENU_CLOSE"
+export const REQUEST_MENU_CLOSE = "@@ui/REQUEST_MENU_CLOSE"
 
 export default function uiReducer(state = initialState.ui, action = {}) {
     switch(action.type) {
