@@ -28,6 +28,9 @@ import PasswordIcon from '@mui/icons-material/Password';
 import ClearIcon from '@mui/icons-material/Clear';
 import TextField from '@mui/material/TextField';
 import {MenuItem} from '@mui/material';
+import {db} from "../../Configs/FirebaseConfig.js"
+import {getAuth, onAuthStateChanged} from "firebase/auth";
+import {doc, setDoc} from "firebase/firestore";
 
 
 // Create rtl cache
@@ -41,6 +44,7 @@ function RTL(props) {
 }
 
 export default function Settings() {
+
     const userTypeArr = [
         'משתמש רגיל',
         'חבר צוות רפואי',
@@ -52,14 +56,28 @@ export default function Settings() {
     const lastName = "def"//TODO
     const city = "Tel Aviv"//TODO
     const initUserType = userTypeArr[0];//TODO
-    const initialyValidatedtionList= ['משתמש רגיל'];//TODO List of all the validation for the use
+    const initialyValidatedtionList = ['משתמש רגיל'];//TODO List of all the validation for the use
     const profilePictureRef = useRef();
     const secondPasswordRef = useRef();
     const goBackButtonRef = useRef();
     const navigate = useNavigate();
+    const auth = getAuth();
+    let uid = auth.currentUser.uid;
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
+            uid = user.uid;
+            // ...
+        } else {
+            // User is signed out
+            // ...
+        }
+    });
+
 
     const theme = createTheme({direction: 'rtl'});
-    const username = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+    const uID = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     const [keyToRerenderPass2, forceUpdatePass2] = useReducer(x => x + 1, 0);
     const [keyToRerenderShowPass, forceUpdateShowPass] = useReducer(x => x + 1, 0);
     const [newPasswordEditMode, setNewPasswordEditMode] = React.useState(false);
@@ -71,7 +89,7 @@ export default function Settings() {
     const [goBackDialogOpen, setGoBackDialogOpen] = React.useState(false);
     const [curPassword, setCurPassword] = React.useState(password);
     const [userType, setUserType] = React.useState(userTypeArr[0]);
-    const [userTypeValidationList,setUserTypeValidated] = React.useState(initialyValidatedtionList);
+    const [userTypeValidationList, setUserTypeValidated] = React.useState(initialyValidatedtionList);
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     useEffect(() => {
@@ -96,26 +114,31 @@ export default function Settings() {
 
 
     }
+    const setField = (a, setTo) => {
+        const fieldRef = doc(db, 'users', uid);
+        const data = {};
+        data[a] = setTo;
+        const res = setDoc(fieldRef, data, {merge: true});
+    }
     const handleFirstNameSubmit = (s) => {
-        //TODO
+        setField('firstName', s)
         return true;
     }
     const handleLastNameSubmit = (s) => {
-        //TODO
+        setField('lastName', s)
         return true;
     }
     const handleMailSubmit = (s) => {
-        //TODO
+        setField('email', s)
         return true;
 
     }
     const handlePhoneNumSubmit = (s) => {
-        //TODO
+        setField('phoneNum', s)
         return true;
-
     }
     const handleCitySubmit = (s) => {
-        //TODO
+        setField('city', s)
         return true;
 
     }
@@ -197,7 +220,7 @@ export default function Settings() {
         return true;
     }
     const handleNewProfPic = (src) => {
-        console.log(fieldsOnEditMode);
+        console.log(uid);
         setSecondPasswordFocus(prevState => !prevState);
         return true;
     }
@@ -300,7 +323,7 @@ export default function Settings() {
                                 name="returns"
                                 value={userType}
                                 onChange={handleUserTypeChange}
-                                helperText={userTypeValidationList.includes(userType)?" ":"מחכה לאישור מנהל" }
+                                helperText={userTypeValidationList.includes(userType) ? " " : "מחכה לאישור מנהל"}
                             >
                                 {userTypeArr.map((type) => (
                                     <MenuItem key={type} value={type}>
