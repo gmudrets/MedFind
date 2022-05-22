@@ -77,19 +77,6 @@ function Register() {
         data.get("password").toString())
         .then(async (userCredential) => {
           try{
-            /*
-              await addDoc(collection(db,"users"),JSON.parse(JSON.stringify({
-              uid: userCredential.user.uid,
-              email: data.get("email").toString(),
-              firstName: data.get("firstName").toString(),
-              lastName: data.get("lastName").toString(),
-              userType: data.get("userType").toString(),
-              telephone: data.get("telephone").toString(),
-              city: data.get("city").toString(),
-              allowExtraEmails: true
-            }))).then();
-              */
-
             await setDoc(doc(collection(db,"users"), userCredential.user.uid), JSON.parse(JSON.stringify({
               uid: userCredential.user.uid,
               email: data.get("email").toString(),
@@ -301,7 +288,7 @@ function Register() {
                       name="city"
                       autoComplete="city"
                       error={cityError.length !== 0}
-                      helperText="שדה אופציונאלי לצורך שיתוף תרופות"
+                      helperText="אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות"
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -312,7 +299,7 @@ function Register() {
                       name="telephone"
                       autoComplete="telephone"
                       error={telephoneError.length !== 0}
-                      helperText="שדה אופציונאלי לצורך שיתוף תרופות"
+                      helperText="אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות"
                   />
                 </Grid>
                 <Grid item xs={12}>
