@@ -28,6 +28,7 @@ public class MedicineQuery {
     private static final String SEARCH_BY_NAME_ENDPOINT = "/SearchByName";
     private static final String SEARCH_GENERIC = "/SearchGeneric";
     private static final String GET_SPECIFIC_DRUG_ENDPOINT = "/GetSpecificDrug";
+    private static final String AUTOCOMPLETE = "/SearchBoxAutocomplete";
 
 
     private <T> String webClientRestCall(String url, String uri, Mono<T> body, Class<T> clazz) {
@@ -99,6 +100,17 @@ public class MedicineQuery {
         );
         String results = "{\"results\":" +response+ "}";
         return new ObjectMapper().readValue(results, MedicineResults.class);
+    }
+
+    @GetMapping("/api/Autocomplete")
+    public String Autocomplete(@RequestParam String val) throws JsonProcessingException {
+        String response = webClientRestCall(
+                HEALTH_MINISTRY_SITE,
+                AUTOCOMPLETE,
+                Mono.just(new RequestAutocomplete(val, 1, 1)),
+                RequestAutocomplete.class
+        );
+        return response;
     }
 }
 
