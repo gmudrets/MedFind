@@ -18,7 +18,7 @@ import * as validations from "../Validators/Validators";
 import {Snackbar, Alert} from "@mui/material";
 import { auth, db } from "../../../Configs/FirebaseConfig";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, setDoc, doc } from "firebase/firestore";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../../Utils/Utils";
 import * as STATE_PATHS from "../../../Consts/StatePaths";
@@ -45,10 +45,6 @@ function Register() {
     key: 'muirtl',
     stylisPlugins: [prefixer, rtlPlugin],
   });
-
-  function RTL(props) {
-    return <CacheProvider value={cacheRtl}>{props.children}</CacheProvider>;
-  }
 
   const types = [
     'משתמש רגיל',
@@ -81,7 +77,20 @@ function Register() {
         data.get("password").toString())
         .then(async (userCredential) => {
           try{
+            /*
               await addDoc(collection(db,"users"),JSON.parse(JSON.stringify({
+              uid: userCredential.user.uid,
+              email: data.get("email").toString(),
+              firstName: data.get("firstName").toString(),
+              lastName: data.get("lastName").toString(),
+              userType: data.get("userType").toString(),
+              telephone: data.get("telephone").toString(),
+              city: data.get("city").toString(),
+              allowExtraEmails: true
+            }))).then();
+              */
+
+            await setDoc(doc(collection(db,"users"), userCredential.user.uid), JSON.parse(JSON.stringify({
               uid: userCredential.user.uid,
               email: data.get("email").toString(),
               firstName: data.get("firstName").toString(),
@@ -95,9 +104,9 @@ function Register() {
           catch(error) {
             console.log(error);
           }
-          signOut(auth).then(); // registration auto sign-in prevention
+          signOut(auth).then();
           setRegisterSuccessMessage(true);
-        }).catch(error =>{ // server email and password validations' errors
+        }).catch(error =>{
           if(error.code === 'auth/email-already-in-use'){
             setEmailError("כתובת המייל שבחרת כבר קיימת במערכת. אנא הזן כתובת אחרת או עבור להתחברות.");
             setRegisterErrorMessage(true);
@@ -154,20 +163,12 @@ function Register() {
       formValidationsPassed = false;
     }
 
-    if(validations.isFieldEmpty(data.get("telephone"))){
-      setTelephoneError("נא הזן טלפון");
-      formValidationsPassed = false;
-    }
-    else if(validations.isFieldContainsOnlyDigits(data.get("telephone"))){
+    if(validations.isFieldContainsOnlyDigits(data.get("telephone"))){
       setTelephoneError("מספר טלפון יכול להכיל ספרות בלבד");
       formValidationsPassed = false;
     }
 
-    if(validations.isFieldEmpty(data.get("city"))){
-      setCityError("נא הזן עיר מגורים");
-      formValidationsPassed = false;
-    }
-    else if(validations.isFieldContainsOnlyLetters(data.get("city"))){
+    if(validations.isFieldContainsOnlyLetters(data.get("city"))){
       setCityError("עיר מגורים יכולה להכיל אותיות בעברית בלבד");
       formValidationsPassed = false;
     }
@@ -205,7 +206,7 @@ function Register() {
                   anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
         >
           <Alert severity="success">
-            נרשמת בהצלחה ! מיד תועבר/י להתחברות
+          נרשמת בהצלחה! מיד תועבר/י להתחברות
           </Alert>
         </Snackbar>
 
@@ -294,26 +295,24 @@ function Register() {
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
-                      required
                       fullWidth
                       id="city"
                       label="עיר מגורים"
                       name="city"
                       autoComplete="city"
                       error={cityError.length !== 0}
-                      helperText={cityError.length !== 0 ? cityError : null}
+                      helperText="שדה אופציונאלי לצורך שיתוף תרופות"
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
-                      required
                       fullWidth
                       id="telephone"
                       label="טלפון"
                       name="telephone"
                       autoComplete="telephone"
                       error={telephoneError.length !== 0}
-                      helperText={telephoneError.length !== 0 ? telephoneError : null}
+                      helperText="שדה אופציונאלי לצורך שיתוף תרופות"
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -321,7 +320,7 @@ function Register() {
                     required
                     fullWidth
                     name="password"
-                    label="סיסמה"
+                    label="בחר סיסמה"
                     type="password"
                     id="password"
                     autoComplete="new-password"

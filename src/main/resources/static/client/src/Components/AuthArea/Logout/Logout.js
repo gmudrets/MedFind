@@ -35,7 +35,7 @@ function Logout() {
 					  anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
 			>
 				<Alert severity="success">
-					התנתקת בהצלחה מהמערכת !
+				התנתקת מהמערכת !
 				</Alert>
 			</Snackbar>
 		</ThemeProvider>

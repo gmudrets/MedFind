@@ -37,12 +37,7 @@ function Login() {
       stylisPlugins: [prefixer, rtlPlugin],
   });
 
-  function RTL(props) {
-      return <CacheProvider value={cacheRtl}>{props.children}</CacheProvider>;
-  }
-
-
-  const [isSignedInAlready, setIsSignedinAlready] = useState(true);
+  const [isSignedInAlready, setIsSignedInAlready] = useState(true);
 
   const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
 
@@ -73,7 +68,7 @@ function Login() {
         email,
         password)
         .then(userCredential => {
-          setIsSignedinAlready(false);
+          setIsSignedInAlready(false);
           dispatch(Actions.requestUserLogin(userCredential.user));
           setSignInSuccessMessage(true);
         }).catch(error => {
@@ -99,7 +94,7 @@ function Login() {
                 anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
       >
         <Alert severity="success">
-          התחברת בהצלחה ! מיד תעבור לדף הבית !
+          התחברת בהצלחה, מיד תעבור לדף הבית!
         </Alert>
       </Snackbar>
 
