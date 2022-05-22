@@ -24,6 +24,7 @@ import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoadingButton from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
+import { Autocomplete } from '@mui/material'
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -32,6 +33,7 @@ function Home() {
 
   const [ items, setItems ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
+  const [ autoCompleteLines, setAutocompleteLines ] = useState([]);
   const [ scannerOpen, setScannerOpen ] = useState(false);
   const [ triggerSearch, setTriggerSearch ] = useState(false);
   const [ triggerGenericSearch, setTriggerGenericSearch ] = useState(false);
@@ -125,6 +127,22 @@ function Home() {
     populateData(data);
   }
 
+  const autocomplete = async (newValue) => {
+      let data;
+      if (newValue===""){
+          setAutocompleteLines([]);
+      }
+      else{
+          data = await getRequest("", ServerConsts.AUTOCOMPLETE, { "val" : newValue });
+          if ("results" in data){
+            setAutocompleteLines(data.results);
+          }
+          else{
+            setAutocompleteLines([]);
+          }
+      }
+  }
+
     const populateData = (data) => {
         let rows = [];
         data["results"].forEach(
@@ -190,12 +208,23 @@ function Home() {
                 <IconButton sx={{ p: '10px' }} aria-label="menu">
                     <MenuIcon/>
                 </IconButton>
-                <InputBase
+                <Autocomplete
                     sx={{ ml: 1, flex: 1 }}
-                    placeholder="חיפוש תרופה"
-                    inputProps={{ 'aria-label': 'חיפוש תרופה' }}
-                    onChange={handleSearchValueChange}
-                    value={searchValue}
+                    freeSolo
+                    onInputChange={(event, newInputValue) => {
+                        setSearchValue(newInputValue);
+                        autocomplete(newInputValue);
+                    }}
+                    options={autoCompleteLines}
+                    renderInput={(params) => {
+                        const {InputLabelProps,InputProps,...rest} = params;
+                        return (
+                        <InputBase
+                            {...params.InputProps} {...rest}
+                            placeholder="חיפוש תרופה"
+                            value={searchValue}
+                        />
+                    )}}
                     onKeyDown={
                         (e) => {
                             if (e.key === 'Enter') {
