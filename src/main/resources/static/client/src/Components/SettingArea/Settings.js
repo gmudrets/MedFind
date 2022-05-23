@@ -90,6 +90,22 @@ export default function Settings() {
     const [curPassword, setCurPassword] = React.useState(password);
     const [userType, setUserType] = React.useState(userTypeArr[0]);
     const [userTypeValidationList, setUserTypeValidated] = React.useState(initialyValidatedtionList);
+    const [mailNotification,setMailNotification] = React.useState(false);
+    
+    const setField = (field, setTo) => {
+        const fieldRef = doc(db, 'users', uid);
+        const data = {};
+        data[field] = setTo;
+        const res = setDoc(fieldRef, data, {merge: true});
+    }
+    const handleMailNotificationChange = (event)=>{
+            setField('mailNotification',event.target.checked);
+    }
+    const handleBrowserNotificationChange = (event) => {
+        setField('browserNotification',event.target.checked);
+    }
+    const handlePhoneNotificationChange = (event) => {
+        setField('phoneNotification',event.target.checked);
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     useEffect(() => {
@@ -97,9 +113,18 @@ export default function Settings() {
             navigate("/login");
         }
     }, [currentUser]);
+    }
+    const handleTakingReminderChange = (event) => {
+        setField('takingReminder',event.target.checked);
 
+    }
+    const handleExpirationReminderChange = (event) => {
+        setField('expirationReminder',event.target.checked);
+
+    }
     const handleUserTypeChange = (event) => {
         setUserType(event.target.value);
+        setField('userType',event.target.value);
         //TODO open change user type form in case that not normal user
     }
     const startEditPasswordMode = () => {
@@ -114,12 +139,7 @@ export default function Settings() {
 
 
     }
-    const setField = (a, setTo) => {
-        const fieldRef = doc(db, 'users', uid);
-        const data = {};
-        data[a] = setTo;
-        const res = setDoc(fieldRef, data, {merge: true});
-    }
+
     const handleFirstNameSubmit = (s) => {
         setField('firstName', s)
         return true;
@@ -151,6 +171,9 @@ export default function Settings() {
         } else {
             return false;
         }
+    }
+    const isUserTypeValidated = () => {
+        return userTypeValidationList.includes(userType);
     }
     const handleFirstPasswordSubmit = (s) => {
         forceUpdatePass2();
@@ -323,7 +346,7 @@ export default function Settings() {
                                 name="returns"
                                 value={userType}
                                 onChange={handleUserTypeChange}
-                                helperText={userTypeValidationList.includes(userType) ? " " : "מחכה לאישור מנהל"}
+                                helperText={isUserTypeValidated() ? " " : "מחכה לאישור מנהל"}
                             >
                                 {userTypeArr.map((type) => (
                                     <MenuItem key={type} value={type}>
@@ -407,14 +430,14 @@ export default function Settings() {
                         <Grid item container xs={12} sx={{textAlign: "left"}}>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="מייל"/>
+                                <SettingsCheckBox label="מייל" onChange = {handleMailNotificationChange} />
                             </Grid>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="טלפון"/>
+                                <SettingsCheckBox label="טלפון" onChange = {handlePhoneNotificationChange}/>
                             </Grid>
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="דפדפן"/>
+                                <SettingsCheckBox label="דפדפן" onChange = {handleBrowserNotificationChange}/>
                             </Grid>
 
                         </Grid>
@@ -428,10 +451,11 @@ export default function Settings() {
                         <Grid item container xs={12} sx={{textAlign: "left"}}>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="תזכורת נטילת תרופה"/>
+                                <SettingsCheckBox label="תזכורת נטילת תרופה" onChange = {handleTakingReminderChange}
+                                />
                             </Grid>
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="סיום תוקף"/>
+                                <SettingsCheckBox label="סיום תוקף" onChange = {handleExpirationReminderChange}/>
                             </Grid>
 
                         </Grid>
