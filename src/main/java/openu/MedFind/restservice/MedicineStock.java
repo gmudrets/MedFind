@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.Min;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @CrossOrigin(origins = "https://localhost:3000")
 @RestController
@@ -112,5 +113,18 @@ public class MedicineStock {
         return medicineEntryRepository.findAllByUuid(uuid);
     }
 
+    @GetMapping("/api/GetAllSharedStockMedicine")
+    public List<MedicineEntry> GetAllSharedStockMedicine(@RequestHeader(name = "idToken", required = false) String idToken) throws TokenException {
+        try {
+            if (!FirebaseValidator.isDoctor(idToken)) {
+                throw new TokenException("User is not A doctor");
+            }
+        }
+        catch (FirebaseAuthException e) {
+            throw new TokenException("User not found.", e);
+        }
+
+        return medicineEntryRepository.findAllByShared(true);
+    }
 
 }

@@ -15,4 +15,5 @@ public interface MedicineEntryRepository extends CrudRepository<MedicineEntry, I
 
     List<MedicineEntry> findAllByUuid(String uuid);
 
+    List<MedicineEntry> findAllByShared(boolean shared);
 }
