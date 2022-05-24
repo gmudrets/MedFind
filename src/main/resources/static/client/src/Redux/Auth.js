@@ -16,7 +16,6 @@ export default function authReducer(state = initialState.auth, action = {}) {
         ...state,
         isLoading: true,
         userDetails: action.userDetails,
-        userProfile: action.userProfile
       }
     case REQUEST_LOGIN_FAILURE:
       return {
@@ -41,8 +40,8 @@ export default function authReducer(state = initialState.auth, action = {}) {
 }
 
 export const Actions = {}
-Actions.requestUserLogin = (userDetails,userProfile) => {
-  return { type: REQUEST_LOGIN, userDetails: userDetails, userProfile: userProfile }
+Actions.requestUserLogin = (userDetails) => {
+  return { type: REQUEST_LOGIN, userDetails: userDetails }
 }
 Actions.logUserOut = () => {
   return { type: REQUEST_LOG_USER_OUT }

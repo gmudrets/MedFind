@@ -12,7 +12,7 @@ import rtlPlugin from 'stylis-plugin-rtl';
 import createCache from '@emotion/cache';
 import {Button, Dialog} from "@mui/material";
 import EditableTextWithButtons from "../UI/EditableTextWithButtons";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import Typography from "@mui/material/Typography";
 import SettingsCheckBox from "../UI/SettingsCheckBox";
@@ -31,7 +31,7 @@ import {MenuItem} from '@mui/material';
 import {db} from "../../Configs/FirebaseConfig.js"
 import {getAuth, onAuthStateChanged} from "firebase/auth";
 import {doc, setDoc} from "firebase/firestore";
-
+import {Actions} from "../../Redux/UserData";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -63,6 +63,8 @@ export default function Settings() {
     const navigate = useNavigate();
     const auth = getAuth();
     let uid = auth.currentUser.uid;
+    const dispatch = useDispatch();
+
     onAuthStateChanged(auth, (user) => {
         if (user) {
             // User is signed in, see docs for a list of available properties
@@ -97,6 +99,8 @@ export default function Settings() {
         const data = {};
         data[field] = setTo;
         const res = setDoc(fieldRef, data, {merge: true});
+        dispatch(Actions.changeField(field,setTo));
+
     }
     const handleMailNotificationChange = (event)=>{
             setField('mailNotification',event.target.checked);

@@ -14,7 +14,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useSelector, useDispatch} from 'react-redux';
-import {Actions} from "../../../Redux/Auth";
+import * as AUTH from "../../../Redux/Auth";
+import * as USER_DATA from "../../../Redux/UserData";
 import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
 import { auth } from "../../../Configs/FirebaseConfig";
@@ -75,6 +76,7 @@ function Login() {
         .then(userCredential => {
           setIsSignedInAlready(false);
           dispatch(Actions.requestUserLogin(userCredential.user));
+          dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()))
           setSignInSuccessMessage(true);
         }).catch(error => {
       console.log("error code: " + error.code + " and message: " + error.message);
