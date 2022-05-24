@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.Min;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @CrossOrigin(origins = "https://localhost:3000")
 @RestController
@@ -31,9 +30,12 @@ public class MedicineStock {
     @GetMapping("/api/AddMedicineToStock")
     public void AddMedicineToStock(@RequestHeader(name = "idToken", required = false) String idToken,
                                      @RequestParam String drugRegNum,
+                                     @RequestParam String hebName,
+                                     @RequestParam String engName,
                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date expiration,
                                      @RequestParam MedicineUnits units,
                                      @RequestParam @Min(1) int count,
+                                     @RequestParam double dosage,
                                      @RequestParam boolean shared) throws TokenException {
 
         String uuid;
@@ -46,9 +48,12 @@ public class MedicineStock {
 
         medicineEntryRepository.save(MedicineEntry.builder()
                 .regNum(drugRegNum)
+                .engName(engName)
+                .hebName(hebName)
                 .expiration(expiration)
-                .units(units)
+                .unitType(units)
                 .count(count)
+                .dosage(dosage)
                 .shared(shared)
                 .uuid(uuid)
                 .build());
@@ -77,7 +82,6 @@ public class MedicineStock {
     public void UpdateMedicineInStock(@RequestHeader(name = "idToken", required = false) String idToken,
                                    @RequestParam String drugRegNum,
                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date expiration,
-                                   @RequestParam MedicineUnits units,
                                    @RequestParam @Min(1) int count,
                                    @RequestParam boolean shared) throws TokenException {
 
@@ -93,7 +97,6 @@ public class MedicineStock {
 
         if(entry != null) {
             entry.setExpiration(expiration);
-            entry.setUnits(units);
             entry.setCount(count);
             entry.setShared(shared);
             medicineEntryRepository.save(entry);
