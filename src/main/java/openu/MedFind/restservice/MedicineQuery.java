@@ -58,7 +58,7 @@ public class MedicineQuery {
     }
 
     @GetMapping("/api/SearchGeneric")
-    public MedicineResults SearchGeneric(@RequestHeader(name = "idToken", required = true) String idToken,
+    public MedicineResults SearchGeneric(@RequestHeader(name = "idToken") String idToken,
                                          @RequestParam String val,
                                          @RequestParam String name,
                                          @RequestParam int pageIndex) throws JsonProcessingException, TokenException {
@@ -67,7 +67,7 @@ public class MedicineQuery {
             throw new TokenException("User not found.");
         }
 
-        String response = webClientRestCall(
+        String response = WebClientHelper.webClientRestCall(
                 HEALTH_MINISTRY_SITE,
                 SEARCH_GENERIC,
                 Mono.just(new RequestGenericMedicine(val, name, null, null, null, pageIndex, 1)),
@@ -79,13 +79,12 @@ public class MedicineQuery {
 
     @GetMapping("/api/Autocomplete")
     public String Autocomplete(@RequestParam String val) throws JsonProcessingException {
-        String response = webClientRestCall(
+        return WebClientHelper.webClientRestCall(
                 HEALTH_MINISTRY_SITE,
                 AUTOCOMPLETE,
                 Mono.just(new RequestAutocomplete(val, 1, 1)),
                 RequestAutocomplete.class
         );
-        return response;
     }
 }
 
