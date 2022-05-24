@@ -9,6 +9,14 @@ spring:
       static-locations: "classpath:/static/client/build/"
   mvc:
     static-path-pattern: "/**"
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://medfind.mysql.database.azure.com:3306/med_data?useSSL=true
+    username: medlink_super
+    password: Secret_Something
 
 server:
   ssl:
