@@ -19,6 +19,9 @@ import {TableCell} from "@mui/material";
 import TableRow from "@mui/material/TableRow";
 import Table from "@mui/material/Table";
 import {ThemeProvider} from "@emotion/react";
+import noPrescription from '../../../Assets/Images/no_perscription_logo.png';
+import needPrescription from '../../../Assets/Images/perscription_only_logo.png';
+import Link from "@mui/material/Link";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../../Utils/Utils";
 import * as STATE_PATHS from "../../../Consts/StatePaths";
@@ -42,6 +45,9 @@ export default function DetailedCard(props) {
         image,
         body,
         expandData,
+        prescription,
+        setGenericSearchValue,
+        triggerSearch,
     } = props;
     const theme = createTheme({direction: 'rtl'});
 
@@ -109,10 +115,16 @@ export default function DetailedCard(props) {
                     image={image}
                     alt="N/A"
                 />
-                <CardContent>
+                <CardContent sx={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between" }}>
                     <Typography variant="body2" color="text.secondary">
                         {getValue(body)}
                     </Typography>
+                    {type === 'drug' && (
+                        prescription ?
+                            <img src={needPrescription} className="prescription-logo" alt="logo" width="30%" height="30%" /> :
+                            <img src={noPrescription} className="prescription-logo" alt="logo" width="60" height="60" />
+
+                    )}
                 </CardContent>
                 {type === 'drug' && (
                     <>
@@ -128,6 +140,16 @@ export default function DetailedCard(props) {
                             >
                                 <ExpandMoreIcon />
                             </ExpandMore>
+                            <Link
+                                component="button"
+                                variant="body2"
+                                onClick={() => {
+                                    setGenericSearchValue({activeIngredient: expandData.activeComponentsCompareName, hebName: title});
+                                    triggerSearch(true);
+                                }}
+                            >
+                                חפש תכשירים עם חומר פעיל זהה
+                            </Link>
                         </CardActions>
                         <Collapse in={expanded} timeout="auto" unmountOnExit>
                             <CardContent>
