@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useReducer, useRef} from 'react';
+import {useContext, useEffect, useReducer, useRef} from 'react';
 import Box from '@mui/material/Box';
 
 import {createTheme} from "@mui/material/styles";
@@ -30,8 +30,12 @@ import TextField from '@mui/material/TextField';
 import {MenuItem} from '@mui/material';
 import {db} from "../../Configs/FirebaseConfig.js"
 import {getAuth, onAuthStateChanged} from "firebase/auth";
-import {doc, setDoc} from "firebase/firestore";
+import {doc, getDoc, setDoc} from "firebase/firestore";
 import {Actions} from "../../Redux/UserData";
+import {USER_PROFILE} from "../../Consts/StatePaths";
+import * as ProfileFields from "../../Consts/ProfileFields"
+import configureReduxStore from "../../Redux/Store";
+import { ReactReduxContext } from 'react-redux'
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -45,25 +49,24 @@ function RTL(props) {
 
 export default function Settings() {
 
-    const userTypeArr = [
-        'משתמש רגיל',
-        'חבר צוות רפואי',
-        'רופא',]
-    const phoneNum = "1111";//TODO:
-    const mail = "a@gmail.com";//TODO:
-    const password = "123456";//TODO
-    const firstName = "abc"//TODO
-    const lastName = "def"//TODO
-    const city = "Tel Aviv"//TODO
-    const initUserType = userTypeArr[0];//TODO
-    const initialyValidatedtionList = ['משתמש רגיל'];//TODO List of all the validation for the use
-    const profilePictureRef = useRef();
-    const secondPasswordRef = useRef();
-    const goBackButtonRef = useRef();
-    const navigate = useNavigate();
     const auth = getAuth();
     let uid = auth.currentUser.uid;
-    const dispatch = useDispatch();
+    // const { store } = useContext(ReactReduxContext);
+    const profile = useSelector((state) => getSafe(USER_PROFILE, state));
+    const setField = (field, setTo) => {
+        const fieldRef = doc(db, 'users', uid);
+        const data = {};
+        data[field] = setTo;
+        const res = setDoc(fieldRef, data, {merge: true});
+        dispatch(Actions.changeField(field, setTo));
+
+    }
+    const getField = (field, defualt) => {
+        if (profile[field]) {
+            return profile[field];
+        }
+        return defualt;
+    }
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -76,6 +79,30 @@ export default function Settings() {
             // ...
         }
     });
+
+    const userTypeArr = [
+        'משתמש רגיל',
+        'חבר צוות רפואי',
+        'רופא',]
+    const phoneNum = getField(ProfileFields.PHONE_NUM, '');
+    const mail = getField(ProfileFields.MAIL_ADDRESS, '');
+    const password = "123456";//TODO
+    const firstName = getField(ProfileFields.FIRST_NAME, '');
+    const lastName = getField(ProfileFields.LAST_NAME, '');
+    const city = getField(ProfileFields.CITY, '');
+    const initUserType = getField(ProfileFields.USER_TYPE, userTypeArr[0]);
+    const initialyValidatedtionList = ['משתמש רגיל'];//TODO List of all the validation for the use
+    const mailNotifications = getField(ProfileFields.MAIL_NOTIFICATIONS, false);
+    const browserNotifications = getField(ProfileFields.BROWSER_NOTIFICATIONS, false);
+    const phoneNotifications = getField(ProfileFields.PHONE_NOTIFICATIONS, false);
+    const takingReminder = getField(ProfileFields.TAKING_REMINDER, false);
+    const expirationReminder = getField(ProfileFields.EXPIRATION_REMINDER, false);
+
+    const profilePictureRef = useRef();
+    const secondPasswordRef = useRef();
+    const goBackButtonRef = useRef();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
 
     const theme = createTheme({direction: 'rtl'});
@@ -92,24 +119,16 @@ export default function Settings() {
     const [curPassword, setCurPassword] = React.useState(password);
     const [userType, setUserType] = React.useState(userTypeArr[0]);
     const [userTypeValidationList, setUserTypeValidated] = React.useState(initialyValidatedtionList);
-    const [mailNotification,setMailNotification] = React.useState(false);
-    
-    const setField = (field, setTo) => {
-        const fieldRef = doc(db, 'users', uid);
-        const data = {};
-        data[field] = setTo;
-        const res = setDoc(fieldRef, data, {merge: true});
-        dispatch(Actions.changeField(field,setTo));
 
-    }
-    const handleMailNotificationChange = (event)=>{
-            setField('mailNotification',event.target.checked);
+
+    const handleMailNotificationChange = (event) => {
+        setField(ProfileFields.MAIL_NOTIFICATIONS, event.target.checked);
     }
     const handleBrowserNotificationChange = (event) => {
-        setField('browserNotification',event.target.checked);
+        setField(ProfileFields.BROWSER_NOTIFICATIONS, event.target.checked);
     }
     const handlePhoneNotificationChange = (event) => {
-        setField('phoneNotification',event.target.checked);
+        setField(ProfileFields.PHONE_NOTIFICATIONS, event.target.checked);
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     useEffect(() => {
@@ -119,16 +138,16 @@ export default function Settings() {
     }, [currentUser]);
     }
     const handleTakingReminderChange = (event) => {
-        setField('takingReminder',event.target.checked);
+        setField(ProfileFields.TAKING_REMINDER, event.target.checked);
 
     }
     const handleExpirationReminderChange = (event) => {
-        setField('expirationReminder',event.target.checked);
+        setField(ProfileFields.EXPIRATION_REMINDER, event.target.checked);
 
     }
     const handleUserTypeChange = (event) => {
         setUserType(event.target.value);
-        setField('userType',event.target.value);
+        setField(ProfileFields.USER_TYPE, event.target.value);
         //TODO open change user type form in case that not normal user
     }
     const startEditPasswordMode = () => {
@@ -145,24 +164,24 @@ export default function Settings() {
     }
 
     const handleFirstNameSubmit = (s) => {
-        setField('firstName', s)
+        setField(ProfileFields.FIRST_NAME, s)
         return true;
     }
     const handleLastNameSubmit = (s) => {
-        setField('lastName', s)
+        setField(ProfileFields.LAST_NAME, s)
         return true;
     }
     const handleMailSubmit = (s) => {
-        setField('email', s)
+        setField(ProfileFields.MAIL_ADDRESS, s)
         return true;
 
     }
     const handlePhoneNumSubmit = (s) => {
-        setField('phoneNum', s)
+        setField(ProfileFields.PHONE_NUM, s)
         return true;
     }
     const handleCitySubmit = (s) => {
-        setField('city', s)
+        setField(ProfileFields.CITY, s)
         return true;
 
     }
@@ -434,14 +453,14 @@ export default function Settings() {
                         <Grid item container xs={12} sx={{textAlign: "left"}}>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="מייל" onChange = {handleMailNotificationChange} />
+                                <SettingsCheckBox label="מייל" onChange={handleMailNotificationChange} initialyChecked = {mailNotifications}/>
                             </Grid>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="טלפון" onChange = {handlePhoneNotificationChange}/>
+                                <SettingsCheckBox label="טלפון" onChange={handlePhoneNotificationChange} initialyChecked = {phoneNotifications}/>
                             </Grid>
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="דפדפן" onChange = {handleBrowserNotificationChange}/>
+                                <SettingsCheckBox label="דפדפן" onChange={handleBrowserNotificationChange} initialyChecked = {browserNotifications}/>
                             </Grid>
 
                         </Grid>
@@ -455,11 +474,11 @@ export default function Settings() {
                         <Grid item container xs={12} sx={{textAlign: "left"}}>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="תזכורת נטילת תרופה" onChange = {handleTakingReminderChange}
+                                <SettingsCheckBox label="תזכורת נטילת תרופה" onChange={handleTakingReminderChange} initialyChecked = {takingReminder}
                                 />
                             </Grid>
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="סיום תוקף" onChange = {handleExpirationReminderChange}/>
+                                <SettingsCheckBox label="סיום תוקף" onChange={handleExpirationReminderChange} initialyChecked = {expirationReminder}/>
                             </Grid>
 
                         </Grid>
