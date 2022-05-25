@@ -18,8 +18,8 @@ import * as AUTH from "../../../Redux/Auth";
 import * as USER_DATA from "../../../Redux/UserData";
 import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
-import { auth } from "../../../Configs/FirebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth"
+import {auth} from "../../../Configs/FirebaseConfig";
+import {signInWithEmailAndPassword} from "firebase/auth"
 import {Alert, Snackbar} from "@mui/material";
 import {useEffect, useState} from "react";
 import createCache from "@emotion/cache";
@@ -28,14 +28,16 @@ import rtlPlugin from "stylis-plugin-rtl";
 import {CacheProvider} from "@emotion/react";
 import {useState} from "react";
 import {getAuth, onAuthStateChanged} from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import {doc, getDoc} from "firebase/firestore";
 import {db} from "../../../Configs/FirebaseConfig.js"
 
 function Login() {
-  const theme = createTheme({direction: 'rtl'});
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+    const theme = createTheme({direction: 'rtl'});
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
+    const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
+    const [signInErrorMessage, setSignInErrorMessage] = useState(false);
   const cacheRtl = createCache({
       key: 'muirtl',
       stylisPlugins: [prefixer, rtlPlugin],
@@ -54,20 +56,30 @@ function Login() {
   const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
   const [signInErrorMessage, setSignInErrorMessage] = useState(false);
 
-  const handleSignInSuccess = () => {
-    navigate("/");
-  }
+    const handleSignInSuccess = () => {
+        navigate("/");
+    }
 
-  const handleSignInError = () => {
-    setSignInErrorMessage(false);
-  }
+    const handleSignInError = () => {
+        setSignInErrorMessage(false);
+    }
 
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    let email = data.get('email').toString();
-    let password = data.get('password').toString();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        let email = data.get('email').toString();
+        let password = data.get('password').toString();
+        let signedIn = false;
+        signInWithEmailAndPassword(auth,
+            email,
+            password)
+            .then(userCredential => {
+                dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
+                setSignInSuccessMessage(true);
+                signedIn = true;
+            }).catch(error => {
+            console.log("error code: " + error.code + " and message: " + error.message);
 
     const docSnap = await getDoc(doc(db, "users", getAuth().currentUser.uid));
     signInWithEmailAndPassword(auth,
@@ -80,15 +92,16 @@ function Login() {
           setSignInSuccessMessage(true);
         }).catch(error => {
       console.log("error code: " + error.code + " and message: " + error.message);
+            if (error.code === 'auth/user-not-found' ||
+                error.code === 'auth/invalid-email' ||
+                error.code === 'auth/user-disabled' ||
+                error.code === 'auth/wrong-password') {
+                setSignInErrorMessage(true);
+                signedIn = false;
+            }
+        });
 
-      if (error.code === 'auth/user-not-found' ||
-          error.code === 'auth/invalid-email' ||
-          error.code === 'auth/user-disabled' ||
-          error.code === 'auth/wrong-password') {
-        setSignInErrorMessage(true);
-      }
-    });
-  };
+    };
 
   return (
       <CacheProvider value={cacheRtl}>
@@ -105,15 +118,15 @@ function Login() {
         </Alert>
       </Snackbar>
 
-      <Snackbar open={signInErrorMessage}
-                autoHideDuration={1500}
-                onClose={handleSignInError}
-                anchorOrigin = {{vertical: 'top', horizontal: 'center'}}
-      >
-        <Alert severity="error">
-        כתובת מייל או סיסמא שגויים. אנא נסה שנית.
-        </Alert>
-      </Snackbar>
+            <Snackbar open={signInErrorMessage}
+                      autoHideDuration={1500}
+                      onClose={handleSignInError}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+                <Alert severity="error">
+                    כתובת מייל או סיסמא שגויים. אנא נסה שנית.
+                </Alert>
+            </Snackbar>
 
 
       <Container component="main" maxWidth="xs">
