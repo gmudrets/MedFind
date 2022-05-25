@@ -97,8 +97,7 @@ function Home() {
   }
 
   const search = async (newSearch, generic) => {
-      // CHECK
-      let pageNum = page;
+    let pageNum = page;
     setIsFetching(true);
     if (newSearch)
     {
@@ -228,9 +227,10 @@ function Home() {
                             value={searchValue}
                         />
                     )}}
-                    onKeyDown={
+                    onKeyPress={
                         (e) => {
                             if (e.key === 'Enter') {
+                                setAutocompleteLines([]);
                                 search(true);
                                 e.preventDefault();
                             }
