@@ -400,7 +400,7 @@ export default function Settings() {
                                                          startsOnEdit
                                                          clearOnOutsideClick={false}
                                                          notOutsideRef={goBackButtonRef}
-                                                         periodicValidateOnlyOnSubmit
+                                                         validateOnlyOnSubmit
                                                          errorHint="טעות בססמא"
 
 

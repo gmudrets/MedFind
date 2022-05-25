@@ -113,7 +113,7 @@ export default function EditableTextWithButtons(props) {
                 setShowPassword(false);
             }
         } else {
-            if (props.validateOnlyOnSubmit) {
+            if (!props.validateOnlyOnSubmit) {
                 alert("Error Submiting " + props.label)
                 setCurrentText(lastSubmitted);
             } else {
@@ -173,7 +173,7 @@ export default function EditableTextWithButtons(props) {
                         fullWidth
                         sx={{maxWidth: "500px", maxHeight: "30px"}}
                         onClick={handleClickInside}
-                        helperText={!currentlyValidated? props.errorHint: ""}
+                        helperText={submiting && props.validateOnlyOnSubmit?'מוודא...': !currentlyValidated? props.errorHint: ""}
 
                     />
 
