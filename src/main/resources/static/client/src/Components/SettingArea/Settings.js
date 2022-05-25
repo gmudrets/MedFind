@@ -29,14 +29,14 @@ import ClearIcon from '@mui/icons-material/Clear';
 import TextField from '@mui/material/TextField';
 import {MenuItem} from '@mui/material';
 import {db} from "../../Configs/FirebaseConfig.js"
-import {getAuth, onAuthStateChanged} from "firebase/auth";
+import {getAuth, onAuthStateChanged,EmailAuthProvider} from "firebase/auth";
 import {doc, getDoc, setDoc} from "firebase/firestore";
 import {Actions} from "../../Redux/UserData";
 import {USER_PROFILE} from "../../Consts/StatePaths";
 import * as ProfileFields from "../../Consts/ProfileFields"
 import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png'
-import configureReduxStore from "../../Redux/Store";
-import { ReactReduxContext } from 'react-redux'
+import {updatePassword, reauthenticateWithCredential} from "firebase/auth";
+
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -83,7 +83,7 @@ export default function Settings() {
     const phoneNotifications = getField(ProfileFields.PHONE_NOTIFICATIONS, false);
     const takingReminder = getField(ProfileFields.TAKING_REMINDER, false);
     const expirationReminder = getField(ProfileFields.EXPIRATION_REMINDER, false);
-    const profilePic = getField(ProfileFields.PROFILE_PICTURE,defualtProfPic);
+    const profilePic = getField(ProfileFields.PROFILE_PICTURE, defualtProfPic);
     const initialyValidatedtionList = ['משתמש רגיל'];//TODO List of all the validation for the use
 
     const profilePictureRef = useRef();
@@ -100,10 +100,8 @@ export default function Settings() {
     const [oldPasswordEditMode, setOldPasswordEditMode] = React.useState(false);
     const [firstNewPassword, setFirstNewPassword] = React.useState("");
     const [secondPasswordFocus, setSecondPasswordFocus] = React.useState(false);
-    const [somthingEdited, setSomthingEdited] = React.useState(false);
     const [fieldsOnEditMode, setFieldsOnEditMode] = React.useState([]);
     const [goBackDialogOpen, setGoBackDialogOpen] = React.useState(false);
-    const [curPassword, setCurPassword] = React.useState(password);
     const [userType, setUserType] = React.useState(initUserType);
     const [userTypeValidationList, setUserTypeValidated] = React.useState(initialyValidatedtionList);
 
@@ -172,15 +170,24 @@ export default function Settings() {
         return true;
 
     }
-    const handleOldPasswordSubmit = (s) => {
-        //TODO (load old password)
-        if (curPassword === s) {
+    const handleOldPasswordSubmit = async (s) => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        const credential = EmailAuthProvider.credential(
+            auth.currentUser.email,
+            s
+        );
+        let authinticated = false;
+        const result = await reauthenticateWithCredential(user, credential).then(() => {
             setOldPasswordEditMode(false);
             setNewPasswordEditMode(true);
-            return true;
-        } else {
-            return false;
-        }
+            authinticated = true;
+        }).catch((error) => {
+            authinticated = false;
+        });
+        console.log(result);
+        return authinticated;
     }
     const isUserTypeValidated = () => {
         return userTypeValidationList.includes(userType);
@@ -242,10 +249,13 @@ export default function Settings() {
     }
 
     const handleSecondPasswordSubmit = (s) => {
-        //TODO
-        setCurPassword(s);
         closeEditPasswordMode();
         forceUpdateShowPass();
+        updatePassword(getAuth().currentUser, s).then(() => {
+        }).catch((error) => {
+            return false;
+        });
+        setFirstNewPassword('');
         return true;
     }
     const validateLastName = (s) => {
@@ -253,7 +263,7 @@ export default function Settings() {
         return true;
     }
     const handleNewProfPic = (src) => {
-        setField(ProfileFields.PROFILE_PICTURE,src);
+        setField(ProfileFields.PROFILE_PICTURE, src);
         return true;
     }
     const handleGoBackPress = () => {
@@ -282,7 +292,7 @@ export default function Settings() {
                           sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {paddingX: "15%", paddingY: "40px"}}>
 
                         <Grid item xs={12}>
-                            <ProfilePicturePicker onUpdateProfilePic={handleNewProfPic} initPic = {profilePic}/>
+                            <ProfilePicturePicker onUpdateProfilePic={handleNewProfPic} initPic={profilePic}/>
                         </Grid>
 
                         <Grid item xs={12}>
@@ -439,14 +449,17 @@ export default function Settings() {
                         <Grid item container xs={12} sx={{textAlign: "left"}}>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="מייל" onChange={handleMailNotificationChange} initialyChecked = {mailNotifications}/>
+                                <SettingsCheckBox label="מייל" onChange={handleMailNotificationChange}
+                                                  initialyChecked={mailNotifications}/>
                             </Grid>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="טלפון" onChange={handlePhoneNotificationChange} initialyChecked = {phoneNotifications}/>
+                                <SettingsCheckBox label="טלפון" onChange={handlePhoneNotificationChange}
+                                                  initialyChecked={phoneNotifications}/>
                             </Grid>
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="דפדפן" onChange={handleBrowserNotificationChange} initialyChecked = {browserNotifications}/>
+                                <SettingsCheckBox label="דפדפן" onChange={handleBrowserNotificationChange}
+                                                  initialyChecked={browserNotifications}/>
                             </Grid>
 
                         </Grid>
@@ -460,11 +473,13 @@ export default function Settings() {
                         <Grid item container xs={12} sx={{textAlign: "left"}}>
 
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="תזכורת נטילת תרופה" onChange={handleTakingReminderChange} initialyChecked = {takingReminder}
+                                <SettingsCheckBox label="תזכורת נטילת תרופה" onChange={handleTakingReminderChange}
+                                                  initialyChecked={takingReminder}
                                 />
                             </Grid>
                             <Grid item sx={{textAlign: "center"}}>
-                                <SettingsCheckBox label="סיום תוקף" onChange={handleExpirationReminderChange} initialyChecked = {expirationReminder}/>
+                                <SettingsCheckBox label="סיום תוקף" onChange={handleExpirationReminderChange}
+                                                  initialyChecked={expirationReminder}/>
                             </Grid>
 
                         </Grid>

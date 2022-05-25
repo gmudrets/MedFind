@@ -101,10 +101,10 @@ export default function EditableTextWithButtons(props) {
         }
     }
 
-    const myHandleSubmit = () => {
+    const myHandleSubmit = async () => {
         const currentTextInField = currentText;
         setSubmiting(true);
-        if (props.onSubmit(currentTextInField)) {
+        if (await props.onSubmit(currentTextInField)) {
             setLastSubmitted(currentTextInField);
             setCurrentText(currentTextInField);
             props.beforeEditModeFinish(props.id);
@@ -116,7 +116,7 @@ export default function EditableTextWithButtons(props) {
             if (props.validateOnlyOnSubmit) {
                 alert("Error Submiting " + props.label)
                 setCurrentText(lastSubmitted);
-            }else{
+            } else {
                 setCurrentlyValidated(false);
             }
         }
