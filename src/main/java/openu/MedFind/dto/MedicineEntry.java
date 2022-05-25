@@ -33,11 +33,17 @@ public class MedicineEntry {
 
     private Date expiration;
 
-    private MedicineUnits units;
+    private MedicineUnits unitType;
 
     private boolean shared;
 
     private int count;
+
+    private double dosage;
+
+    private String engName;
+
+    private String hebName;
 
     public void addCount(int count) {
         this.count += count;
