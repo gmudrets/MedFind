@@ -34,6 +34,7 @@ import {doc, getDoc, setDoc} from "firebase/firestore";
 import {Actions} from "../../Redux/UserData";
 import {USER_PROFILE} from "../../Consts/StatePaths";
 import * as ProfileFields from "../../Consts/ProfileFields"
+import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png'
 import configureReduxStore from "../../Redux/Store";
 import { ReactReduxContext } from 'react-redux'
 
@@ -49,12 +50,9 @@ function RTL(props) {
 
 export default function Settings() {
 
-    const auth = getAuth();
-    let uid = auth.currentUser.uid;
-    // const { store } = useContext(ReactReduxContext);
     const profile = useSelector((state) => getSafe(USER_PROFILE, state));
     const setField = (field, setTo) => {
-        const fieldRef = doc(db, 'users', uid);
+        const fieldRef = doc(db, 'users', getAuth().currentUser.uid);
         const data = {};
         data[field] = setTo;
         const res = setDoc(fieldRef, data, {merge: true});
@@ -68,17 +66,6 @@ export default function Settings() {
         return defualt;
     }
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // User is signed in, see docs for a list of available properties
-            // https://firebase.google.com/docs/reference/js/firebase.User
-            uid = user.uid;
-            // ...
-        } else {
-            // User is signed out
-            // ...
-        }
-    });
 
     const userTypeArr = [
         'משתמש רגיל',
@@ -91,12 +78,13 @@ export default function Settings() {
     const lastName = getField(ProfileFields.LAST_NAME, '');
     const city = getField(ProfileFields.CITY, '');
     const initUserType = getField(ProfileFields.USER_TYPE, userTypeArr[0]);
-    const initialyValidatedtionList = ['משתמש רגיל'];//TODO List of all the validation for the use
     const mailNotifications = getField(ProfileFields.MAIL_NOTIFICATIONS, false);
     const browserNotifications = getField(ProfileFields.BROWSER_NOTIFICATIONS, false);
     const phoneNotifications = getField(ProfileFields.PHONE_NOTIFICATIONS, false);
     const takingReminder = getField(ProfileFields.TAKING_REMINDER, false);
     const expirationReminder = getField(ProfileFields.EXPIRATION_REMINDER, false);
+    const profilePic = getField(ProfileFields.PROFILE_PICTURE,defualtProfPic);
+    const initialyValidatedtionList = ['משתמש רגיל'];//TODO List of all the validation for the use
 
     const profilePictureRef = useRef();
     const secondPasswordRef = useRef();
@@ -106,7 +94,6 @@ export default function Settings() {
 
 
     const theme = createTheme({direction: 'rtl'});
-    const uID = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     const [keyToRerenderPass2, forceUpdatePass2] = useReducer(x => x + 1, 0);
     const [keyToRerenderShowPass, forceUpdateShowPass] = useReducer(x => x + 1, 0);
     const [newPasswordEditMode, setNewPasswordEditMode] = React.useState(false);
@@ -117,7 +104,7 @@ export default function Settings() {
     const [fieldsOnEditMode, setFieldsOnEditMode] = React.useState([]);
     const [goBackDialogOpen, setGoBackDialogOpen] = React.useState(false);
     const [curPassword, setCurPassword] = React.useState(password);
-    const [userType, setUserType] = React.useState(userTypeArr[0]);
+    const [userType, setUserType] = React.useState(initUserType);
     const [userTypeValidationList, setUserTypeValidated] = React.useState(initialyValidatedtionList);
 
 
@@ -266,8 +253,7 @@ export default function Settings() {
         return true;
     }
     const handleNewProfPic = (src) => {
-        console.log(uid);
-        setSecondPasswordFocus(prevState => !prevState);
+        setField(ProfileFields.PROFILE_PICTURE,src);
         return true;
     }
     const handleGoBackPress = () => {
@@ -296,7 +282,7 @@ export default function Settings() {
                           sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {paddingX: "15%", paddingY: "40px"}}>
 
                         <Grid item xs={12}>
-                            <ProfilePicturePicker onUpdateProfilePic={handleNewProfPic}/>
+                            <ProfilePicturePicker onUpdateProfilePic={handleNewProfPic} initPic = {profilePic}/>
                         </Grid>
 
                         <Grid item xs={12}>
