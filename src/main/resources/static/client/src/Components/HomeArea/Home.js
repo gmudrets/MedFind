@@ -97,8 +97,7 @@ function Home() {
   }
 
   const search = async (newSearch, generic) => {
-      // CHECK
-      let pageNum = page;
+    let pageNum = page;
     setIsFetching(true);
     if (newSearch)
     {
