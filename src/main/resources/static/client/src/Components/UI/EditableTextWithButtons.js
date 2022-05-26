@@ -87,6 +87,7 @@ export default function EditableTextWithButtons(props) {
     const handleClearClick = () => {
         props.beforeEditModeFinish(props.id);
         setIsEditMode(false);
+        setCurrentlyValidated(true);
         setCurrentText(lastSubmitted);
         if (props.password) {
             setShowPassword(false);

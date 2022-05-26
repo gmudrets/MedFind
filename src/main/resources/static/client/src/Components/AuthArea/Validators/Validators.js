@@ -27,6 +27,17 @@ export const isFieldContainsOnlyLetters = (fld) => {
     let validChars = /^[\u0590-\u05ff -']*$/
     return !validChars.test(fld);
 }
+export const phoneNumLength = (phoneNum) => {
+	return phoneNum.length === 10;
+}
+export const phoneNumNumbersOnly = (phoneNum) => {
+	let validChars = /^[0-9]*$/
+	return validChars.test(phoneNum);
+}
+export const cityEmpty = (city) => {
+	return city.length === 0;
+}
+
 export const userNameFullValidate = (userName, sendError) => {
 	if (usernameEmpty(userName)) {
 		sendError("נא הזן שם משתמש");
@@ -77,7 +88,7 @@ export const passwordFullValidate = (password, sendError) => {
 	}
 	return true;
 }
-export const confirmPasswordFullValidate = (firstPass, secondPass,sendError) => {
+export const confirmPasswordFullValidate = (firstPass, secondPass, sendError) => {
 	if (!passwordsMatches(firstPass, secondPass)) {
 		sendError("הסיסמאות לא זהות, אנא הזן שוב");
 		return false;
@@ -88,4 +99,22 @@ export const isFieldContainsOnlyDigits = (fld) => {
     let validChars = /^[0-9]*$/
     return !validChars.test(fld);
 }
+export const phoneNumFullValidate = (phoneNum, sendError) => {
+	if (!phoneNumLength((phoneNum))) {
+		sendError("מספר טלפון חייב להיות באורך 10 מספרים בדיוק");
+		return false;
+	} else if (!phoneNumNumbersOnly(phoneNum)) {
+		sendError("אנא הזן ספרות בלבד");
+		return false;
+	}
+	return true;
 }
+export const cityFullValidate = (city, sendError) => {
+	if (cityEmpty(city)) {
+		sendError("נא הזן עיר מגורים");
+		return false;
+	}
+	return true;
+}
+
+

@@ -70,14 +70,14 @@ function Login() {
         const data = new FormData(event.currentTarget);
         let email = data.get('email').toString();
         let password = data.get('password').toString();
-        let signedIn = false;
         signInWithEmailAndPassword(auth,
             email,
             password)
-            .then(userCredential => {
+            .then(async userCredential => {
                 dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
                 setSignInSuccessMessage(true);
-                signedIn = true;
+                const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
+                dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
             }).catch(error => {
             console.log("error code: " + error.code + " and message: " + error.message);
 
@@ -97,9 +97,9 @@ function Login() {
                 error.code === 'auth/user-disabled' ||
                 error.code === 'auth/wrong-password') {
                 setSignInErrorMessage(true);
-                signedIn = false;
             }
         });
+
 
     };
 

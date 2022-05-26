@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useContext, useEffect, useReducer, useRef} from 'react';
+import {useContext, useEffect, useReducer, useRef, useState} from 'react';
 import Box from '@mui/material/Box';
 
 import {createTheme} from "@mui/material/styles";
@@ -33,9 +33,11 @@ import {getAuth, onAuthStateChanged,EmailAuthProvider} from "firebase/auth";
 import {doc, getDoc, setDoc} from "firebase/firestore";
 import {Actions} from "../../Redux/UserData";
 import {USER_PROFILE} from "../../Consts/StatePaths";
-import * as ProfileFields from "../../Consts/ProfileFields"
-import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png'
+import * as ProfileFields from "../../Consts/ProfileFields";
+import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png';
 import {updatePassword, reauthenticateWithCredential} from "firebase/auth";
+import * as validations from "../../Components/AuthArea/Validators/Validators";
+
 
 
 // Create rtl cache
@@ -106,6 +108,18 @@ export default function Settings() {
     const [userTypeValidationList, setUserTypeValidated] = React.useState(initialyValidatedtionList);
 
 
+    const [usernameError, setUsernameError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [firstNameError, setFirstNameError] = useState("");
+    const [lastNameError, setLastNameError] = useState("");
+    const [phoneNumError,setPhoneNumError] = React.useState("");
+    const [cityError,setCityError] = React.useState("");
+    const [emailError, setEmailError] = useState("");
+
+
+
+
+
     const handleMailNotificationChange = (event) => {
         setField(ProfileFields.MAIL_NOTIFICATIONS, event.target.checked);
     }
@@ -149,26 +163,40 @@ export default function Settings() {
     }
 
     const handleFirstNameSubmit = (s) => {
-        setField(ProfileFields.FIRST_NAME, s)
-        return true;
+        if(validations.firstNameFullValidate(s,setFirstNameError)) {
+            setField(ProfileFields.FIRST_NAME, s)
+            return true;
+        }
+        return false;
     }
     const handleLastNameSubmit = (s) => {
-        setField(ProfileFields.LAST_NAME, s)
-        return true;
+        if(validations.lastNameFullValidate(s,setLastNameError)) {
+            setField(ProfileFields.LAST_NAME, s)
+            return true;
+        }
+        return false;
     }
     const handleMailSubmit = (s) => {
-        setField(ProfileFields.MAIL_ADDRESS, s)
-        return true;
+        if (validations.mailFullValidate(s,setEmailError)) {
+            setField(ProfileFields.MAIL_ADDRESS, s)
+            return true;
+        }
+        return false;
 
     }
     const handlePhoneNumSubmit = (s) => {
-        setField(ProfileFields.PHONE_NUM, s)
-        return true;
+        if(validations.phoneNumFullValidate(s,setPhoneNumError)) {
+            setField(ProfileFields.PHONE_NUM, s)
+            return true;
+        }
+        return false;
     }
     const handleCitySubmit = (s) => {
-        setField(ProfileFields.CITY, s)
-        return true;
-
+        if(validations.cityFullValidate(s,setCityError)) {
+            setField(ProfileFields.CITY, s)
+            return true;
+        }
+        return false;
     }
     const handleOldPasswordSubmit = async (s) => {
         const auth = getAuth();
@@ -303,25 +331,28 @@ export default function Settings() {
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="שם פרטי" initVal={firstName}
-                                                     periodicValidate={validateFirstName}
+                                                     validateOnlyOnSubmit
                                                      onSubmit={handleFirstNameSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
                                                      clearOnOutsideClick={!goBackDialogOpen}
                                                      id="firstName"
+                                                     errorHint = {firstNameError}
+
 
                             />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="שם משפחה" initVal={lastName}
-                                                     periodicValidate={validateLastName}
+                                                     validateOnlyOnSubmit
                                                      onSubmit={handleLastNameSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
                                                      clearOnOutsideClick={!goBackDialogOpen}
                                                      id="secondName"
+                                                     errorHint = {lastNameError}
                             />
                         </Grid>
                         {/*<Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>*/}
@@ -337,23 +368,25 @@ export default function Settings() {
 
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum}
-                                                     periodicValidate={validatePhoneNum}
+                                                     validateOnlyOnSubmit
                                                      onSubmit={handlePhoneNumSubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
                                                      clearOnOutsideClick={!goBackDialogOpen}
-                                                     id="phoneNum"/>
+                                                     id="phoneNum"
+                                                     errorHint = {phoneNumError}/>
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="עיר מגורים" initVal={city}
-                                                     periodicValidate={validateCity}
+                                                     validateOnlyOnSubmit
                                                      onSubmit={handleCitySubmit}
                                                      notOutsideRef={goBackButtonRef}
                                                      beforeEditModeStart={onFieldEnterEditMode}
                                                      beforeEditModeFinish={onFieldExitEditMode}
                                                      clearOnOutsideClick={!goBackDialogOpen}
                                                      id="city"
+                                                     errorHint = {cityError}
                             />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "left"}}>
@@ -411,7 +444,7 @@ export default function Settings() {
                             <>
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                                     <EditableTextWithButtons label="סיסמא חדשה"
-                                                             periodicValidate={validatePassword}
+                                                             validateOnlyOnSubmit
                                                              onSubmit={handleFirstPasswordSubmit}
                                                              password
                                                              startsOnEdit
@@ -425,7 +458,7 @@ export default function Settings() {
                                 <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                                     <EditableTextWithButtons key={keyToRerenderPass2}
                                                              label="ודא סיסמא חדשה"
-                                                             periodicValidate={validateSecondPassword}
+                                                             validateOnlyOnSubmit
                                                              onSubmit={handleSecondPasswordSubmit}
                                                              password
                                                              saveButton
