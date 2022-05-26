@@ -1,3 +1,4 @@
+export const USER_NAME = 'userName';
 export const FIRST_NAME = 'firstName';
 export const LAST_NAME = 'lastName';
 export const MAIL_ADDRESS = 'email';

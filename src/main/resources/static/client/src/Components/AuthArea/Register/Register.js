@@ -14,6 +14,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider} from '@mui/material/styles';
+import {postRequest} from "../../../Utils/AxiosRequests";
+import {ServerConsts} from "../../../Consts/apiPaths";
 import * as validations from "../Validators/Validators";
 import {Snackbar, Alert} from "@mui/material";
 import { auth, db } from "../../../Configs/FirebaseConfig";
@@ -26,12 +28,16 @@ import createCache from "@emotion/cache";
 import {prefixer} from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import {CacheProvider} from "@emotion/react";
+import {auth, db} from "../../../Configs/FirebaseConfig";
+import {createUserWithEmailAndPassword, signOut} from "firebase/auth";
+import {collection, addDoc, setDoc, doc} from "firebase/firestore";
+import * as ProfileFields from '../../../Consts/ProfileFields.js'
 
 const theme = createTheme({direction: 'rtl'});
 
 function Register() {
 
-  const navigate = useNavigate();
+	const navigate = useNavigate();
 
   const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
 
@@ -52,7 +58,7 @@ function Register() {
     'צוות רפואי',
   ];
 
-  const [userType, setUserType] = useState(types[0]);
+	const [userType, setUserType] = useState(types[0]);
 
   // states of fields errors
   const [emailError, setEmailError] = useState("");
@@ -62,8 +68,8 @@ function Register() {
   const [telephoneError, setTelephoneError] = useState("");
   const [cityError, setCityError] = useState("");
 
-  const [registerSuccessMessage, setRegisterSuccessMessage] = useState(false);
-  const [registerErrorMessage, setRegisterErrorMessage] = useState(false);
+	const [registerSuccessMessage, setRegisterSuccessMessage] = useState(false);
+	const [registerErrorMessage, setRegisterErrorMessage] = useState(false);
 
   const handleSelectUserType = (event) => {
     setUserType(event.target.value);
@@ -104,22 +110,22 @@ function Register() {
           }
         })
 
-  }
+	}
 
-  const handleRegisterSuccess = () => {
-    navigate("/login");
-  }
+	const handleRegisterSuccess = () => {
+		navigate("/login");
+	}
 
-  const handleRegisterError = () => {
-    setRegisterErrorMessage(false);
-  }
+	const handleRegisterError = () => {
+		setRegisterErrorMessage(false);
+	}
 
-  const handleSubmit = async (event) => {
+	const handleSubmit = async (event) => {
 
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+		event.preventDefault();
+		const data = new FormData(event.currentTarget);
 
-    let formValidationsPassed = true;
+		let formValidationsPassed = true;
 
     // setting all errors as false before validations.
     setEmailError("");
@@ -129,26 +135,15 @@ function Register() {
     setTelephoneError("");
     setCityError("");
 
-    // pass through all validations, setting the errors if exists.
-    if(validations.isFieldEmpty(data.get("email"))){
-      setEmailError("נא הזן כתובת אימייל");
-      formValidationsPassed = false;
-    }
+		// pass through all validations, setting the errors if exists.
+		const firstNameValidated = validations.firstNameFullValidate(data.get(ProfileFields.FIRST_NAME), setFirstNameError)
+		const lastNameValidated = validations.lastNameFullValidate(data.get(ProfileFields.LAST_NAME), setLastNameError);
+		const mailValidated = validations.mailFullValidate(data.get(ProfileFields.MAIL_ADDRESS), setEmailError);
+		const passwordValidated = validations.passwordFullValidate(data.get('password'), setPasswordError);
+		const secondPasswordValidated = validations.confirmPasswordFullValidate(data.get('password'), data.get('confirmPassword'), setPasswordError);
 
-    else if(!validations.emailValid(data.get("email"))){
-      setEmailError("כתובת אימייל לא תקינה");
-      formValidationsPassed = false;
-    }
 
-    if(validations.isFieldEmpty(data.get("firstName"))){
-      setFirstNameError("נא הזן שם פרטי");
-      formValidationsPassed = false;
-    }
 
-    if(validations.isFieldEmpty(data.get("lastName"))){
-      setLastNameError("נא הזן שם משפחה");
-      formValidationsPassed = false;
-    }
 
     if(validations.isFieldContainsOnlyDigits(data.get("telephone"))){
       setTelephoneError("מספר טלפון יכול להכיל ספרות בלבד");
@@ -159,31 +154,12 @@ function Register() {
       setCityError("עיר מגורים יכולה להכיל אותיות בעברית בלבד");
       formValidationsPassed = false;
     }
-
-    if(validations.isFieldEmpty(data.get("password"))){
-      setPasswordError("נא הזן סיסמה");
-      formValidationsPassed = false;
-    }
-    else if(!validations.passwordMinChars(data.get("password"))){
-      setPasswordError("סיסמה צריכה להכיל לפחות 8 תווים");
-      formValidationsPassed = false;
-    }
-    else if(!validations.passwordValid(data.get("password"))){
-      setPasswordError("סיסמה יכולה להכיל תווים, ספרות וסמלים מיוחדים בלבד");
-      formValidationsPassed = false;
-    }
-    else if(!validations.passwordsMatches(data.get("password"), data.get("confirmPassword"))){
-      setPasswordError("הסיסמאות לא זהות, אנא הזן שוב");
-      formValidationsPassed = false;
-    }
-
-    if(formValidationsPassed){
-     await registerNewUser(data);
-    } else {
-      setRegisterErrorMessage(true);
-    }
-  };
-
+		if ((userNameValidated && firstNameValidated && lastNameValidated && mailValidated && passwordValidated && secondPasswordValidated)) {
+			await registerNewUser(data);
+		} else {
+			setRegisterErrorMessage(true);
+		}
+    };
   return (
       <CacheProvider value={cacheRtl}>
         <ThemeProvider theme={theme}>
