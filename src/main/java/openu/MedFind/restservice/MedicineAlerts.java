@@ -27,9 +27,10 @@ public class MedicineAlerts {
     @Autowired
     private AlertEntryRepository alertEntryRepository;
 
-    private static long WEEK_DAYS = 7L;
+    private static final long WEEK_DAYS = 7L;
 
 
+    @SafeVarargs
     private static boolean listsSizeEqual(List<Integer>... values) {
         if (values.length == 0) {
             return true;
@@ -108,7 +109,7 @@ public class MedicineAlerts {
             var week = weeks.get(i);
 
             if (day <= 0 || hour <= 0 || minute <= 0 || week <= 0) {
-                throw new IllegalArgumentException("time canot be <= 0");
+                throw new IllegalArgumentException("time cannot be <= 0");
             }
 
             alertEntryRepository.save(AlertEntry.builder()
@@ -165,8 +166,7 @@ public class MedicineAlerts {
         for (var alert : userAlerts) {
 
             // Delete expired alerts
-            if (alert.getAlertExpiration().isAfter(LocalDateTime.now())) {
-                var id = alert.getId();
+            if (LocalDateTime.now().isAfter(alert.getAlertExpiration())) {
                 alertEntryRepository.delete(alert);
                 continue;
             }
