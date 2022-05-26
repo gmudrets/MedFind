@@ -25,6 +25,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoadingButton from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
 import { Autocomplete } from '@mui/material'
+import {auth} from '../../Configs/FirebaseConfig'
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -109,13 +110,15 @@ function Home() {
     let data;
     if (generic){
         setIsGeneric(true);
-        data = await getRequest(currentUser.stsTokenManager.accessToken,
-        ServerConsts.SEARCH_GENERIC,
+        data = await getRequest(
+            await auth.currentUser.getIdToken(true),
+            ServerConsts.SEARCH_GENERIC,
             { "val" : genericSearchValue.activeIngredient, "name" : genericSearchValue.hebName, "pageIndex" : pageNum });
     }
     else{
         setIsGeneric(false);
-        data = await getRequest(currentUser.stsTokenManager.accessToken,
+        data = await getRequest(
+            await auth.currentUser.getIdToken(true),
             ServerConsts.SEARCH_MEDICINE,
             { "name" : searchValue, "prescription" : "false", "pageIndex" : pageNum });
     }
@@ -224,9 +227,10 @@ function Home() {
                             value={searchValue}
                         />
                     )}}
-                    onKeyDown={
+                    onKeyPress={
                         (e) => {
                             if (e.key === 'Enter') {
+                                setAutocompleteLines([]);
                                 search(true);
                                 e.preventDefault();
                             }
