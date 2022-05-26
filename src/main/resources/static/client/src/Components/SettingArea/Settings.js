@@ -75,7 +75,6 @@ export default function Settings() {
         'רופא',]
     const phoneNum = getField(ProfileFields.PHONE_NUM, '');
     const mail = getField(ProfileFields.MAIL_ADDRESS, '');
-    const password = "123456";//TODO
     const firstName = getField(ProfileFields.FIRST_NAME, '');
     const lastName = getField(ProfileFields.LAST_NAME, '');
     const city = getField(ProfileFields.CITY, '');
@@ -166,21 +165,21 @@ export default function Settings() {
     }
 
     const handleFirstNameSubmit = (s) => {
-        if(validations.firstNameFullValidate(s,setFirstNameError)) {
+        if(validations.firstNameFullValidate(s,setFirstNameError,true)) {
             setField(ProfileFields.FIRST_NAME, s)
             return true;
         }
         return false;
     }
     const handleLastNameSubmit = (s) => {
-        if(validations.lastNameFullValidate(s,setLastNameError)) {
+        if(validations.lastNameFullValidate(s,setLastNameError,true)) {
             setField(ProfileFields.LAST_NAME, s)
             return true;
         }
         return false;
     }
     const handleMailSubmit = (s) => {
-        if (validations.mailFullValidate(s,setEmailError)) {
+        if (validations.mailFullValidate(s,setEmailError,true)) {
             setField(ProfileFields.MAIL_ADDRESS, s)
             return true;
         }
@@ -188,14 +187,14 @@ export default function Settings() {
 
     }
     const handlePhoneNumSubmit = (s) => {
-        if(validations.phoneNumFullValidate(s,setPhoneNumError)) {
+        if(validations.phoneNumFullValidate(s,setPhoneNumError,true)) {
             setField(ProfileFields.PHONE_NUM, s)
             return true;
         }
         return false;
     }
     const handleCitySubmit = (s) => {
-        if(validations.cityFullValidate(s,setCityError)) {
+        if(validations.cityFullValidate(s,setCityError,true)) {
             setField(ProfileFields.CITY, s)
             return true;
         }
@@ -205,10 +204,7 @@ export default function Settings() {
         const auth = getAuth();
         const user = auth.currentUser;
 
-        const credential = EmailAuthProvider.credential(
-            auth.currentUser.email,
-            s
-        );
+        const credential = EmailAuthProvider.credential(auth.currentUser.email, s);
         let authinticated = false;
         const result = await reauthenticateWithCredential(user, credential).then(() => {
             setOldPasswordEditMode(false);
@@ -217,14 +213,13 @@ export default function Settings() {
         }).catch((error) => {
             authinticated = false;
         });
-        console.log(result);
         return authinticated;
     }
     const isUserTypeValidated = () => {
         return userTypeValidationList.includes(userType);
     }
     const handleFirstPasswordSubmit = (s) => {
-        if(validations.passwordFullValidate(s,setFirstPasswordError)){
+        if(validations.passwordFullValidate(s,setFirstPasswordError,true)){
             forceUpdatePass2();
             setSecondPasswordFocus(true);
             setFirstNewPassword(s);
@@ -284,7 +279,7 @@ export default function Settings() {
     }
 
     const handleSecondPasswordSubmit = (s) => {
-        if(validations.confirmPasswordFullValidate(s,firstNewPassword,setSecondPasswordError)) {
+        if(validations.confirmPasswordFullValidate(s,firstNewPassword,setSecondPasswordError,true)) {
             closeEditPasswordMode();
             forceUpdateShowPass();
             updatePassword(getAuth().currentUser, s).then(() => {
@@ -353,7 +348,7 @@ export default function Settings() {
 
                             />
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center", paddingBottom: "15px"}}>
                             <EditableTextWithButtons label="שם משפחה" initVal={lastName}
                                                      validateOnlyOnSubmit
                                                      onSubmit={handleLastNameSubmit}
@@ -400,26 +395,24 @@ export default function Settings() {
                                                      errorHint = {cityError}
                             />
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "left"}}>
-                            <TextField
-                                select
-                                fullWidth
-                                id="until"
-                                label="סוג משתמש"
-                                name="returns"
-                                value={userType}
-                                onChange={handleUserTypeChange}
-                                helperText={isUserTypeValidated() ? " " : "מחכה לאישור מנהל"}
-                            >
-                                {userTypeArr.map((type) => (
-                                    <MenuItem key={type} value={type}>
-                                        {type}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-
-
-                        </Grid>
+                        {/*<Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "left"}}>*/}
+                            {/*<TextField*/}
+                            {/*    select*/}
+                            {/*    fullWidth*/}
+                            {/*    id="until"*/}
+                            {/*    label="סוג משתמש"*/}
+                            {/*    name="returns"*/}
+                            {/*    value={userType}*/}
+                            {/*    onChange={handleUserTypeChange}*/}
+                            {/*    helperText={isUserTypeValidated() ? " " : "מחכה לאישור מנהל"}*/}
+                            {/*>*/}
+                            {/*    {userTypeArr.map((type) => (*/}
+                            {/*        <MenuItem key={type} value={type}>*/}
+                            {/*            {type}*/}
+                            {/*        </MenuItem>*/}
+                            {/*    ))}*/}
+                            {/*</TextField>*/}
+                        {/*</Grid>*/}
                         <Grid item xs={12} sx={{textAlign: "left", marginTop: "5px"}}>
                             <Divider/>
                         </Grid>
