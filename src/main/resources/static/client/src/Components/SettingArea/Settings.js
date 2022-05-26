@@ -115,7 +115,10 @@ export default function Settings() {
     const [phoneNumError,setPhoneNumError] = React.useState("");
     const [cityError,setCityError] = React.useState("");
     const [emailError, setEmailError] = useState("");
-
+    const [firstPasswordError,setFirstPasswordError] = React.useState("");
+    const [secondPasswordError,setSecondPasswordError] = React.useState("");
+    
+    
 
 
 
@@ -221,10 +224,14 @@ export default function Settings() {
         return userTypeValidationList.includes(userType);
     }
     const handleFirstPasswordSubmit = (s) => {
-        forceUpdatePass2();
-        setSecondPasswordFocus(true);
-        setFirstNewPassword(s);
-        return true;
+        if(validations.passwordFullValidate(s,setFirstPasswordError)){
+            forceUpdatePass2();
+            setSecondPasswordFocus(true);
+            setFirstNewPassword(s);
+            return true;
+        }
+        return false;
+
     }
     const validateName = (s) => {
         //TODO
@@ -277,14 +284,17 @@ export default function Settings() {
     }
 
     const handleSecondPasswordSubmit = (s) => {
-        closeEditPasswordMode();
-        forceUpdateShowPass();
-        updatePassword(getAuth().currentUser, s).then(() => {
-        }).catch((error) => {
-            return false;
-        });
-        setFirstNewPassword('');
-        return true;
+        if(validations.confirmPasswordFullValidate(s,firstNewPassword,setSecondPasswordError)) {
+            closeEditPasswordMode();
+            forceUpdateShowPass();
+            updatePassword(getAuth().currentUser, s).then(() => {
+            }).catch((error) => {
+                return false;
+            });
+            setFirstNewPassword('');
+            return true;
+        }
+        return false;
     }
     const validateLastName = (s) => {
 
@@ -375,7 +385,8 @@ export default function Settings() {
                                                      beforeEditModeFinish={onFieldExitEditMode}
                                                      clearOnOutsideClick={!goBackDialogOpen}
                                                      id="phoneNum"
-                                                     errorHint = {phoneNumError}/>
+                                                     errorHint = {phoneNumError}
+                            />
                         </Grid>
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
                             <EditableTextWithButtons label="עיר מגורים" initVal={city}
@@ -450,7 +461,7 @@ export default function Settings() {
                                                              startsOnEdit
                                                              clearOnOutsideClick={false}
                                                              notOutsideRef={goBackButtonRef}
-
+                                                             errorHint = {firstPasswordError}
 
                                     />
 
@@ -465,6 +476,7 @@ export default function Settings() {
                                                              startsOnEdit={secondPasswordFocus}
                                                              clearOnOutsideClick={false}
                                                              notOutsideRef={goBackButtonRef}
+                                                             errorHint = {secondPasswordError}
 
 
                                     />
