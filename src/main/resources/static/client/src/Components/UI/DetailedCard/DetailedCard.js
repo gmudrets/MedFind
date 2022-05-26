@@ -25,6 +25,7 @@ import Link from "@mui/material/Link";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../../Utils/Utils";
 import * as STATE_PATHS from "../../../Consts/StatePaths";
+import {auth} from "../../../Configs/FirebaseConfig"
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -90,7 +91,8 @@ export default function DetailedCard(props) {
 
     const getBrochure = async (drugRegNum) => {
         setBrochureLoading(true);
-        let data = await getRequest(userDetails.stsTokenManager.accessToken,
+        let data = await getRequest(
+            await auth.currentUser.getIdToken(true),
             ServerConsts.GET_BROCHURE,
             { "drugRegNum" : drugRegNum});
         let url = External.EXTERNAL_FILES_URL + data["consumerBrochure"];

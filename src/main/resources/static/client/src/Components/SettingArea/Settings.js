@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useReducer, useRef} from 'react';
+import {useEffect, useReducer, useRef} from 'react';
 import Box from '@mui/material/Box';
 
 import {createTheme} from "@mui/material/styles";
@@ -73,7 +73,12 @@ export default function Settings() {
     const [userType, setUserType] = React.useState(userTypeArr[0]);
     const [userTypeValidationList,setUserTypeValidated] = React.useState(initialyValidatedtionList);
 
-    
+    const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+    useEffect(() => {
+        if (currentUser === ''){
+            navigate("/login");
+        }
+    }, [currentUser]);
 
     const handleUserTypeChange = (event) => {
         setUserType(event.target.value);
