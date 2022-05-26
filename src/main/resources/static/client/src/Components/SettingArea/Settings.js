@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useContext, useEffect, useReducer, useRef, useState} from 'react';
+import {useReducer, useRef, useState} from 'react';
 import Box from '@mui/material/Box';
 
 import {createTheme} from "@mui/material/styles";
@@ -18,7 +18,7 @@ import Typography from "@mui/material/Typography";
 import SettingsCheckBox from "../UI/SettingsCheckBox";
 import {isMobile} from "react-device-detect";
 import {prefixer} from 'stylis';
-import * as STATE_PATHS from "../../Consts/StatePaths";
+import {USER_PROFILE} from "../../Consts/StatePaths";
 import ProfilePicturePicker from "./ProfilePicturePicker";
 import Divider from "@mui/material/Divider";
 import {useNavigate} from "react-router-dom";
@@ -26,18 +26,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import PasswordIcon from '@mui/icons-material/Password';
 import ClearIcon from '@mui/icons-material/Clear';
-import TextField from '@mui/material/TextField';
-import {MenuItem} from '@mui/material';
 import {db} from "../../Configs/FirebaseConfig.js"
-import {getAuth, onAuthStateChanged,EmailAuthProvider} from "firebase/auth";
-import {doc, getDoc, setDoc} from "firebase/firestore";
+import {EmailAuthProvider, getAuth, reauthenticateWithCredential, updatePassword} from "firebase/auth";
+import {doc, setDoc} from "firebase/firestore";
 import {Actions} from "../../Redux/UserData";
-import {USER_PROFILE} from "../../Consts/StatePaths";
 import * as ProfileFields from "../../Consts/ProfileFields";
 import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png';
-import {updatePassword, reauthenticateWithCredential} from "firebase/auth";
 import * as validations from "../../Components/AuthArea/Validators/Validators";
-
 
 
 // Create rtl cache
@@ -152,7 +147,6 @@ export default function Settings() {
         //TODO open change user type form in case that not normal user
     }
     const startEditPasswordMode = () => {
-        onFieldEnterEditMode("password")
         setOldPasswordEditMode(true);
     }
     const closeEditPasswordMode = () => {
@@ -210,6 +204,7 @@ export default function Settings() {
             setOldPasswordEditMode(false);
             setNewPasswordEditMode(true);
             authinticated = true;
+            onFieldEnterEditMode("password");
         }).catch((error) => {
             authinticated = false;
         });
@@ -348,7 +343,7 @@ export default function Settings() {
 
                             />
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center", paddingBottom: "15px"}}>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center", paddingBottom: "15px"} }>
                             <EditableTextWithButtons label="שם משפחה" initVal={lastName}
                                                      validateOnlyOnSubmit
                                                      onSubmit={handleLastNameSubmit}
@@ -371,7 +366,7 @@ export default function Settings() {
                         {/*    />*/}
                         {/*</Grid>*/}
 
-                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center", paddingBottom: "15px"}}>
                             <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum}
                                                      validateOnlyOnSubmit
                                                      onSubmit={handlePhoneNumSubmit}
@@ -383,7 +378,7 @@ export default function Settings() {
                                                      errorHint = {phoneNumError}
                             />
                         </Grid>
-                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>
+                        <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center", paddingBottom: "15px"}}>
                             <EditableTextWithButtons label="עיר מגורים" initVal={city}
                                                      validateOnlyOnSubmit
                                                      onSubmit={handleCitySubmit}
