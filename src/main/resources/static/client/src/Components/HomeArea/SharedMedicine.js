@@ -17,9 +17,18 @@ import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import {getRequest} from "../../Utils/AxiosRequests";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../Configs/FirebaseConfig";
 import {ServerConsts} from "../../Consts/apiPaths";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import ContactPageIcon from '@mui/icons-material/ContactPage';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
+import HomeIcon from '@mui/icons-material/Home';
+import LoadingButton from "@mui/lab/LoadingButton";
+import moment from "moment";
+import TransitionsModal from "../UI/Modal/Modal";
 
 function SharedMedicine() {
 
@@ -27,6 +36,9 @@ function SharedMedicine() {
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
     const isDoctor = true; //TODO: implement
     const [rows, setRows] = useState([]);
+    const [contactDetailsLoading, setContactDetailsLoading] = useState(false);
+    const [showContactDetails, setShowContactDetails] = useState(false);
+    const [contactDetails, setContactDetails] = useState({});
 
     useEffect(() => {
         if (!isDoctor){
@@ -35,7 +47,9 @@ function SharedMedicine() {
     });
 
     useEffect(() => {
-        getShareData();
+        if(rows.length===0){
+            getShareData();
+        }
     });
 
     const nameMapping = {
@@ -48,35 +62,40 @@ function SharedMedicine() {
         "userDetails" : "פרטי משתמש",
     };
 
-    function createData(name, dosage, totalAvailable) {
-        return {
-            name,
-            dosage,
-            totalAvailable,
-            sharingDetails: [
-                {
-                    expDate: '2023-11-31',
-                    amount: 37,
-                    customerId: '11091700',
-                },
-                {
-                    expDate: '2022-09-23',
-                    amount: 132,
-                    customerId: 'Anonymous',
-                },
-            ],
-        };
-    }
-
-
-
     const getShareData = async () => {
         let data = await getRequest(currentUser.stsTokenManager.accessToken,
             ServerConsts.GET_SHARED_MEDICINE);
 
-        setRows(data);
-        console.log(data);
+        let result = data.reduce((r, { hebName: name, dosage: dosage, regNum: regNum, unitType: unitType, ...object }) => {
+            let temp = r.find(o => o.regNum === regNum);
+            if (!temp) r.push(temp = { hebName: name, dosage: dosage, unitType: unitType, regNum: regNum, sharingDetails: [] });
+            temp.sharingDetails.push(object);
+            return r;
+        }, []);
+
+        setRows(result);
     }
+
+    const calculateTotalAvailable = (row) => {
+        let count = 0;
+        row.sharingDetails.forEach((item) => {
+            count += item.count;
+        });
+        return count;
+    }
+
+    const formatDate = (dateString) => {
+        let date = new moment(dateString);
+
+        return date.format('DD/MM/yyyy');
+    }
+
+    const getContactDetails = async (uuid) => {
+        let data = await getDoc(doc(db, "users", uuid));
+        setContactDetails(data.data());
+        console.log(data.data());
+        setShowContactDetails(true);
+    };
 
     function Row(props) {
         const { row } = props;
@@ -95,10 +114,10 @@ function SharedMedicine() {
                         </IconButton>
                     </TableCell>
                     <TableCell component="th" scope="row" align="right">
-                        {row.name}
+                        {row.hebName}
                     </TableCell>
-                    <TableCell align="right">{row.dosage}</TableCell>
-                    <TableCell align="right">{row.totalAvailable}</TableCell>
+                    <TableCell align="right">{row.dosage}{row.unitType==='CAPLET'?<>&nbsp;(mg)</>:<>&nbsp;(ml)</>}</TableCell>
+                    <TableCell align="right">{calculateTotalAvailable(row)}</TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -117,12 +136,23 @@ function SharedMedicine() {
                                     </TableHead>
                                     <TableBody>
                                         {row.sharingDetails.map((detailsRow) => (
-                                            <TableRow key={detailsRow.expDate}>
+                                            <TableRow key={detailsRow.expiration}>
                                                 <TableCell align="right" component="th" scope="row">
-                                                    {detailsRow.expDate}
+                                                    {formatDate(detailsRow.expiration)}
                                                 </TableCell>
-                                                <TableCell align="right">{detailsRow.amount}</TableCell>
-                                                <TableCell align="right">{detailsRow.customerId}</TableCell>
+                                                <TableCell align="right">{detailsRow.count}</TableCell>
+                                                <TableCell align="right">
+                                                    <LoadingButton
+                                                        variant="contained"
+                                                        size="small"
+                                                        endIcon={<ContactPageIcon style={{marginRight: 12}}/>}
+                                                        onClick={() => {getContactDetails(detailsRow.uuid);}}
+                                                        loading={contactDetailsLoading}
+                                                        loadingPosition="end"
+                                                    >
+                                                        פרטי משתמש
+                                                    </LoadingButton>
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -138,45 +168,57 @@ function SharedMedicine() {
     Row.propTypes = {
         row: PropTypes.shape({
             dosage: PropTypes.number.isRequired,
-            totalAvailable: PropTypes.number.isRequired,
+            unitType: PropTypes.string.isRequired,
             sharingDetails: PropTypes.arrayOf(
                 PropTypes.shape({
-                    expDate: PropTypes.string.isRequired,
-                    amount: PropTypes.number.isRequired,
-                    customerId: PropTypes.string.isRequired,
+                    count: PropTypes.number.isRequired,
+                    engName: PropTypes.string.isRequired,
+                    expiration: PropTypes.string.isRequired,
+                    uuid: PropTypes.string.isRequired,
                 }),
             ).isRequired,
-            name: PropTypes.string.isRequired,
+            hebName: PropTypes.string.isRequired,
+            regNum: PropTypes.string.isRequired,
         }).isRequired,
     };
 
-    // const rows = [
-    //     createData('מוקסיפן', 250, 159),
-    //     createData('נוסידקס', 50, 237),
-    //     createData('לוסק', 50, 262),
-    //     createData('אקמול פורטה', 100, 305),
-    //     createData('אוגמנטין', 875, 356),
-    // ];
-
-
     return (
-        <TableContainer component={Paper}>
-            <Table aria-label="collapsible table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell />
-                        <TableCell align="right">{nameMapping.drugName}</TableCell>
-                        <TableCell align="right">{nameMapping.dosage}&nbsp;(mg)</TableCell>
-                        <TableCell align="right">{nameMapping.amountAvailable}</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <Row key={row.name} row={row} />
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <>
+            {showContactDetails &&
+                <>
+                    <TransitionsModal open={showContactDetails} toggleModal={()=>{setShowContactDetails(!showContactDetails)}}>
+                        <h4>{contactDetails.firstName} {contactDetails.lastName}</h4>
+                        <Box paddingBottom={'8px'} display={'flex'}>
+                            <EmailIcon/> &nbsp;&nbsp;{contactDetails.email}
+                        </Box>
+                        <Box paddingBottom={'8px'} display={'flex'}>
+                            <PhoneIcon/> &nbsp;&nbsp;{contactDetails.telephone}
+                        </Box>
+                        <Box paddingBottom={'8px'} display={'flex'}>
+                            <HomeIcon/> &nbsp;&nbsp;{contactDetails.city}
+                        </Box>
+                    </TransitionsModal>
+                </>
+            }
+
+            <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell />
+                            <TableCell align="right">{nameMapping.drugName}</TableCell>
+                            <TableCell align="right">{nameMapping.dosage}</TableCell>
+                            <TableCell align="right">{nameMapping.amountAvailable}</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row) => (
+                            <Row key={row.name} row={row} />
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
     );
 }
 
