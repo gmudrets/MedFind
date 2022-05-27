@@ -20,53 +20,38 @@ export const emailValid = (email) => {
 }
 
 export const isFieldEmpty = (fld) => {
-    return fld.length === 0;
+	return fld.length === 0;
 }
 
 export const isFieldContainsOnlyLetters = (fld) => {
-    let validChars = /^[\u0590-\u05ff -']*$/
-    return !validChars.test(fld);
+	let validChars = /^[\u0590-\u05ff -']*$/
+	return !validChars.test(fld);
+}
+export const isFieldContainsOnlyDigits = (fld) => {
+	let validChars = /^[0-9]*$/
+	return !validChars.test(fld);
 }
 export const phoneNumLength = (phoneNum) => {
-	return phoneNum.length === 10;
+	return phoneNum.length === 10 || phoneNum.length === 0;
 }
-export const phoneNumNumbersOnly = (phoneNum) => {
-	let validChars = /^[0-9]*$/
-	return validChars.test(phoneNum);
-}
-export const cityEmpty = (city) => {
-	return city.length === 0;
-}
-//should be removed on merge
-export const userNameFullValidate = (userName, sendError, short = false) => {
-	if (usernameEmpty(userName)) {
-		sendError("נא הזן שם משתמש");
-		return false;
-	} else if (!usernameMinChars(userName)) {
-		sendError("שם המשתמש חייב להיות באורך 8 תווים לפחות");
-		return false;
-	} else if (!usernameValid(userName)) {
-		sendError("אנא הזן תווים באנגלית וספרות בלבד")
-		return false;
-	}
-	return true;
-}
+
+
 export const firstNameFullValidate = (firstName, sendError, short = false) => {
-	if (firstnameEmpty(firstName)) {
+	if (isFieldEmpty(firstName)) {
 		sendError(short ? "הזן שם פרטי" : "נא הזן שם פרטי");
 		return false;
 	}
 	return true;
 }
 export const lastNameFullValidate = (lastName, sendError, short = false) => {
-	if (lastnameEmpty(lastName)) {
+	if (isFieldEmpty(lastName)) {
 		sendError(short ? "הזן שם משפחה" : "נא הזן שם משפחה");
 		return false;
 	}
 	return true;
 }
 export const mailFullValidate = (mailAddress, sendError, short = false) => {
-	if (emailEmpty(mailAddress)) {
+	if (isFieldEmpty(mailAddress)) {
 		sendError(short ? "הזן אימייל" : "נא הזן כתובת אימייל");
 		return false;
 	} else if (!emailValid(mailAddress)) {
@@ -76,7 +61,7 @@ export const mailFullValidate = (mailAddress, sendError, short = false) => {
 	return true;
 }
 export const passwordFullValidate = (password, sendError, short = false) => {
-	if (passwordEmpty(password)) {
+	if (isFieldEmpty(password)) {
 		sendError(short ? "הזן ססמא" : "נא הזן סיסמה");
 		return false;
 	} else if (!passwordMinChars(password)) {
@@ -95,26 +80,23 @@ export const confirmPasswordFullValidate = (firstPass, secondPass, sendError, sh
 	}
 	return true;
 
-export const isFieldContainsOnlyDigits = (fld) => {
-    let validChars = /^[0-9]*$/
-    return !validChars.test(fld);
 }
 export const phoneNumFullValidate = (phoneNum, sendError, short = false) => {
 	if (!phoneNumLength((phoneNum))) {
 		sendError(short ? "10 ספרות" : "מספר טלפון חייב להיות באורך 10 ספרות בדיוק");
 		return false;
-	} else if (!phoneNumNumbersOnly(phoneNum)) {
+	} else if (!isFieldContainsOnlyDigits(phoneNum)) {
 		sendError(short ? "ספרות בלבד" : "אנא הזן ספרות בלבד");
 		return false;
 	}
 	return true;
 }
 export const cityFullValidate = (city, sendError, short = false) => {
-	if (cityEmpty(city)) {
-		sendError(short ? "הזן עיר" : "נא הזן עיר מגורים");
+	if(isFieldContainsOnlyLetters(city)){
+		sendError(short? "רק עברית"  : "עיר מגורים יכולה להכיל אותיות בעברית בלבד");
 		return false;
 	}
 	return true;
-}
 
+}
 
