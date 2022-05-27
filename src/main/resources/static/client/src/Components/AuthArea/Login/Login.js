@@ -43,7 +43,7 @@ function Login() {
 	const [signInErrorMessage, setSignInErrorMessage] = useState(false);
 	const [isSignedInAlready, setIsSignedInAlready] = useState(true);
 
-	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
 	useEffect(() => {
 		if (currentUser !== '' && isSignedInAlready) {

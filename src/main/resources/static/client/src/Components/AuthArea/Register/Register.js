@@ -34,7 +34,7 @@ function Register() {
 
 	const navigate = useNavigate();
 
-	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
 	useEffect(() => {
 		if (currentUser !== '') {
