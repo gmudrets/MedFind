@@ -26,7 +26,7 @@ public class UserTypeRequest {
                                  @RequestParam String lastName,
                                  @RequestParam UserType requestedType,
                                  @RequestParam String certificateImage)
-                                 throws TokenException{
+                                 throws TokenException {
 
         String uuid;
         try {
@@ -35,7 +35,8 @@ public class UserTypeRequest {
             throw new TokenException("User not found.", e);
         }
 
-        userTypeRequestEntryRepository.save(UserTypeRequestEntry.builder()
+        userTypeRequestEntryRepository.save(
+                UserTypeRequestEntry.builder()
                 .uuid(uuid)
                 .email(email)
                 .firstName(firstName)
@@ -82,13 +83,13 @@ public class UserTypeRequest {
         }
 
         if(requestStatus == RequestStatus.APPROVED){
-            return userTypeRequestEntryRepository.findAllUserTypeRequestsByStatus(RequestStatus.APPROVED);
+            return userTypeRequestEntryRepository.findAllUserTypeRequestsByRequestStatus(RequestStatus.APPROVED);
         }
         else if(requestStatus == RequestStatus.DENIED){
-            return userTypeRequestEntryRepository.findAllUserTypeRequestsByStatus(RequestStatus.DENIED);
+            return userTypeRequestEntryRepository.findAllUserTypeRequestsByRequestStatus(RequestStatus.DENIED);
         }
         else {
-            return userTypeRequestEntryRepository.findAllUserTypeRequestsByStatus(RequestStatus.PENDING);
+            return userTypeRequestEntryRepository.findAllUserTypeRequestsByRequestStatus(RequestStatus.PENDING);
         }
     }
 }

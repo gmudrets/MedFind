@@ -7,9 +7,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface UserTypeRequestEntryRepository extends CrudRepository<UserTypeRequestEntry, Integer> {
+public interface UserTypeRequestEntryRepository extends CrudRepository<UserTypeRequestEntry, Long> {
 
     UserTypeRequestEntry findByUuid(String uuid);
-    List<UserTypeRequestEntry> findAllUserTypeRequestsByStatus(RequestStatus status);
+    List<UserTypeRequestEntry> findAllUserTypeRequestsByRequestStatus(RequestStatus requestStatus);
 
 }
