@@ -136,7 +136,7 @@ function Register() {
 		const passwordValidated = validations.passwordFullValidate(data.get('password'), setPasswordError);
 		const secondPasswordValidated = validations.confirmPasswordFullValidate(data.get('password'), data.get('confirmPassword'), setPasswordError);
 		const phoneNumValidated = validations.phoneNumFullValidate(data.get(ProfileFields.PHONE_NUM), setTelephoneError);
-		const cityValidated = validations.cityFullValidate(data.get(ProfileFields.CITY), setTelephoneError);
+		const cityValidated = validations.cityFullValidate(data.get(ProfileFields.CITY), setCityError);
 
 
 		if ((cityValidated && phoneNumValidated && firstNameValidated && lastNameValidated && mailValidated && passwordValidated && secondPasswordValidated)) {
@@ -249,7 +249,7 @@ function Register() {
 										name={ProfileFields.CITY}
 										autoComplete="city"
 										error={cityError.length !== 0}
-										helperText="אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות"
+										helperText={cityError.length === 0 ? "אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות" : cityError}
 									/>
 								</Grid>
 								<Grid item xs={12}>
@@ -260,7 +260,7 @@ function Register() {
 										name={ProfileFields.PHONE_NUM}
 										autoComplete="telephone"
 										error={telephoneError.length !== 0}
-										helperText="אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות"
+										helperText={telephoneError.length === 0 ? "אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות" : telephoneError}
 									/>
 								</Grid>
 								<Grid item xs={12}>

@@ -25,14 +25,14 @@ export const isFieldEmpty = (fld) => {
 
 export const isFieldContainsOnlyLetters = (fld) => {
 	let validChars = /^[\u0590-\u05ff -']*$/
-	return !validChars.test(fld);
+	return validChars.test(fld);
 }
 export const isFieldContainsOnlyDigits = (fld) => {
 	let validChars = /^[0-9]*$/
-	return !validChars.test(fld);
+	return validChars.test(fld);
 }
 export const phoneNumLength = (phoneNum) => {
-	return phoneNum.length === 10 || phoneNum.length === 0;
+	return phoneNum.length === 10;
 }
 
 
@@ -82,6 +82,9 @@ export const confirmPasswordFullValidate = (firstPass, secondPass, sendError, sh
 
 }
 export const phoneNumFullValidate = (phoneNum, sendError, short = false) => {
+	if(isFieldEmpty(phoneNum)){//phone num is optional, allow to not exist
+		return true;
+	}
 	if (!phoneNumLength((phoneNum))) {
 		sendError(short ? "10 ספרות" : "מספר טלפון חייב להיות באורך 10 ספרות בדיוק");
 		return false;
@@ -92,7 +95,11 @@ export const phoneNumFullValidate = (phoneNum, sendError, short = false) => {
 	return true;
 }
 export const cityFullValidate = (city, sendError, short = false) => {
-	if(isFieldContainsOnlyLetters(city)){
+	console.log(isFieldContainsOnlyLetters(city));
+	if (isFieldEmpty(city)){//city is optional, allow to not exist
+		return true;
+	}
+	if(!isFieldContainsOnlyLetters(city)){
 		sendError(short? "רק עברית"  : "עיר מגורים יכולה להכיל אותיות בעברית בלבד");
 		return false;
 	}
