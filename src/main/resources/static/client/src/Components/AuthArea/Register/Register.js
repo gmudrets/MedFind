@@ -119,7 +119,6 @@ function Register() {
             setRegisterErrorMessage(true);
           }
         })
-
   }
 
   const handleRegisterSuccess = () => {
