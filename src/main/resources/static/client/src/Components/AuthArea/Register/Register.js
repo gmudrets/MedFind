@@ -26,6 +26,8 @@ import createCache from "@emotion/cache";
 import {prefixer} from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import {CacheProvider} from "@emotion/react";
+import {getRequest} from "../../../Utils/AxiosRequests";
+import {ServerConsts} from "../../../Consts/apiPaths";
 
 const theme = createTheme({direction: 'rtl'});
 
@@ -77,22 +79,36 @@ function Register() {
         data.get("password").toString())
         .then(async (userCredential) => {
           try{
-            await setDoc(doc(collection(db,"users"), userCredential.user.uid), JSON.parse(JSON.stringify({
-              uid: userCredential.user.uid,
-              email: data.get("email").toString(),
-              firstName: data.get("firstName").toString(),
-              lastName: data.get("lastName").toString(),
-              userType: data.get("userType").toString(),
-              telephone: data.get("telephone").toString(),
-              city: data.get("city").toString(),
-              allowExtraEmails: true
+            await setDoc(doc(collection(db,"users"),
+                userCredential.user.uid),
+                JSON.parse(JSON.stringify({
+                uid: userCredential.user.uid,
+                userType: types[0],
+                email: data.get("email").toString(),
+                firstName: data.get("firstName").toString(),
+                lastName: data.get("lastName").toString(),
+                telephone: data.get("telephone").toString(),
+                city: data.get("city").toString(),
+                allowExtraEmails: true
             }))).then();
-          }
-          catch(error) {
+          } catch(error) {
             console.log(error);
           }
+
           signOut(auth).then();
+
+          if(data.get("userType") !== types[0]){
+            await getRequest(await auth.currentUser.getIdToken(true),
+                ServerConsts.CREATE_NEW_USERTYPE_REQUEST,
+                {"email" : data.get("email").toString(),
+                "firstName" : data.get("firstName").toString(),
+                "lastName" : data.get("lastName").toString(),
+                "requestedType" : "DOCTOR",
+                "certificateImage" : "defaultValueForNow"});
+          }
+
           setRegisterSuccessMessage(true);
+
         }).catch(error =>{
           if(error.code === 'auth/email-already-in-use'){
             setEmailError("כתובת המייל שבחרת כבר קיימת במערכת. אנא הזן כתובת אחרת או עבור להתחברות.");
