@@ -47,15 +47,12 @@ public class UserTypeRequest {
                 .build());
     }
 
-    // TODO - only admins can change status or view all requests
-
     @GetMapping("/api/changeUserTypeRequestStatus")
     public void changeUserTypeRequestStatus(@RequestHeader(name = "idToken", required = false) String idToken,
                                             @RequestParam String uuid,
                                             @RequestParam RequestStatus requestStatus)
                                             throws TokenException {
 
-        // validates the uuid which confirmed the request is valid. maybe adding admin type and check it?
         try {
             FirebaseValidator.getUidFromIdToken(idToken);
         } catch (FirebaseAuthException e) {
