@@ -5,8 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Tolerate;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Objects;
+
 
 @Getter
 @Setter
