@@ -189,9 +189,7 @@ ProfilePicturePicker.defaultProps = {
 	imageHeight: '150px',
 	imageWidth: '150px',
 	circleImage: true,
-	sendToFireBase: false,
 	title: "תמונת פרופיל",
-	fireBaseKey: 'profilePic',
 	initPic: defualtProfPic
 
 }
