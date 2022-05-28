@@ -80,13 +80,13 @@ public class UserTypeRequest {
         }
 
         if(requestStatus == RequestStatus.APPROVED){
-            return userTypeRequestEntryRepository.findAllUserTypeRequestsByRequestStatus(RequestStatus.APPROVED);
+            return userTypeRequestEntryRepository.findAllByRequestStatus(RequestStatus.APPROVED);
         }
         else if(requestStatus == RequestStatus.DENIED){
-            return userTypeRequestEntryRepository.findAllUserTypeRequestsByRequestStatus(RequestStatus.DENIED);
+            return userTypeRequestEntryRepository.findAllByRequestStatus(RequestStatus.DENIED);
         }
         else {
-            return userTypeRequestEntryRepository.findAllUserTypeRequestsByRequestStatus(RequestStatus.PENDING);
+            return userTypeRequestEntryRepository.findAllByRequestStatus(RequestStatus.PENDING);
         }
     }
 }
