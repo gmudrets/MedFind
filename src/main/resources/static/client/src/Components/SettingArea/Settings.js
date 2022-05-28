@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useReducer, useRef, useState} from 'react';
+import {useEffect, useReducer, useRef, useState} from 'react';
 import Box from '@mui/material/Box';
 
 import {createTheme} from "@mui/material/styles";
@@ -33,6 +33,7 @@ import * as ProfileFields from "../../Consts/ProfileFields";
 import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png';
 import * as validations from "../../Components/AuthArea/Validators/Validators";
 import {useNavigate} from "react-router-dom";
+import * as STATE_PATHS from "../../Consts/StatePaths";
 
 
 // Create rtl cache
@@ -46,6 +47,13 @@ function RTL(props) {
 }
 
 export default function Settings() {
+	const navigate = useNavigate();
+	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
+	useEffect(() => {
+		if (currentUser === ''){
+			navigate("/login");
+		}
+	}, [currentUser]);
 
     const profile = useSelector((state) => getSafe(USER_PROFILE, state));
     const setField = (field, setTo) => {
