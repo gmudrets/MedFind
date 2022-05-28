@@ -30,6 +30,7 @@ import {doc, getDoc} from "firebase/firestore";
 import {db} from "../../../Configs/FirebaseConfig.js"
 import OneSignal from "react-onesignal";
 import * as ONE_SIGNAL from "../../../Consts/OneSignalInfo";
+import {phoneNumLength} from "../Validators/Validators";
 
 function Login() {
 	const theme = createTheme({direction: 'rtl'});
@@ -74,16 +75,22 @@ function Login() {
 			password)
 			.then(async userCredential => {
 				dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
-				const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
-				dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
+
 				OneSignal.init({appId: ONE_SIGNAL.APP_ID,autoResubscribe: true, allowLocalhostAsSecureOrigin: true}).then(() => {
 					setInitialized(true);
 					console.log('worked');
 					OneSignal.showSlidedownPrompt().then(() => {
 						console.log('worked2')
 					});
+					OneSignal.setExternalUserId(userCredential.user.uid);
+					//TODO: maybe phone notfications later
+					// OneSignal.setEmail(userCredential.user.email);
+					// OneSignal.s
 				})
 				setSignInSuccessMessage(true);
+
+				const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
+				dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
 
 			}).catch(error => {
 			console.log("error code: " + error.code + " and message: " + error.message);
