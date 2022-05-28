@@ -48,13 +48,13 @@ function Register() {
     stylisPlugins: [prefixer, rtlPlugin],
   });
 
-  const types = [
-    'משתמש רגיל',
-    'רופא',
-    'צוות רפואי',
-  ];
+  const types = {
+    REGULAR_USER : 'משתמש רגיל',
+    DOCTOR : 'רופא',
+    MEDICAL_STAFF_MEMBER : 'צוות רפואי',
+  };
 
-  const [userType, setUserType] = useState(types[0]);
+  const [userType, setUserType] = useState(types.REGULAR_USER);
 
   // states of fields errors
   const [emailError, setEmailError] = useState("");
@@ -83,7 +83,7 @@ function Register() {
                 userCredential.user.uid),
                 JSON.parse(JSON.stringify({
                 uid: userCredential.user.uid,
-                userType: types[0],
+                userType: types.REGULAR_USER.toString(),
                 email: data.get("email").toString(),
                 firstName: data.get("firstName").toString(),
                 lastName: data.get("lastName").toString(),
@@ -97,13 +97,13 @@ function Register() {
 
           signOut(auth).then();
 
-          if(data.get("userType") !== types[0]){
+          if(data.get("userType") !== types.REGULAR_USER){
             await getRequest(await auth.currentUser.getIdToken(true),
                 ServerConsts.CREATE_NEW_USERTYPE_REQUEST,
                 {"email" : data.get("email").toString(),
                 "firstName" : data.get("firstName").toString(),
                 "lastName" : data.get("lastName").toString(),
-                "requestedType" : data.get("userType") === types[1] ? "DOCTOR":"MEDICAL_STAFF_MEMBER",
+                "requestedType" : data.get("userType") === types.DOCTOR ? "DOCTOR":"MEDICAL_STAFF_MEMBER",
                 "certificateImage" : "defaultValueForNow"});
           }
 
@@ -252,7 +252,7 @@ function Register() {
                     value={userType}
                     onChange={handleSelectUserType}
                   >
-                    {types.map((type) => (
+                    {Object.values(types).map((type) => (
                     <MenuItem key={type} value={type}>
                       {type}
                     </MenuItem>
