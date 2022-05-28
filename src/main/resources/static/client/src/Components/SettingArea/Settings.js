@@ -13,6 +13,7 @@ import createCache from '@emotion/cache';
 import {Button, Dialog} from "@mui/material";
 import EditableTextWithButtons from "../UI/EditableTextWithButtons";
 import {useDispatch, useSelector} from "react-redux";
+import PicturePicker from "../UI/PicturePicker";
 import {getSafe} from "../../Utils/Utils";
 import Typography from "@mui/material/Typography";
 import SettingsCheckBox from "../UI/SettingsCheckBox";
@@ -146,7 +147,9 @@ export default function Settings() {
 		setSecondPasswordFocus(false);
 
 
-	}
+                        <Grid item xs={12}>
+                            <PicturePicker onUpdateProfilePic={handleNewProfPic} />
+                        </Grid>
 
 	const handleFirstNameSubmit = (s) => {
 		if (validations.firstNameFullValidate(s, setFirstNameError, true)) {
