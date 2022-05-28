@@ -343,10 +343,6 @@ function Register() {
                       helperText={passwordError.length !== 0 ? passwordError : null}
                   />
                 </Grid>
-                {/*TO ADD PICTURE*/}
-                {
-                  userType!=="משתמש רגיל" && (<p> או יופי </p>)
-                }
                 <Grid item xs={12}>
                   <FormControlLabel
                     control={<Checkbox id="allowExtraEmails" value="allowExtraEmails" color="primary" />}
