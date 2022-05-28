@@ -28,6 +28,8 @@ import rtlPlugin from "stylis-plugin-rtl";
 import {CacheProvider} from "@emotion/react";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "../../../Configs/FirebaseConfig.js"
+import OneSignal from "react-onesignal";
+import * as ONE_SIGNAL from "../../../Consts/OneSignalInfo";
 
 function Login() {
 	const theme = createTheme({direction: 'rtl'});
@@ -42,6 +44,7 @@ function Login() {
 	const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
 	const [signInErrorMessage, setSignInErrorMessage] = useState(false);
 	const [isSignedInAlready, setIsSignedInAlready] = useState(true);
+	const [initialized, setInitialized] = useState(false);
 
 	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
@@ -71,9 +74,17 @@ function Login() {
 			password)
 			.then(async userCredential => {
 				dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
-				setSignInSuccessMessage(true);
 				const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
 				dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
+				OneSignal.init({appId: ONE_SIGNAL.APP_ID,autoResubscribe: true, allowLocalhostAsSecureOrigin: true}).then(() => {
+					setInitialized(true);
+					console.log('worked');
+					OneSignal.showSlidedownPrompt().then(() => {
+						console.log('worked2')
+					});
+				})
+				setSignInSuccessMessage(true);
+
 			}).catch(error => {
 			console.log("error code: " + error.code + " and message: " + error.message);
 
