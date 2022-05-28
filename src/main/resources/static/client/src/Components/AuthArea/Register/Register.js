@@ -103,7 +103,7 @@ function Register() {
                 {"email" : data.get("email").toString(),
                 "firstName" : data.get("firstName").toString(),
                 "lastName" : data.get("lastName").toString(),
-                "requestedType" : "DOCTOR",
+                "requestedType" : data.get("userType") === types[1] ? "DOCTOR":"MEDICAL_STAFF_MEMBER",
                 "certificateImage" : "defaultValueForNow"});
           }
 
