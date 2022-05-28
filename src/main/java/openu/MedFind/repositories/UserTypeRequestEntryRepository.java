@@ -10,6 +10,6 @@ import java.util.List;
 public interface UserTypeRequestEntryRepository extends CrudRepository<UserTypeRequestEntry, Long> {
 
     UserTypeRequestEntry findByUuid(String uuid);
-    List<UserTypeRequestEntry> findAllUserTypeRequestsByRequestStatus(RequestStatus requestStatus);
+    List<UserTypeRequestEntry> findAllByRequestStatus(RequestStatus requestStatus);
 
 }
