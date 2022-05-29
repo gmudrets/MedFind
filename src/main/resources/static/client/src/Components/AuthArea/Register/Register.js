@@ -122,10 +122,6 @@ function Register() {
         })
   }
 
-    const handleSelectUserType = (event) => {
-        setUserType(event.target.value);
-    };
-
     const handleRegisterSuccess = () => {
         navigate("/login");
     }
