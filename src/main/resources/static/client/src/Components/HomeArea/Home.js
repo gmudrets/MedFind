@@ -30,7 +30,7 @@ import {auth} from '../../Configs/FirebaseConfig'
 function Home() {
   const theme = createTheme({direction: 'rtl'});
   const navigate = useNavigate();
-  const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+  const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
   const [ items, setItems ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");

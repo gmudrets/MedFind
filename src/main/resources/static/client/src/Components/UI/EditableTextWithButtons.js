@@ -87,6 +87,7 @@ export default function EditableTextWithButtons(props) {
     const handleClearClick = () => {
         props.beforeEditModeFinish(props.id);
         setIsEditMode(false);
+        setCurrentlyValidated(true);
         setCurrentText(lastSubmitted);
         if (props.password) {
             setShowPassword(false);
@@ -101,10 +102,10 @@ export default function EditableTextWithButtons(props) {
         }
     }
 
-    const myHandleSubmit = () => {
+    const myHandleSubmit = async () => {
         const currentTextInField = currentText;
         setSubmiting(true);
-        if (props.onSubmit(currentTextInField)) {
+        if (await props.onSubmit(currentTextInField)) {
             setLastSubmitted(currentTextInField);
             setCurrentText(currentTextInField);
             props.beforeEditModeFinish(props.id);
@@ -113,10 +114,10 @@ export default function EditableTextWithButtons(props) {
                 setShowPassword(false);
             }
         } else {
-            if (props.validateOnlyOnSubmit) {
+            if (!props.validateOnlyOnSubmit) {
                 alert("Error Submiting " + props.label)
                 setCurrentText(lastSubmitted);
-            }else{
+            } else {
                 setCurrentlyValidated(false);
             }
         }
@@ -173,7 +174,7 @@ export default function EditableTextWithButtons(props) {
                         fullWidth
                         sx={{maxWidth: "500px", maxHeight: "30px"}}
                         onClick={handleClickInside}
-                        helperText={!currentlyValidated? props.errorHint: ""}
+                        helperText={submiting && props.validateOnlyOnSubmit?'מוודא...': !currentlyValidated? props.errorHint: ""}
 
                     />
 
