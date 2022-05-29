@@ -23,6 +23,8 @@ import createCache from "@emotion/cache";
 import {prefixer} from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import {CacheProvider} from "@emotion/react";
+import {getRequest} from "../../../Utils/AxiosRequests";
+import {ServerConsts} from "../../../Consts/apiPaths";
 import {auth, db} from "../../../Configs/FirebaseConfig";
 import {createUserWithEmailAndPassword, signOut} from "firebase/auth";
 import {collection, doc, setDoc} from "firebase/firestore";
@@ -36,75 +38,89 @@ function Register() {
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
-    useEffect(() => {
-        if (currentUser !== '') {
-            navigate("/");
-        }
-    }, [currentUser]);
-
-    const cacheRtl = createCache({
-        key: 'muirtl',
-        stylisPlugins: [prefixer, rtlPlugin],
-    });
-
-    const types = [
-        'משתמש רגיל',
-        'רופא',
-        'צוות רפואי',
-    ];
-
-    const [userType, setUserType] = useState(types[0]);
-
-    // states of fields errors
-    const [emailError, setEmailError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
-    const [firstNameError, setFirstNameError] = useState("");
-    const [lastNameError, setLastNameError] = useState("");
-    const [telephoneError, setTelephoneError] = useState("");
-    const [cityError, setCityError] = useState("");
-
-    const [registerSuccessMessage, setRegisterSuccessMessage] = useState(false);
-    const [registerErrorMessage, setRegisterErrorMessage] = useState(false);
-
-    const handleSelectUserType = (event) => {
-        setUserType(event.target.value);
-    };
-
-    // checks if the user email is not in use and password meets requirements.
-    // if not, raise an error. else, register the user to firebase + saving user info in "users" collection firestore.
-    const registerNewUser = async (data) => {
-        await createUserWithEmailAndPassword(auth,
-            data.get("email").toString(),
-            data.get("password").toString())
-            .then(async (userCredential) => {
-                try {
-                    await setDoc(doc(collection(db, "users"), userCredential.user.uid), JSON.parse(JSON.stringify({
-                        uid: userCredential.user.uid,
-                        email: data.get("email").toString(),
-                        firstName: data.get("firstName").toString(),
-                        lastName: data.get("lastName").toString(),
-                        userType: data.get("userType").toString(),
-                        telephone: data.get("telephone").toString(),
-                        city: data.get("city").toString(),
-                        allowExtraEmails: true
-                    }))).then();
-                } catch (error) {
-                    console.log(error);
-                }
-                signOut(auth).then();
-                setRegisterSuccessMessage(true);
-            }).catch(error => {
-                if (error.code === 'auth/email-already-in-use') {
-                    setEmailError("כתובת המייל שבחרת כבר קיימת במערכת. אנא הזן כתובת אחרת או עבור להתחברות.");
-                    setRegisterErrorMessage(true);
-                }
-                if (error.code === 'auth/weak-password') {
-                    setPasswordError("הסיסמא שבחרת חלשה מידי. אנא בחר סיסמא חזקה יותר.");
-                    setRegisterErrorMessage(true);
-                }
-            })
-
+  useEffect(() => {
+    if (currentUser !== ''){
+      navigate("/");
     }
+  }, [currentUser]);
+
+  const cacheRtl = createCache({
+    key: 'muirtl',
+    stylisPlugins: [prefixer, rtlPlugin],
+  });
+
+  const types = {
+    REGULAR_USER : 'משתמש רגיל',
+    DOCTOR : 'רופא',
+    MEDICAL_STAFF_MEMBER : 'צוות רפואי',
+  };
+
+  const [userType, setUserType] = useState(types.REGULAR_USER);
+
+  // states of fields errors
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [telephoneError, setTelephoneError] = useState("");
+  const [cityError, setCityError] = useState("");
+
+  const [registerSuccessMessage, setRegisterSuccessMessage] = useState(false);
+  const [registerErrorMessage, setRegisterErrorMessage] = useState(false);
+
+  const handleSelectUserType = (event) => {
+    setUserType(event.target.value);
+  };
+
+  // checks if the user email is not in use and password meets requirements.
+  // if not, raise an error. else, register the user to firebase + saving user info in "users" collection firestore.
+  const registerNewUser = async (data) => {
+    await createUserWithEmailAndPassword(auth,
+        data.get("email").toString(),
+        data.get("password").toString())
+        .then(async (userCredential) => {
+          try{
+            await setDoc(doc(collection(db,"users"),
+                userCredential.user.uid),
+                JSON.parse(JSON.stringify({
+                uid: userCredential.user.uid,
+                userType: types.REGULAR_USER.toString(),
+                email: data.get("email").toString(),
+                firstName: data.get("firstName").toString(),
+                lastName: data.get("lastName").toString(),
+                telephone: data.get("telephone").toString(),
+                city: data.get("city").toString(),
+                allowExtraEmails: true
+            }))).then();
+          } catch(error) {
+            console.log(error);
+          }
+
+          signOut(auth).then();
+
+          if(data.get("userType") !== types.REGULAR_USER){
+            await getRequest(await auth.currentUser.getIdToken(true),
+                ServerConsts.CREATE_NEW_USERTYPE_REQUEST,
+                {"email" : data.get("email").toString(),
+                "firstName" : data.get("firstName").toString(),
+                "lastName" : data.get("lastName").toString(),
+                "requestedType" : data.get("userType") === types.DOCTOR ? "DOCTOR":"MEDICAL_STAFF_MEMBER",
+                "certificateImage" : "defaultValueForNow"});
+          }
+
+          setRegisterSuccessMessage(true);
+
+        }).catch(error =>{
+          if(error.code === 'auth/email-already-in-use'){
+            setEmailError("כתובת המייל שבחרת כבר קיימת במערכת. אנא הזן כתובת אחרת או עבור להתחברות.");
+            setRegisterErrorMessage(true);
+          }
+          if(error.code === 'auth/weak-password'){
+            setPasswordError("הסיסמא שבחרת חלשה מידי. אנא בחר סיסמא חזקה יותר.");
+            setRegisterErrorMessage(true);
+          }
+        })
+  }
 
     const handleRegisterSuccess = () => {
         navigate("/login");
@@ -145,6 +161,7 @@ function Register() {
             setRegisterErrorMessage(true);
         }
     };
+  
     return (
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
@@ -198,7 +215,7 @@ function Register() {
                                         value={userType}
                                         onChange={handleSelectUserType}
                                     >
-                                        {types.map((type) => (
+                                {Object.values(types).map((type) => (
                                             <MenuItem key={type} value={type}>
                                                 {type}
                                             </MenuItem>
