@@ -15,7 +15,7 @@ import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png'
 
 export default function ProfilePicturePicker(props) {
     const fileInput = createRef();
-    const [img, setImg] = React.useState(defualtProfPic);
+    const [img, setImg] = React.useState(props.initPic);
     const [pointerInUpload, setPointerInUpload] = React.useState(false);
     const [pointerInTake, setPointerInTake] = React.useState(false);
     const [cameraOpen, setCameraOpen] = React.useState(false);
@@ -175,7 +175,8 @@ export default function ProfilePicturePicker(props) {
 ProfilePicturePicker.defaultProps = {
     onUpdateProfilePic: (src) => {
         return true;
-    }
+    },
+    initPic: defualtProfPic
 
 }
 

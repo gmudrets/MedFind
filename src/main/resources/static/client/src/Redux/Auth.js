@@ -1,8 +1,13 @@
 import initialState from "./InitialState"
+import {getAuth, onAuthStateChanged} from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import {db} from "../../src/Configs/FirebaseConfig.js"
+
 export const REQUEST_LOGIN = "@@auth/REQUEST_LOGIN"
 export const REQUEST_LOGIN_FAILURE = "@@auth/REQUEST_LOGIN_FAILURE"
 export const REQUEST_LOGIN_SUCCESS = "@@auth/REQUEST_LOGIN_SUCCESS"
 export const REQUEST_LOG_USER_OUT = "@@auth/REQUEST_LOG_USER_OUT"
+
 
 export default function authReducer(state = initialState.auth, action = {}) {
   switch(action.type) {
