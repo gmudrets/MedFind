@@ -25,7 +25,10 @@ import {getSafe} from "../../../Utils/Utils";
 export default function MenuDrawer() {
 
   const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
-  const isDoctor = true; //TODO: implement
+  const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
+  const DOCTOR = 'רופא'
+  const isDoctor = profile.userType===DOCTOR;
+
 
   const drawerWidth = 250;
   const anchor='right';

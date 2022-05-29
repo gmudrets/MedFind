@@ -29,22 +29,32 @@ import HomeIcon from '@mui/icons-material/Home';
 import LoadingButton from "@mui/lab/LoadingButton";
 import moment from "moment";
 import TransitionsModal from "../UI/Modal/Modal";
+import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
 
 function SharedMedicine() {
 
     const navigate = useNavigate();
-    const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
-    const isDoctor = true; //TODO: implement
+    const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
+    const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
     const [rows, setRows] = useState([]);
     const [contactDetailsLoading, setContactDetailsLoading] = useState(false);
     const [showContactDetails, setShowContactDetails] = useState(false);
     const [contactDetails, setContactDetails] = useState({});
+    const [ loading, setLoading ] = useState(false);
+    const DOCTOR = 'רופא'
+    const isDoctor = profile.userType===DOCTOR;
 
     useEffect(() => {
         if (!isDoctor){
             navigate("/");
         }
-    });
+    },[isDoctor]);
+
+    useEffect(() => {
+        if (currentUser === ''){
+            navigate("/login");
+        }
+    }, [currentUser]);
 
     useEffect(() => {
         if(rows.length===0){
@@ -63,6 +73,7 @@ function SharedMedicine() {
     };
 
     const getShareData = async () => {
+        setLoading(true);
         let data = await getRequest(currentUser.stsTokenManager.accessToken,
             ServerConsts.GET_SHARED_MEDICINE);
 
@@ -74,6 +85,7 @@ function SharedMedicine() {
         }, []);
 
         setRows(result);
+        setLoading(false);
     }
 
     const calculateTotalAvailable = (row) => {
@@ -183,6 +195,7 @@ function SharedMedicine() {
 
     return (
         <>
+            <CircularProgressBackdrop open={loading} toggle={setLoading}/>
             {showContactDetails &&
                 <>
                     <TransitionsModal open={showContactDetails} toggleModal={()=>{setShowContactDetails(!showContactDetails)}}>
