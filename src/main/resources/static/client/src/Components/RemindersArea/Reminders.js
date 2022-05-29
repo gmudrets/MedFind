@@ -61,6 +61,7 @@ export default function Reminders() {
         if (currentUser === ''){
             navigate("/login");
         }
+
     }, [currentUser]);
     const [onReminderCreation, setOnReminderCreation] = useState(false);
     const toggleOnReminderCreation = () => {

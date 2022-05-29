@@ -25,6 +25,12 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {TimePicker} from "@mui/x-date-pickers/TimePicker";
 import {DatePicker} from "@mui/x-date-pickers";
 import {createTheme} from "@mui/material/styles";
+import {getRequest} from "../../Utils/AxiosRequests";
+import {useSelector} from "react-redux";
+import {getSafe} from "../../Utils/Utils";
+import {USER_PROFILE} from "../../Consts/StatePaths";
+import {getAuth} from "firebase/auth";
+import {ServerConsts} from "../../Consts/apiPaths";
 
 export const TITLE = 'title';
 export const MEDICINE = 'medicine';
@@ -52,7 +58,8 @@ export const daysWeekOptions = [
 export const untilTypeOptions = [
     'תאריך',
     'כמות תזכורת'
-]
+];
+
 
 const initilizeWeekDaysSelected = () => {
     const today = new Date().getDay();
@@ -65,9 +72,13 @@ const getTomorow = () => {
 }
 
 function RemindersCreateForm(props) {
+    // const auth = getAuth().currentUser.uid;
+    // const profile = useSelector((state) => getSafe(USER_PROFILE, state));
+    //
+
     const maxTimes = 15;
     const ltrTheme = createTheme({direction: 'ltr'});
-
+    const defualtMedicne = "בחר תרופה";
 
     const [stopStream, setStopStream] = useState(false);
     const [timesArray, setTimesArray] = useState(props.timesArray);
@@ -80,10 +91,37 @@ function RemindersCreateForm(props) {
     const [eachManyWeeks, setEachManyWeeks] = React.useState(props.eachManyWeeks);
     const [returnsType, setReturnsType] = useState(props.returnsType);
     const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
-    const [medicene, setMedicene] = React.useState();
     const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
     const [remindersRemain, setRemindersRemain] = React.useState(2);
     const [untilDate, setUntilDate] = React.useState(props.untilDate);
+    const [data,setData] = React.useState(["null"]);
+    const [medicineList,setMedicineList] = React.useState(["טוען תרופות..."]);
+    const [medicine,setMedicine] = React.useState("טוען תרופות...");
+    useEffect(async () => {
+        if (timesArray.length == maxTimes) {
+            setReachedMaxTimes(true);
+        } else {
+            setReachedMaxTimes(false);
+        }
+        const curData =await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE);
+        setData(curData);
+        let medicenes = [defualtMedicne];
+        for (let i = 0; i < curData.length; i++) {
+            medicenes[i+1] = curData[i]['hebName'];
+        }
+        setMedicineList(medicenes);
+        setMedicine(medicenes[0]);
+
+    }, [])
+    
+    const handleMedicineChange = (event) => {
+      if (medicineList[0] === defualtMedicne){
+          const next = [...medicineList];
+          next.splice(0,1);
+          setMedicineList(next);
+      }
+      setMedicine(event.target.value);
+    }
 
 
     const ITEM_HEIGHT = 48;
@@ -190,13 +228,7 @@ function RemindersCreateForm(props) {
 
     };
 
-    useEffect(() => {
-        if (timesArray.length == maxTimes) {
-            setReachedMaxTimes(true);
-        } else {
-            setReachedMaxTimes(false);
-        }
-    });
+
     return (
         <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
                sx={{
@@ -241,10 +273,10 @@ function RemindersCreateForm(props) {
                                     id={MEDICINE}
                                     label="תרופה"
                                     name={MEDICINE}
-                                    value={returnsType}
-                                    onChange={handleSelectUserType}
+                                    value={medicine}
+                                    onChange={handleMedicineChange}
                                 >
-                                    {returnsTypeOptions.map((type) => (
+                                    {medicineList.map((type) => (
                                         <MenuItem key={type} value={type}>
                                             {type}
                                         </MenuItem>
@@ -453,6 +485,7 @@ RemindersCreateForm.defaultProps = {
     handleSubmit: (res) => {
         return true;
     }
+
 
 }
 export default RemindersCreateForm;
