@@ -31,53 +31,56 @@ import {DatePicker} from "@mui/x-date-pickers";
 import {createTheme} from "@mui/material/styles";
 import {CacheProvider} from "@emotion/react";
 
+const returnsTypeOptions = [
+    'לא חוזר',
+    'כל יום',
+    'כל כמה ימים',
+    'כל שבוע',
+    'כל כמה שבועות',
+];
+const daysWeekOptions = [
+    'ראשון',
+    'שני',
+    'שלישי',
+    'רביעי',
+    'חמישי',
+    'שישי',
+    'שבת'
+];
+const untilTypeOptions = [
+    'תאריך',
+    'כמות תזכורת'
+]
+const initilizeWeekDaysSelected = () => {
+    const today = new Date().getDay();
+    return [daysWeekOptions[today]];
+}
+const getTomorow = () => {
+    let date = new Date();
+    date.setDate(date.getDate() + 1);
+    return date;
+}
 function RemindersCreateForm(props) {
     const maxTimes = 15;
     const ltrTheme = createTheme({direction: 'ltr'});
 
-    const returnsTypeOptions = [
-        'לא חוזר',
-        'כל יום',
-        'כל כמה ימים',
-        'כל שבוע',
-        'כל כמה שבועות',
-    ];
-    const daysWeekOptions = [
-        'ראשון',
-        'שני',
-        'שלישי',
-        'רביעי',
-        'חמישי',
-        'שישי',
-        'שבת'
-    ];
-    const untilTypeOptions = [
-        'תאריך',
-        'כמות תזכורת'
-    ]
-    const initilizeWeekDaysSelected = () => {
-        const today = new Date().getDay();
-        return [daysWeekOptions[today]];
-    }
-    const getTomorow = () => {
-        let date = new Date();
-        date.setDate(date.getDate() + 1);
-        return date;
-    }
+
+
     const [stopStream, setStopStream] = useState(false);
-    const [timesArray, setTimesArray] = useState([null]);
-    const [name, setName] = React.useState("");
+    const [timesArray, setTimesArray] = useState(props.timesArray);
+    const [name, setName] = React.useState(props.name);
     const [value, setValue] = React.useState(null);
     const [hasErrorArr, setHasErrorArr] = React.useState(new Array(15).fill(false));
     const [triedSubmit, setTriedSubmitted] = React.useState(false);
     const [reachedMaxTimes, setReachedMaxTimes] = React.useState(false);
-    const [eachManyDays, setEachManyDays] = React.useState(2);
-    const [eachManyWeeks, setEachManyWeeks] = React.useState(2);
-    const [returnsType, setReturnsType] = useState(returnsTypeOptions[0]);
-    const [weekDaysSelected, setWeekDaysSelected] = React.useState(initilizeWeekDaysSelected());
+    const [eachManyDays, setEachManyDays] = React.useState(props.eachManyDays);
+    const [eachManyWeeks, setEachManyWeeks] = React.useState(props.eachManyWeeks);
+    const [returnsType, setReturnsType] = useState(props.returnsType);
+    const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
+	const [medicene,setMedicene] = React.useState();
     const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
     const [remindersRemain, setRemindersRemain] = React.useState(2);
-    const [untilDate, setUntilDate] = React.useState(getTomorow);//tommorow
+    const [untilDate, setUntilDate] = React.useState(props.untilDate);
 
 
     const ITEM_HEIGHT = 48;
@@ -122,7 +125,6 @@ function RemindersCreateForm(props) {
 
     const showError = (time, index) => {
         let hasError = !validateTime(time, index);
-        console.log(hasError + "\n")
         if (!triedSubmit && time == null) {
             return false;
         } else {
@@ -163,7 +165,6 @@ function RemindersCreateForm(props) {
         const next = [...timesArray, null];
         setTimesArray(next);
 
-        console.log(next);
     }
 
     const handleRemoveTime = (index) => {
@@ -175,13 +176,11 @@ function RemindersCreateForm(props) {
         setReturnsType(event.target.value);
     };
 
-    const handleSubmit = (event) => {
+    const myHandleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+		const value = Object.fromEntries(data.entries());
+		console.log(value);
     };
 
     useEffect(() => {
@@ -190,7 +189,6 @@ function RemindersCreateForm(props) {
         } else {
             setReachedMaxTimes(false);
         }
-        console.log(weekDaysSelected);
     });
     return (
         <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
@@ -217,17 +215,35 @@ function RemindersCreateForm(props) {
                     <Typography component="h1" variant="h5">
                         צור תזכורת
                     </Typography>
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{mt: 3}}>
+                    <Box component="form" noValidate onSubmit={myHandleSubmit} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
                                     id="title"
+									name='tile'
                                     label="כותרת"
                                     value={name}
                                     onChange={handleNameChange}
                                 />
                             </Grid>
+							<Grid item xs={12}>
+								<TextField
+									select
+									fullWidth
+									id="returns"
+									label="תרופה"
+									name="returns"
+									value={returnsType}
+									onChange={handleSelectUserType}
+								>
+									{returnsTypeOptions.map((type) => (
+										<MenuItem key={type} value={type}>
+											{type}
+										</MenuItem>
+									))}
+								</TextField>
+							</Grid>
                             {timesArray.map((time, index) =>
                                 <Grid item xs={12} key={"test123" + index}>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -415,5 +431,17 @@ function RemindersCreateForm(props) {
     )
         ;
 }
+RemindersCreateForm.defaultProps = {
+	timesArray: [null],
+    name: "",
+    returnsType: returnsTypeOptions[0],
+    eachManyDays: 2,
+    eachManyWeeks:2,
+    weekDays: initilizeWeekDaysSelected(),
+    untilDate:getTomorow(),
+	handleSubmit: (res)=>{
+		return true;
+	}
 
+}
 export default RemindersCreateForm;
