@@ -64,7 +64,8 @@ export default function Reminders() {
     }, [currentUser]);
     const [onReminderCreation, setOnReminderCreation] = useState(false);
     const toggleOnReminderCreation = () => {
-        setOnReminderCreation(!onReminderCreation);
+        console.log("hello")
+        setOnReminderCreation((prevState => !prevState));
     }
     const loadReminders = () => {
         //TODO: load data, currently will create fake data
@@ -72,6 +73,9 @@ export default function Reminders() {
     }
     const handleAddClick = () => {
         setOnReminderCreation(true);
+    }
+    const handleSubmit = (k)=>{
+        toggleOnReminderCreation();
     }
     return (
         <CacheProvider value={cacheRtl}>
@@ -88,7 +92,7 @@ export default function Reminders() {
                         </Grid>
                     </Box>
                     <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
-                        <RemindersCreateForm/>
+                        <RemindersCreateForm handleSubmit = {handleSubmit}/>
                     </TransitionsModal>
                 </React.Fragment>
             </ThemeProvider>

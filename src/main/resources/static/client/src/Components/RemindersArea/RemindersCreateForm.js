@@ -53,6 +53,7 @@ export const untilTypeOptions = [
     'תאריך',
     'כמות תזכורת'
 ]
+
 const initilizeWeekDaysSelected = () => {
     const today = new Date().getDay();
     return [daysWeekOptions[today]];
@@ -62,10 +63,10 @@ const getTomorow = () => {
     date.setDate(date.getDate() + 1);
     return date;
 }
+
 function RemindersCreateForm(props) {
     const maxTimes = 15;
     const ltrTheme = createTheme({direction: 'ltr'});
-
 
 
     const [stopStream, setStopStream] = useState(false);
@@ -79,7 +80,7 @@ function RemindersCreateForm(props) {
     const [eachManyWeeks, setEachManyWeeks] = React.useState(props.eachManyWeeks);
     const [returnsType, setReturnsType] = useState(props.returnsType);
     const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
-	const [medicene,setMedicene] = React.useState();
+    const [medicene, setMedicene] = React.useState();
     const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
     const [remindersRemain, setRemindersRemain] = React.useState(2);
     const [untilDate, setUntilDate] = React.useState(props.untilDate);
@@ -181,10 +182,12 @@ function RemindersCreateForm(props) {
     const myHandleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-		const value = Object.fromEntries(data.entries());
-		value[TIMES_ARRAY] = timesArray;
+        const value = Object.fromEntries(data.entries());
+        value[TIMES_ARRAY] = timesArray;
         value[WEEK_DAYS_SELECTED] = weekDaysSelected;
-		console.log(value);
+        props.handleSubmit(value);
+        console.log(value);
+
     };
 
     useEffect(() => {
@@ -225,29 +228,29 @@ function RemindersCreateForm(props) {
                                 <TextField
                                     fullWidth
                                     id={TITLE}
-									name={TITLE}
+                                    name={TITLE}
                                     label="כותרת"
                                     value={name}
                                     onChange={handleNameChange}
                                 />
                             </Grid>
-							<Grid item xs={12}>
-								<TextField
-									select
-									fullWidth
-									id={MEDICINE}
-									label="תרופה"
-									name={MEDICINE}
-									value={returnsType}
-									onChange={handleSelectUserType}
-								>
-									{returnsTypeOptions.map((type) => (
-										<MenuItem key={type} value={type}>
-											{type}
-										</MenuItem>
-									))}
-								</TextField>
-							</Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    select
+                                    fullWidth
+                                    id={MEDICINE}
+                                    label="תרופה"
+                                    name={MEDICINE}
+                                    value={returnsType}
+                                    onChange={handleSelectUserType}
+                                >
+                                    {returnsTypeOptions.map((type) => (
+                                        <MenuItem key={type} value={type}>
+                                            {type}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
                             {timesArray.map((time, index) =>
                                 <Grid item xs={12} key={"test123" + index}>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -323,7 +326,7 @@ function RemindersCreateForm(props) {
                                     <TextField
                                         id={WEEKS_NUMBER}
                                         label="מספר שבועות"
-                                        name = {WEEKS_NUMBER}
+                                        name={WEEKS_NUMBER}
                                         type="number"
                                         InputLabelProps={{
                                             shrink: true,
@@ -361,7 +364,7 @@ function RemindersCreateForm(props) {
                                 </Grid>
                             }
                             {returnsType != returnsTypeOptions[0] &&
-                                    <Grid item xs={12}><Divider/></Grid>}
+                                <Grid item xs={12}><Divider/></Grid>}
                             {/*        <Grid item xs={5}>*/}
                             {/*            <TextField*/}
                             {/*                select*/}
@@ -387,8 +390,8 @@ function RemindersCreateForm(props) {
                                         <ThemeProvider theme={ltrTheme}>
                                             <DatePicker
                                                 label="חזור עד"
-                                                id = {UNTIL_DATE}
-                                                name = {UNTIL_DATE}
+                                                id={UNTIL_DATE}
+                                                name={UNTIL_DATE}
                                                 value={untilDate}
                                                 onChange={handleUntilDateChange}
                                                 views={["year", "month", "day"]}
@@ -438,17 +441,18 @@ function RemindersCreateForm(props) {
     )
         ;
 }
+
 RemindersCreateForm.defaultProps = {
-	timesArray: [null],
+    timesArray: [null],
     name: "",
     returnsType: returnsTypeOptions[0],
     eachManyDays: 2,
-    eachManyWeeks:2,
+    eachManyWeeks: 2,
     weekDays: initilizeWeekDaysSelected(),
-    untilDate:getTomorow(),
-	handleSubmit: (res)=>{
-		return true;
-	}
+    untilDate: getTomorow(),
+    handleSubmit: (res) => {
+        return true;
+    }
 
 }
 export default RemindersCreateForm;
