@@ -11,7 +11,6 @@ export default function SettingsCheckBox(props) {
                 label={props.label}
                 labelPlacement="end"
                 onChange={props.onChange}
-                on
 
             />
         </FormGroup>
