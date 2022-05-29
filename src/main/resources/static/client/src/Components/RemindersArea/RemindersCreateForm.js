@@ -1,14 +1,11 @@
 import {Box, Divider, ThemeProvider} from "@mui/material";
-import {getThemeProps} from "@mui/system";
 import React, {useEffect, useState} from "react";
-import BarcodeScannerComponent from "react-qr-barcode-scanner";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Button from "@mui/material/Button";
 import CancelIcon from '@mui/icons-material/Cancel';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -18,7 +15,6 @@ import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
-import Link from "@mui/material/Link";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import AddAlarmIcon from '@mui/icons-material/AddAlarm';
 import IconButton from "@mui/material/IconButton";
@@ -29,16 +25,22 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {TimePicker} from "@mui/x-date-pickers/TimePicker";
 import {DatePicker} from "@mui/x-date-pickers";
 import {createTheme} from "@mui/material/styles";
-import {CacheProvider} from "@emotion/react";
 
-const returnsTypeOptions = [
+export const TITLE = 'title';
+export const MEDICINE = 'medicine';
+export const TIMES_ARRAY = 'timesArray';
+export const RETURNS_TYPE = 'returnType';
+export const WEEK_DAYS_SELECTED = 'weekDays';
+export const WEEKS_NUMBER = 'weeksNumber';
+export const UNTIL_DATE = 'untilDate'
+export const returnsTypeOptions = [
     'לא חוזר',
     'כל יום',
     'כל כמה ימים',
     'כל שבוע',
     'כל כמה שבועות',
 ];
-const daysWeekOptions = [
+export const daysWeekOptions = [
     'ראשון',
     'שני',
     'שלישי',
@@ -47,7 +49,7 @@ const daysWeekOptions = [
     'שישי',
     'שבת'
 ];
-const untilTypeOptions = [
+export const untilTypeOptions = [
     'תאריך',
     'כמות תזכורת'
 ]
@@ -180,6 +182,8 @@ function RemindersCreateForm(props) {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 		const value = Object.fromEntries(data.entries());
+		value[TIMES_ARRAY] = timesArray;
+        value[WEEK_DAYS_SELECTED] = weekDaysSelected;
 		console.log(value);
     };
 
@@ -220,8 +224,8 @@ function RemindersCreateForm(props) {
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
-                                    id="title"
-									name='tile'
+                                    id={TITLE}
+									name={TITLE}
                                     label="כותרת"
                                     value={name}
                                     onChange={handleNameChange}
@@ -231,9 +235,9 @@ function RemindersCreateForm(props) {
 								<TextField
 									select
 									fullWidth
-									id="returns"
+									id={MEDICINE}
 									label="תרופה"
-									name="returns"
+									name={MEDICINE}
 									value={returnsType}
 									onChange={handleSelectUserType}
 								>
@@ -284,9 +288,9 @@ function RemindersCreateForm(props) {
                                 <TextField
                                     select
                                     fullWidth
-                                    id="returns"
+                                    id={RETURNS_TYPE}
                                     label="חזרה"
-                                    name="returns"
+                                    name={RETURNS_TYPE}
                                     value={returnsType}
                                     onChange={handleSelectUserType}
                                 >
@@ -317,8 +321,9 @@ function RemindersCreateForm(props) {
                             {returnsType == returnsTypeOptions[4] &&
                                 <Grid item xs={4}>
                                     <TextField
-                                        id="'week number'"
+                                        id={WEEKS_NUMBER}
                                         label="מספר שבועות"
+                                        name = {WEEKS_NUMBER}
                                         type="number"
                                         InputLabelProps={{
                                             shrink: true,
@@ -382,6 +387,8 @@ function RemindersCreateForm(props) {
                                         <ThemeProvider theme={ltrTheme}>
                                             <DatePicker
                                                 label="חזור עד"
+                                                id = {UNTIL_DATE}
+                                                name = {UNTIL_DATE}
                                                 value={untilDate}
                                                 onChange={handleUntilDateChange}
                                                 views={["year", "month", "day"]}
