@@ -24,9 +24,9 @@ export default function ProfilePicturePicker(props) {
 	const webcamRef = React.useRef(null);
 
 	const videoConstraints = {
-		width: 1280,
-		height: 720,
-		facingMode: "user"
+		width: props.widthResultion,
+		height: props.heightResultion,
+		facingMode: props.facingMode
 	};
 
 	const onSelectFile = (event) => {
@@ -118,8 +118,8 @@ export default function ProfilePicturePicker(props) {
 					<img
 						src={`${img}`}
 						srcSet={`${img}`}
-						alt={"תמונת פרופיל"}
-						loading="lazy"
+						alt={props.title}
+						loading= {props.loading}
 
 						style={props.circleImage ? {
 							borderRadius: "50%",
@@ -148,7 +148,7 @@ export default function ProfilePicturePicker(props) {
 									onPointerLeave={handlePointerLeaveTake}
 									onClick={handleTakeClick}
 								>
-									<AddAPhotoIcon sx={{fontSize: "14px"}}/>
+									<AddAPhotoIcon sx={{fontSize: props.takePicIconSize}}/>
 								</IconButton>
 								<IconButton
 									sx={!pointerInUpload ? {color: 'rgba(255, 255, 255, 0.8)'} : {color: 'rgba(33, 150, 243, 0.8)'}}
@@ -158,7 +158,7 @@ export default function ProfilePicturePicker(props) {
 									onClick={() => fileInput.current.click()}
 
 								>
-									<AddPhotoAlternateIcon sx={{fontSize: "16px"}}/>
+									<AddPhotoAlternateIcon sx={{fontSize: props.uploadPicIconSize}}/>
 								</IconButton>
 							</Stack>
 						}
@@ -190,7 +190,16 @@ ProfilePicturePicker.defaultProps = {
 	imageWidth: '150px',
 	circleImage: true,
 	title: "תמונת פרופיל",
-	initPic: defualtProfPic
+	initPic: defualtProfPic,
+	facingMode: 'user',
+	widthResultion: 1280,
+	heightResultion:720,
+	loading: 'lazy',
+	takePicIconSize:'14px',
+	uploadPicIconSize:'16px'
+
+
+
 
 }
 
