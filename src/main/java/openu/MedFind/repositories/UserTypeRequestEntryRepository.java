@@ -1,6 +1,5 @@
 package openu.MedFind.repositories;
 
-import openu.MedFind.dto.MedicineEntry;
 import openu.MedFind.dto.RequestStatus;
 import openu.MedFind.dto.UserTypeRequestEntry;
 import org.springframework.data.repository.CrudRepository;
