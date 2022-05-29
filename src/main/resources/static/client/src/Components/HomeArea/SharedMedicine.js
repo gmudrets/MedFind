@@ -93,7 +93,6 @@ function SharedMedicine() {
     const getContactDetails = async (uuid) => {
         let data = await getDoc(doc(db, "users", uuid));
         setContactDetails(data.data());
-        console.log(data.data());
         setShowContactDetails(true);
     };
 
