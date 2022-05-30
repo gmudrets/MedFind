@@ -37,7 +37,7 @@ export const MEDICINE = 'medicine';
 export const TIMES_ARRAY = 'timesArray';
 export const RETURNS_TYPE = 'returnType';
 export const WEEK_DAYS_SELECTED = 'weekDays';
-export const WEEKS_NUMBER = 'weeksNumber';
+export const EACH_MANY_WEEKS = 'weeksNumber';
 export const UNTIL_DATE = 'untilDate';
 export const UNTIL_TYPE = 'untilType';
 export const REMINDERS_NUM = 'reminderNum';
@@ -402,9 +402,9 @@ function RemindersCreateForm(props) {
                                 {returnsType == returnsTypeOptions.EACH_FEW_WEEKS &&
                                     <Grid item xs={4}>
                                         <TextField
-                                            id={WEEKS_NUMBER}
+                                            id={EACH_MANY_WEEKS}
                                             label="מספר שבועות"
-                                            name={WEEKS_NUMBER}
+                                            name={EACH_MANY_WEEKS}
                                             type="number"
                                             InputLabelProps={{
                                                 shrink: true,
