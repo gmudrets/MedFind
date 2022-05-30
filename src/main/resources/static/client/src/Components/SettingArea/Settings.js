@@ -20,7 +20,6 @@ import SettingsCheckBox from "../UI/SettingsCheckBox";
 import {isMobile} from "react-device-detect";
 import {prefixer} from 'stylis';
 import {USER_PROFILE} from "../../Consts/StatePaths";
-import ProfilePicturePicker from "./ProfilePicturePicker";
 import Divider from "@mui/material/Divider";
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
