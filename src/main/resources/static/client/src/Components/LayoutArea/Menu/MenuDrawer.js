@@ -16,6 +16,7 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import ShareIcon from '@mui/icons-material/Share';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SearchIcon from '@mui/icons-material/Search';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import {ListItemButton} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import * as STATE_PATHS from "../../../Consts/StatePaths";
@@ -24,6 +25,8 @@ import {getSafe} from "../../../Utils/Utils";
 export default function MenuDrawer() {
 
   const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
+  const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
+  const isAdmin = profile.userType==='admin';
 
   const drawerWidth = 250;
   const anchor='right';
@@ -44,6 +47,10 @@ export default function MenuDrawer() {
 
   const handleSettingClick = () => {
     navigate("/settings");
+  }
+
+  const handleApprovalClick = () => {
+    navigate("/approval");
   }
 
   const handleSearchClick = () => {
@@ -98,6 +105,14 @@ export default function MenuDrawer() {
             </ListItemIcon>
             <ListItemText primary='תזכורות' />
           </ListItemButton>
+          {isAdmin && (
+            <ListItemButton onClick= {handleApprovalClick} key='approval'>
+              <ListItemIcon>
+                <AssignmentTurnedInIcon />
+              </ListItemIcon>
+              <ListItemText primary='בקשות לאישור' />
+            </ListItemButton>
+          )}
           <ListItemButton onClick= {handleSettingClick} key='settings'>
             <ListItemIcon>
               <SettingsIcon />
