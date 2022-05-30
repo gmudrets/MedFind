@@ -1,4 +1,4 @@
-import {Box, Divider, ThemeProvider} from "@mui/material";
+import {Alert, Box, Divider, Snackbar, ThemeProvider} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -84,7 +84,6 @@ function RemindersCreateForm(props) {
     const [timesArray, setTimesArray] = useState(props.timesArray);
     const [name, setName] = React.useState(props.name);
     const [value, setValue] = React.useState(null);
-    const [hasErrorArr, setHasErrorArr] = React.useState(new Array(15).fill(false));
     const [triedSubmit, setTriedSubmitted] = React.useState(false);
     const [reachedMaxTimes, setReachedMaxTimes] = React.useState(false);
     const [eachManyDays, setEachManyDays] = React.useState(props.eachManyDays);
@@ -92,35 +91,39 @@ function RemindersCreateForm(props) {
     const [returnsType, setReturnsType] = useState(props.returnsType);
     const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
     const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
-    const [remindersRemain, setRemindersRemain] = React.useState(2);
+    const [remindersRemain, setRemindersRemain] = React.useState(2);//later if possible
+    const [errorMessege,setErrorMessege] = React.useState(null);
+    
     const [untilDate, setUntilDate] = React.useState(props.untilDate);
-    const [data,setData] = React.useState(["null"]);
-    const [medicineList,setMedicineList] = React.useState(["טוען תרופות..."]);
-    const [medicine,setMedicine] = React.useState("טוען תרופות...");
+    const [data, setData] = React.useState(["null"]);
+    const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
+    const [medicine, setMedicine] = React.useState("טוען תרופות...");
     useEffect(async () => {
+        setTriedSubmitted(false);
+        console.log("suuuup")
         if (timesArray.length == maxTimes) {
             setReachedMaxTimes(true);
         } else {
             setReachedMaxTimes(false);
         }
-        const curData =await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE);
+        const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE);
         setData(curData);
         let medicenes = [defualtMedicne];
         for (let i = 0; i < curData.length; i++) {
-            medicenes[i+1] = curData[i]['hebName'];
+            medicenes[i + 1] = curData[i]['hebName'];
         }
         setMedicineList(medicenes);
         setMedicine(medicenes[0]);
 
     }, [])
-    
+
     const handleMedicineChange = (event) => {
-      if (medicineList[0] === defualtMedicne){
-          const next = [...medicineList];
-          next.splice(0,1);
-          setMedicineList(next);
-      }
-      setMedicine(event.target.value);
+        if (medicineList[0] === defualtMedicne) {
+            const next = [...medicineList];
+            next.splice(0, 1);
+            setMedicineList(next);
+        }
+        setMedicine(event.target.value);
     }
 
 
@@ -190,12 +193,12 @@ function RemindersCreateForm(props) {
         }
         return true;
     }
-    const checkIfHasError = (time, index) => {
-        let hasError = !validateTime(time, index);
-        let nextHasError = [...hasErrorArr];
-        nextHasError[index] = hasError;
-        setHasErrorArr(nextHasError);
-    }
+    // const checkIfHasError = (time, index) => {
+    //     let hasError = !validateTime(time, index);
+    //     let nextHasError = [...hasErrorArr];
+    //     nextHasError[index] = hasError;
+    //     setHasErrorArr(nextHasError);
+    // }
 
     const handleTimeChange = (time, index) => {
         const next = [...timesArray];
@@ -216,260 +219,297 @@ function RemindersCreateForm(props) {
     const handleSelectUserType = (event) => {
         setReturnsType(event.target.value);
     };
-
+    const showMedicineError = (triedSubmitted2 = false) => {
+        if (medicine === defualtMedicne && (triedSubmit || triedSubmitted2)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    const closeError = ()=>{
+        setErrorMessege(false);
+    }
     const myHandleSubmit = (event) => {
         event.preventDefault();
+        setTriedSubmitted(true);
+        console.log(timesArray);
+        console.log(timesArray.length);
+        for (let i = 0; i < timesArray.length; i++) {
+            console.log(i);
+            console.log(timesArray[i] == null || showError(timesArray[i], i));
+            if (timesArray[i] == null || showError(timesArray[i], i)) {
+                setErrorMessege(true);
+                return false;
+            }
+        }
+        if (showMedicineError(true)) {
+            setErrorMessege(true);
+            return false;
+        }
+
         const data = new FormData(event.currentTarget);
         const value = Object.fromEntries(data.entries());
         value[TIMES_ARRAY] = timesArray;
         value[WEEK_DAYS_SELECTED] = weekDaysSelected;
         props.handleSubmit(value);
         console.log(value);
-
+        return true;
     };
 
 
     return (
-        <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
-               sx={{
-                   marginTop: 1,
-                   display: 'flex',
-                   flexDirection: 'column',
-                   alignItems: 'center',
-               }}
-               overflow={'auto'}>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline/>
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
-                        <DateRangeIcon/>
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        צור תזכורת
-                    </Typography>
-                    <Box component="form" noValidate onSubmit={myHandleSubmit} sx={{mt: 3}}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    id={TITLE}
-                                    name={TITLE}
-                                    label="כותרת"
-                                    value={name}
-                                    onChange={handleNameChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    select
-                                    fullWidth
-                                    id={MEDICINE}
-                                    label="תרופה"
-                                    name={MEDICINE}
-                                    value={medicine}
-                                    onChange={handleMedicineChange}
-                                >
-                                    {medicineList.map((type) => (
-                                        <MenuItem key={type} value={type}>
-                                            {type}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-                            {timesArray.map((time, index) =>
-                                <Grid item xs={12} key={"test123" + index}>
-                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <TimePicker
-                                            label="בחר שעה"
-                                            value={timesArray[index]}
-                                            onChange={(newValue) => {
-                                                handleTimeChange(newValue, index);
-                                            }}
-                                            renderInput={(params) => <TextField {...params} fullWidth
-                                                                                error={showError(time, index)}
-                                                                                InputLabelProps={{shrink: true}}
-
-                                            />}
-                                            InputProps={{
-                                                startAdornment: (index !== 0) && (
-                                                    <IconButton
-                                                        aria-label="toggle password visibility"
-                                                        onClick={() => handleRemoveTime(index)}
-                                                    >
-                                                        <CancelIcon/>
-                                                    </IconButton>
-                                                )
-                                            }}
-
-
-                                        />
-                                    </LocalizationProvider>
-                                </Grid>)
-                            }
-
-                            <Grid item xs={12}>
-                                <IconButton onClick={handleAddTimeClick}
-                                            disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
-                            </Grid>
-                            <Grid item xs={12}><Divider/></Grid>
-                            <Grid item xs={8}>
-                                <TextField
-                                    select
-                                    fullWidth
-                                    id={RETURNS_TYPE}
-                                    label="חזרה"
-                                    name={RETURNS_TYPE}
-                                    value={returnsType}
-                                    onChange={handleSelectUserType}
-                                >
-                                    {returnsTypeOptions.map((type) => (
-                                        <MenuItem key={type} value={type}>
-                                            {type}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-                            {/*in case of repeat each few days*/}
-                            {returnsType == returnsTypeOptions[2] &&
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id="day number"
-                                        label="מספר ימים"
-                                        type="number"
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                        value={eachManyDays}
-                                        onChange={handleEachManyDaysChange}
-                                        fullWidth
-                                    />
-                                </Grid>
-                            }
-                            {/*in case of repeat each few days*/}
-                            {returnsType == returnsTypeOptions[4] &&
-                                <Grid item xs={4}>
-                                    <TextField
-                                        id={WEEKS_NUMBER}
-                                        label="מספר שבועות"
-                                        name={WEEKS_NUMBER}
-                                        type="number"
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                        value={eachManyWeeks}
-                                        onChange={handleEachManyWeeksChange}
-                                        fullWidth
-                                    />
-                                </Grid>
-                            }
-                            {/*in case of repeat each few or each week weeks*/}
-                            {(returnsType == returnsTypeOptions[3] || returnsType == returnsTypeOptions[4]) &&
+        <>
+            <Snackbar open={errorMessege}
+                      autoHideDuration={1500}
+                      onClose={closeError}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+                <Alert severity="error">
+                    חלק מהפרטים שגויים, נסה שוב
+                </Alert>
+            </Snackbar>
+            <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
+                   sx={{
+                       marginTop: 1,
+                       display: 'flex',
+                       flexDirection: 'column',
+                       alignItems: 'center',
+                   }}
+                   overflow={'auto'}>
+                <Container component="main" maxWidth="xs">
+                    <CssBaseline/>
+                    <Box
+                        sx={{
+                            marginTop: 8,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                            <DateRangeIcon/>
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            צור תזכורת
+                        </Typography>
+                        <Box component="form" noValidate onSubmit={myHandleSubmit} sx={{mt: 3}}>
+                            <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="demo-multiple-checkbox-label">בימים</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-checkbox-label"
-                                            id="demo-multiple-checkbox"
-                                            multiple
-                                            value={weekDaysSelected}
-                                            onChange={handleWeekDaysSelectedChange}
-                                            input={<OutlinedInput label="ימים בשבוע"/>}
-                                            renderValue={(selected) => selected.join(', ')}
-                                            MenuProps={MenuProps}
-                                            fullWidth
-                                        >
-                                            {daysWeekOptions.map((name) => (
-                                                <MenuItem key={name} value={name}>
-                                                    <Checkbox checked={weekDaysSelected.indexOf(name) > -1}/>
-                                                    <ListItemText primary={name}/>
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                    <TextField
+                                        fullWidth
+                                        id={TITLE}
+                                        name={TITLE}
+                                        label="כותרת"
+                                        value={name}
+                                        onChange={handleNameChange}
+                                    />
                                 </Grid>
-                            }
-                            {returnsType != returnsTypeOptions[0] &&
-                                <Grid item xs={12}><Divider/></Grid>}
-                            {/*        <Grid item xs={5}>*/}
-                            {/*            <TextField*/}
-                            {/*                select*/}
-                            {/*                fullWidth*/}
-                            {/*                id="until"*/}
-                            {/*                label="חזור עד"*/}
-                            {/*                name="returns"*/}
-                            {/*                value={untilType}*/}
-                            {/*                onChange={handleUntilTypeChange}*/}
-                            {/*            >*/}
-                            {/*                {untilTypeOptions.map((type) => (*/}
-                            {/*                    <MenuItem key={type} value={type}>*/}
-                            {/*                        {type}*/}
-                            {/*                    </MenuItem>*/}
-                            {/*                ))}*/}
-                            {/*            </TextField>*/}
-                            {/*        </Grid>*/}
-                            {/*    </>}*/}
-                            {returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[0] &&
-                                <Grid item xs={7}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        select
+                                        fullWidth
+                                        id={MEDICINE}
+                                        label="תרופה"
+                                        name={MEDICINE}
+                                        value={medicine}
+                                        onChange={handleMedicineChange}
+                                        error={showMedicineError()}
+                                    >
+                                        {medicineList.map((type) => (
+                                            <MenuItem key={type} value={type}>
+                                                {type}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                                {timesArray.map((time, index) =>
+                                    <Grid item xs={12} key={"test123" + index}>
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                            <TimePicker
+                                                label="בחר שעה"
+                                                value={timesArray[index]}
+                                                onChange={(newValue) => {
+                                                    handleTimeChange(newValue, index);
+                                                }}
+                                                renderInput={(params) => <TextField {...params} fullWidth
+                                                                                    error={showError(time, index)}
+                                                                                    InputLabelProps={{shrink: true}}
 
-                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <ThemeProvider theme={ltrTheme}>
-                                            <DatePicker
-                                                label="חזור עד"
-                                                id={UNTIL_DATE}
-                                                name={UNTIL_DATE}
-                                                value={untilDate}
-                                                onChange={handleUntilDateChange}
-                                                views={["year", "month", "day"]}
-                                                inputFormat="dd/MM/yyyy"
-                                                minDate={new Date()}
-                                                renderInput={(params) => <TextField {...params}
                                                 />}
+                                                InputProps={{
+                                                    startAdornment: (index !== 0) && (
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={() => handleRemoveTime(index)}
+                                                        >
+                                                            <CancelIcon/>
+                                                        </IconButton>
+                                                    )
+                                                }}
+
 
                                             />
-                                        </ThemeProvider>
+                                        </LocalizationProvider>
+                                    </Grid>)
+                                }
 
-                                    </LocalizationProvider>
+                                <Grid item xs={12}>
+                                    <IconButton onClick={handleAddTimeClick}
+                                                disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
                                 </Grid>
+                                <Grid item xs={12}><Divider/></Grid>
+                                <Grid item xs={8}>
+                                    <TextField
+                                        select
+                                        fullWidth
+                                        id={RETURNS_TYPE}
+                                        label="חזרה"
+                                        name={RETURNS_TYPE}
+                                        value={returnsType}
+                                        onChange={handleSelectUserType}
+                                    >
+                                        {returnsTypeOptions.map((type) => (
+                                            <MenuItem key={type} value={type}>
+                                                {type}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                                {/*in case of repeat each few days*/}
+                                {returnsType == returnsTypeOptions[2] &&
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id="day number"
+                                            label="מספר ימים"
+                                            type="number"
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                            value={eachManyDays}
+                                            onChange={handleEachManyDaysChange}
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                }
+                                {/*in case of repeat each few days*/}
+                                {returnsType == returnsTypeOptions[4] &&
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id={WEEKS_NUMBER}
+                                            label="מספר שבועות"
+                                            name={WEEKS_NUMBER}
+                                            type="number"
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                            value={eachManyWeeks}
+                                            onChange={handleEachManyWeeksChange}
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                }
+                                {/*in case of repeat each few or each week weeks*/}
+                                {(returnsType == returnsTypeOptions[3] || returnsType == returnsTypeOptions[4]) &&
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id="demo-multiple-checkbox-label">בימים</InputLabel>
+                                            <Select
+                                                labelId="demo-multiple-checkbox-label"
+                                                id="demo-multiple-checkbox"
+                                                multiple
+                                                value={weekDaysSelected}
+                                                onChange={handleWeekDaysSelectedChange}
+                                                input={<OutlinedInput label="ימים בשבוע"/>}
+                                                renderValue={(selected) => selected.join(', ')}
+                                                MenuProps={MenuProps}
+                                                fullWidth
+                                            >
+                                                {daysWeekOptions.map((name) => (
+                                                    <MenuItem key={name} value={name}>
+                                                        <Checkbox checked={weekDaysSelected.indexOf(name) > -1}/>
+                                                        <ListItemText primary={name}/>
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                }
+                                {returnsType != returnsTypeOptions[0] &&
+                                    <Grid item xs={12}><Divider/></Grid>}
+                                {/*        <Grid item xs={5}>*/}
+                                {/*            <TextField*/}
+                                {/*                select*/}
+                                {/*                fullWidth*/}
+                                {/*                id="until"*/}
+                                {/*                label="חזור עד"*/}
+                                {/*                name="returns"*/}
+                                {/*                value={untilType}*/}
+                                {/*                onChange={handleUntilTypeChange}*/}
+                                {/*            >*/}
+                                {/*                {untilTypeOptions.map((type) => (*/}
+                                {/*                    <MenuItem key={type} value={type}>*/}
+                                {/*                        {type}*/}
+                                {/*                    </MenuItem>*/}
+                                {/*                ))}*/}
+                                {/*            </TextField>*/}
+                                {/*        </Grid>*/}
+                                {/*    </>}*/}
+                                {returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[0] &&
+                                    <Grid item xs={7}>
 
-                            }
-                            {/*{returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[1] &&*/}
-                            {/*    <Grid item xs={7}>*/}
-                            {/*        <TextField*/}
-                            {/*            id="reminders num"*/}
-                            {/*            label="כמות תזכורת (שנותרו)"*/}
-                            {/*            type="number"*/}
-                            {/*            InputLabelProps={{*/}
-                            {/*                shrink: true,*/}
-                            {/*            }}*/}
-                            {/*            value={remindersRemain}*/}
-                            {/*            onChange={handleRemindersRemainChange}*/}
-                            {/*            fullWidth*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*}*/}
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                            <ThemeProvider theme={ltrTheme}>
+                                                <DatePicker
+                                                    label="חזור עד"
+                                                    id={UNTIL_DATE}
+                                                    name={UNTIL_DATE}
+                                                    value={untilDate}
+                                                    onChange={handleUntilDateChange}
+                                                    views={["year", "month", "day"]}
+                                                    inputFormat="dd/MM/yyyy"
+                                                    minDate={new Date()}
+                                                    renderInput={(params) => <TextField {...params}
+                                                    />}
 
-                        </Grid>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{mt: 3, mb: 2}}
-                        >
-                            צור תזכורת
-                        </Button>
+                                                />
+                                            </ThemeProvider>
 
+                                        </LocalizationProvider>
+                                    </Grid>
+
+                                }
+                                {/*{returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[1] &&*/}
+                                {/*    <Grid item xs={7}>*/}
+                                {/*        <TextField*/}
+                                {/*            id="reminders num"*/}
+                                {/*            label="כמות תזכורת (שנותרו)"*/}
+                                {/*            type="number"*/}
+                                {/*            InputLabelProps={{*/}
+                                {/*                shrink: true,*/}
+                                {/*            }}*/}
+                                {/*            value={remindersRemain}*/}
+                                {/*            onChange={handleRemindersRemainChange}*/}
+                                {/*            fullWidth*/}
+                                {/*        />*/}
+                                {/*    </Grid>*/}
+                                {/*}*/}
+
+                            </Grid>
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{mt: 3, mb: 2}}
+                            >
+                                צור תזכורת
+                            </Button>
+
+                        </Box>
                     </Box>
-                </Box>
-            </Container>
+                </Container>
 
-        </Paper>
+            </Paper>
+        </>
     )
         ;
 }
