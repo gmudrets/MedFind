@@ -39,8 +39,18 @@ import {isMobile} from "react-device-detect";
 import BarcodeScanner from "../BarcodeScanner/BarcodeScanner";
 import TransitionsModal from "../UI/Modal/Modal";
 import {useEffect, useState} from "react";
-import RemindersCreateForm from "./RemindersCreateForm";
+import RemindersCreateForm, {
+    EACH_MANY_DAYS,
+    getTomorow, MEDICINE, REMINDERS_NUM,
+    RETURNS_TYPE,
+    returnsTypeOptions,
+    TIMES_ARRAY,
+    UNTIL_DATE, UNTIL_TYPE, untilTypeOptions
+} from "./RemindersCreateForm";
 import {useNavigate} from "react-router-dom";
+import {getRequest} from "../../Utils/AxiosRequests";
+import {getAuth} from "firebase/auth";
+import {ServerConsts} from "../../Consts/apiPaths";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -58,14 +68,14 @@ export default function Reminders() {
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     useEffect(() => {
-        if (currentUser === ''){
+        if (currentUser === '') {
             navigate("/login");
+
         }
 
     }, [currentUser]);
     const [onReminderCreation, setOnReminderCreation] = useState(false);
     const toggleOnReminderCreation = () => {
-        console.log("hello")
         setOnReminderCreation((prevState => !prevState));
     }
     const loadReminders = () => {
@@ -74,11 +84,87 @@ export default function Reminders() {
     }
     const handleAddClick = () => {
         setOnReminderCreation(true);
+        console.log(dateToString(new Date()));
     }
-    const handleSubmit = (k)=>{
+    const convertNotReturn = (newData) => {
+        newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
+        newData[EACH_MANY_DAYS] = 1;
+        newData[UNTIL_TYPE] = untilTypeOptions.NUM;
+        newData[REMINDERS_NUM] = 1;
+        return newData;
+    }
+    const convertEachDay = (newData) => {
+        newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
+        newData[EACH_MANY_DAYS] = 1;
+        return newData;
+    }
+    const changeEndDate = (newData) => {
+        let newEndDate = new Date(newData[UNTIL_DATE]);
+        newEndDate.setDate(newEndDate.getDate() + 1);
+        newEndDate.setHours(0);
+        newEndDate.setMinutes(0);
+        newEndDate.setSeconds(0);
+        newData[UNTIL_DATE] = newEndDate;
+        return newData;
+    }
+    const convertToUntilNum = (newData) => {
+        newData[untilTypeOptions] = untilTypeOptions.NUM;
+        let end = new Date(newData[UNTIL_DATE]);
+        let start = new Date(newData[TIMES_ARRAY][0]);
+        let difference = end.getTime() - start.getTime();
+        let daysDiff = Math.ceil(difference / (1000 * 3600 * 24));
+        newData[REMINDERS_NUM] = daysDiff;
+        return newData;
+
+    }
+    const handleSubmit = async (originalData) => {
         toggleOnReminderCreation();
-        console.log(k);
+
+        let newData = JSON.parse(JSON.stringify(originalData));
+        newData = changeEndDate(newData);
+        if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
+            newData = convertNotReturn(newData);
+        }
+        if (originalData[RETURNS_TYPE] === returnsTypeOptions.EACH_DAY) {
+            newData = convertEachDay(newData);
+        }
+        if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
+            newData = convertToUntilNum(newData);
+            if (newData[UNTIL_TYPE] === untilTypeOptions.DATE) {
+                await sendEachFewDays(newData, originalData);
+                return true;
+            }
+        }
     }
+    const dateToString = (date) => {
+        return (date.getDate()) + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + "-" + (date.getHours()) + ':' +
+            (date.getMinutes())
+
+    }
+    const sendEachFewDays = async (data, originalData) => {
+        const dates = [];
+        console.log(data);
+        const now = new Date();
+        for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
+            let curDate = new Date(data[TIMES_ARRAY][i]);
+            for (let j = 0; j < data[REMINDERS_NUM]; j++) {
+                console.log(curDate.getTime() > now.getTime());
+                console.log(dateToString(curDate));
+                if (curDate.getTime() > now.getTime()) {
+                    dates.push(dateToString(curDate));
+                }
+                curDate.setDate(curDate.getDate() + 1);
+            }
+        }
+        const requastParams = {
+            'alertName': JSON.stringify(originalData),
+            "regNum": data[MEDICINE]['regNum'],
+            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates,
+        }
+        console.log(requastParams);
+        const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
+    }
+
     return (
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
@@ -94,7 +180,7 @@ export default function Reminders() {
                         </Grid>
                     </Box>
                     <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
-                        <RemindersCreateForm handleSubmit = {handleSubmit}/>
+                        <RemindersCreateForm handleSubmit={handleSubmit}/>
                     </TransitionsModal>
                 </React.Fragment>
             </ThemeProvider>
