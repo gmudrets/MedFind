@@ -14,7 +14,7 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 
-export default function ProfilePicturePicker(props) {
+export default function PicturePicker(props) {
 	const fileInput = createRef();
 	const [img, setImg] = React.useState(defualtProfPic);
 	const [pointerInUpload, setPointerInUpload] = React.useState(false);
@@ -180,7 +180,7 @@ export default function ProfilePicturePicker(props) {
 	)
 		;
 }
-ProfilePicturePicker.defaultProps = {
+PicturePicker.defaultProps = {
 	onUpdateProfilePic: (src) => {
 		return true;
 	},
