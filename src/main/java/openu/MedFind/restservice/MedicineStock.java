@@ -28,7 +28,7 @@ public class MedicineStock {
     }
 
     @GetMapping("/api/AddMedicineToStock")
-    public void AddMedicineToStock(@RequestHeader(name = "idToken", required = false) String idToken,
+    public void AddMedicineToStock(@RequestHeader(name = "idToken") String idToken,
                                      @RequestParam String drugRegNum,
                                      @RequestParam String hebName,
                                      @RequestParam String engName,
@@ -60,7 +60,7 @@ public class MedicineStock {
     }
 
     @GetMapping("/api/DeleteMedicineFromStock")
-    public void DeleteMedicineFromStock(@RequestHeader(name = "idToken", required = false) String idToken,
+    public void DeleteMedicineFromStock(@RequestHeader(name = "idToken") String idToken,
                                    @RequestParam Long id) throws TokenException {
 
         String uuid;
@@ -79,7 +79,7 @@ public class MedicineStock {
     }
 
     @GetMapping("/api/UpdateMedicineInStock")
-    public void UpdateMedicineInStock(@RequestHeader(name = "idToken", required = false) String idToken,
+    public void UpdateMedicineInStock(@RequestHeader(name = "idToken") String idToken,
                                    @RequestParam String drugRegNum,
                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date expiration,
                                    @RequestParam @Min(1) int count,
@@ -104,7 +104,7 @@ public class MedicineStock {
     }
 
     @GetMapping("/api/GetAllUserStockMedicine")
-    public List<MedicineEntry> GetAllUserStockMedicine(@RequestHeader(name = "idToken", required = false) String idToken) throws TokenException {
+    public List<MedicineEntry> GetAllUserStockMedicine(@RequestHeader(name = "idToken") String idToken) throws TokenException {
         String uuid;
 
         try {
@@ -117,7 +117,7 @@ public class MedicineStock {
     }
 
     @GetMapping("/api/GetAllSharedStockMedicine")
-    public List<MedicineEntry> GetAllSharedStockMedicine(@RequestHeader(name = "idToken", required = false) String idToken) throws TokenException {
+    public List<MedicineEntry> GetAllSharedStockMedicine(@RequestHeader(name = "idToken") String idToken) throws TokenException {
         try {
             if (!FirebaseValidator.isDoctor(idToken)) {
                 throw new TokenException("User is not A doctor");
