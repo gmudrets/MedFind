@@ -77,7 +77,7 @@ export default function Reminders() {
     }
     const handleSubmit = (k)=>{
         toggleOnReminderCreation();
-
+        console.log(k);
     }
     return (
         <CacheProvider value={cacheRtl}>

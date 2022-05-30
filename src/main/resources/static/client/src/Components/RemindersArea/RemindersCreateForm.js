@@ -38,7 +38,9 @@ export const TIMES_ARRAY = 'timesArray';
 export const RETURNS_TYPE = 'returnType';
 export const WEEK_DAYS_SELECTED = 'weekDays';
 export const WEEKS_NUMBER = 'weeksNumber';
-export const UNTIL_DATE = 'untilDate'
+export const UNTIL_DATE = 'untilDate';
+export const UNTIL_TYPE = 'untilType';
+export const REMINDERS_NUM = 'reminderNum'
 export const returnsTypeOptions = [
     'לא חוזר',
     'כל יום',
@@ -92,9 +94,9 @@ function RemindersCreateForm(props) {
     const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
     const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
     const [remindersRemain, setRemindersRemain] = React.useState(2);//later if possible
-    const [errorMessege,setErrorMessege] = React.useState(null);
-    const [newFrom,setNewFrom] = React.useState(1);
-    
+    const [errorMessege, setErrorMessege] = React.useState(null);
+    const [newFrom, setNewFrom] = React.useState(1);
+
     const [untilDate, setUntilDate] = React.useState(props.untilDate);
     const [data, setData] = React.useState(["null"]);
     const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
@@ -169,7 +171,7 @@ function RemindersCreateForm(props) {
 
     const showError = (time, index) => {
         let hasError = !validateTime(time, index);
-        if (index >=newFrom  || (!triedSubmit && time == null)) {
+        if (index >= newFrom || (!triedSubmit && time == null)) {
             return false;
         } else {
             return hasError;
@@ -226,7 +228,7 @@ function RemindersCreateForm(props) {
             return false;
         }
     }
-    const closeError = ()=>{
+    const closeError = () => {
         setErrorMessege(false);
     }
     const myHandleSubmit = (event) => {
@@ -432,31 +434,33 @@ function RemindersCreateForm(props) {
                                 }
                                 {returnsType != returnsTypeOptions[0] &&
                                     <Grid item xs={12}><Divider/></Grid>}
-                                {/*        <Grid item xs={5}>*/}
-                                {/*            <TextField*/}
-                                {/*                select*/}
-                                {/*                fullWidth*/}
-                                {/*                id="until"*/}
-                                {/*                label="חזור עד"*/}
-                                {/*                name="returns"*/}
-                                {/*                value={untilType}*/}
-                                {/*                onChange={handleUntilTypeChange}*/}
-                                {/*            >*/}
-                                {/*                {untilTypeOptions.map((type) => (*/}
-                                {/*                    <MenuItem key={type} value={type}>*/}
-                                {/*                        {type}*/}
-                                {/*                    </MenuItem>*/}
-                                {/*                ))}*/}
-                                {/*            </TextField>*/}
-                                {/*        </Grid>*/}
-                                {/*    </>}*/}
-                                {returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[0] &&
+                                {returnsType == returnsTypeOptions[2] &&
+
+                                    <Grid item xs={5}>
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            id={UNTIL_TYPE}
+                                            label="חזור עד"
+                                            name={UNTIL_TYPE}
+                                            value={untilType}
+                                            onChange={handleUntilTypeChange}
+                                        >
+                                            {untilTypeOptions.map((type) => (
+                                                <MenuItem key={type} value={type}>
+                                                    {type}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                }
+                                {returnsType != returnsTypeOptions[0] && !(returnsType == returnsTypeOptions[2] && untilType != untilTypeOptions[0]) &&
                                     <Grid item xs={7}>
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <ThemeProvider theme={ltrTheme}>
                                                 <DatePicker
-                                                    label="חזור עד"
+                                                    label={returnsType == returnsTypeOptions[2] ? "תאריך (כולל)" : "חזור עד"}
                                                     id={UNTIL_DATE}
                                                     name={UNTIL_DATE}
                                                     value={untilDate}
@@ -474,21 +478,22 @@ function RemindersCreateForm(props) {
                                     </Grid>
 
                                 }
-                                {/*{returnsType != returnsTypeOptions[0] && untilType == untilTypeOptions[1] &&*/}
-                                {/*    <Grid item xs={7}>*/}
-                                {/*        <TextField*/}
-                                {/*            id="reminders num"*/}
-                                {/*            label="כמות תזכורת (שנותרו)"*/}
-                                {/*            type="number"*/}
-                                {/*            InputLabelProps={{*/}
-                                {/*                shrink: true,*/}
-                                {/*            }}*/}
-                                {/*            value={remindersRemain}*/}
-                                {/*            onChange={handleRemindersRemainChange}*/}
-                                {/*            fullWidth*/}
-                                {/*        />*/}
-                                {/*    </Grid>*/}
-                                {/*}*/}
+                                {returnsType == returnsTypeOptions[2] && untilType == untilTypeOptions[1] &&
+                                    <Grid item xs={7}>
+                                        <TextField
+                                            id={REMINDERS_NUM}
+                                            label="כמות תזכורת (שנותרו)"
+                                            name={REMINDERS_NUM}
+                                            type="number"
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                            value={remindersRemain}
+                                            onChange={handleRemindersRemainChange}
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                }
 
                             </Grid>
                             <Button
