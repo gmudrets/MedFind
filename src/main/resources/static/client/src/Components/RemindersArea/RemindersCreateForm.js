@@ -93,6 +93,7 @@ function RemindersCreateForm(props) {
     const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
     const [remindersRemain, setRemindersRemain] = React.useState(2);//later if possible
     const [errorMessege,setErrorMessege] = React.useState(null);
+    const [newFrom,setNewFrom] = React.useState(1);
     
     const [untilDate, setUntilDate] = React.useState(props.untilDate);
     const [data, setData] = React.useState(["null"]);
@@ -100,7 +101,6 @@ function RemindersCreateForm(props) {
     const [medicine, setMedicine] = React.useState("טוען תרופות...");
     useEffect(async () => {
         setTriedSubmitted(false);
-        console.log("suuuup")
         if (timesArray.length == maxTimes) {
             setReachedMaxTimes(true);
         } else {
@@ -169,7 +169,7 @@ function RemindersCreateForm(props) {
 
     const showError = (time, index) => {
         let hasError = !validateTime(time, index);
-        if (!triedSubmit && time == null) {
+        if (index >=newFrom  || (!triedSubmit && time == null)) {
             return false;
         } else {
             return hasError;
@@ -232,11 +232,8 @@ function RemindersCreateForm(props) {
     const myHandleSubmit = (event) => {
         event.preventDefault();
         setTriedSubmitted(true);
-        console.log(timesArray);
-        console.log(timesArray.length);
+        setNewFrom(timesArray.length);
         for (let i = 0; i < timesArray.length; i++) {
-            console.log(i);
-            console.log(timesArray[i] == null || showError(timesArray[i], i));
             if (timesArray[i] == null || showError(timesArray[i], i)) {
                 setErrorMessege(true);
                 return false;
@@ -252,7 +249,6 @@ function RemindersCreateForm(props) {
         value[TIMES_ARRAY] = timesArray;
         value[WEEK_DAYS_SELECTED] = weekDaysSelected;
         props.handleSubmit(value);
-        console.log(value);
         return true;
     };
 
