@@ -218,7 +218,10 @@ function RemindersCreateForm(props) {
         next.splice(index, 1);
         setTimesArray(next);
     }
-    const handleSelectUserType = (event) => {
+    const handleSelectReturnsType = (event) => {
+        if (event.target.value !== returnsTypeOptions[2]) {
+            setUntilType(untilTypeOptions[0]);
+        }
         setReturnsType(event.target.value);
     };
     const showMedicineError = (triedSubmitted2 = false) => {
@@ -364,7 +367,7 @@ function RemindersCreateForm(props) {
                                         label="חזרה"
                                         name={RETURNS_TYPE}
                                         value={returnsType}
-                                        onChange={handleSelectUserType}
+                                        onChange={handleSelectReturnsType}
                                     >
                                         {returnsTypeOptions.map((type) => (
                                             <MenuItem key={type} value={type}>
