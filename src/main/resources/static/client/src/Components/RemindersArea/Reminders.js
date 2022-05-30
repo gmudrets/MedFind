@@ -68,6 +68,7 @@ export default function Reminders() {
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     useEffect(() => {
+        console.log("HIIIIIII")
         if (currentUser === '') {
             navigate("/login");
 
@@ -120,20 +121,25 @@ export default function Reminders() {
     const handleSubmit = async (originalData) => {
         toggleOnReminderCreation();
 
-        let newData = JSON.parse(JSON.stringify(originalData));
-        newData = changeEndDate(newData);
+        const newData = JSON.parse(JSON.stringify(originalData));
+        // changeEndDate(newData);
         if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
-            newData = convertNotReturn(newData);
+            convertNotReturn(newData);
         }
         if (originalData[RETURNS_TYPE] === returnsTypeOptions.EACH_DAY) {
-            newData = convertEachDay(newData);
+            console.log(newData);
+            convertEachDay(newData);
+
         }
+        console.log(newData);
+
         if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
-            newData = convertToUntilNum(newData);
             if (newData[UNTIL_TYPE] === untilTypeOptions.DATE) {
-                await sendEachFewDays(newData, originalData);
-                return true;
+                convertToUntilNum(newData);
             }
+            await sendEachFewDays(newData, originalData);
+            return true;
+
         }
     }
     const dateToString = (date) => {
@@ -157,7 +163,7 @@ export default function Reminders() {
             }
         }
         const requastParams = {
-            'alertName': JSON.stringify(originalData),
+            'alertName': 'abc',
             "regNum": data[MEDICINE]['regNum'],
             'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates,
         }

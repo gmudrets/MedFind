@@ -100,7 +100,7 @@ function RemindersCreateForm(props) {
     const [newFrom, setNewFrom] = React.useState(1);
 
     const [untilDate, setUntilDate] = React.useState(props.untilDate);
-    const [data, setData] = React.useState(["null"]);
+    const [medicineFullList, setMedicineFullList] = React.useState(["null"]);
     const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
     const [medicine, setMedicine] = React.useState("טוען תרופות...");
     useEffect(async () => {
@@ -111,7 +111,7 @@ function RemindersCreateForm(props) {
             setReachedMaxTimes(false);
         }
         const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE);
-        setData(curData);
+        setMedicineFullList(curData);
         let medicenes = [defualtMedicne];
         for (let i = 0; i < curData.length; i++) {
             medicenes[i + 1] = curData[i]['hebName'];
@@ -255,6 +255,9 @@ function RemindersCreateForm(props) {
         const value = Object.fromEntries(data.entries());
         value[TIMES_ARRAY] = timesArray;
         value[WEEK_DAYS_SELECTED] = weekDaysSelected;
+        value[UNTIL_TYPE] = untilType;
+        value[UNTIL_DATE] = untilDate;
+        value[MEDICINE] = medicineFullList[medicineList.indexOf(medicine)];
         props.handleSubmit(value);
         return true;
     };
