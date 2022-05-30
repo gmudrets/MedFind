@@ -13,7 +13,7 @@ function Logout() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const theme = createTheme({direction: 'rtl'});
-	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
 	useEffect(() => {
 		if (currentUser === ''){

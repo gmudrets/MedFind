@@ -1,0 +1,13 @@
+export const USER_NAME = 'userName';
+export const FIRST_NAME = 'firstName';
+export const LAST_NAME = 'lastName';
+export const MAIL_ADDRESS = 'email';
+export const PHONE_NUM = 'telephone';
+export const CITY = 'city';
+export const MAIL_NOTIFICATIONS = 'mailNotification';
+export const BROWSER_NOTIFICATIONS = 'browserNotification';
+export const PHONE_NOTIFICATIONS = 'phoneNotification';
+export const TAKING_REMINDER = 'takingReminder';
+export const EXPIRATION_REMINDER = 'expirationReminder';
+export const USER_TYPE = 'userType'
+export const PROFILE_PICTURE = 'profilePic';

@@ -5,7 +5,8 @@ module.exports = {
         AUTOCOMPLETE : "/api/Autocomplete",
         GET_BROCHURE: "/api/GetBrochure",
         REGISTER : "/api/User/Register",
-        GET_SHARED_MEDICINE : "/api/GetAllSharedStockMedicine"
+        GET_SHARED_MEDICINE : "/api/GetAllSharedStockMedicine",
+        CREATE_NEW_USERTYPE_REQUEST : "/api/CreateNewUserTypeRequest",
     },
     External: {
         EXTERNAL_FILES_URL: "https://mohpublic.z6.web.core.windows.net/IsraelDrugs/"

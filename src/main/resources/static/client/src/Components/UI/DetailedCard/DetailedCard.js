@@ -87,7 +87,7 @@ export default function DetailedCard(props) {
         return data;
     }
 
-    const userDetails = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+    const userDetails = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
     const getBrochure = async (drugRegNum) => {
         setBrochureLoading(true);

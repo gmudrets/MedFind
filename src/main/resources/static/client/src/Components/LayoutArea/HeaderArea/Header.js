@@ -19,7 +19,7 @@ function Header() {
   const dispatch = useDispatch();
   const [auth, setAuth] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
-  const currentUser = useSelector((state) => getSafe(STATE_PATHS.USERNAME, state));
+  const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
   const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
   const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
