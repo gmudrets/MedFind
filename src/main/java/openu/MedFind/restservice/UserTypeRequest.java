@@ -1,6 +1,7 @@
 package openu.MedFind.restservice;
 
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.cloud.FirestoreClient;
 import openu.MedFind.dto.RequestStatus;
 import openu.MedFind.dto.UserType;
 import openu.MedFind.dto.UserTypeRequestEntry;
@@ -9,7 +10,6 @@ import openu.MedFind.repositories.UserTypeRequestEntryRepository;
 import openu.MedFind.services.FirebaseValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @CrossOrigin(origins = "https://localhost:3000")
@@ -18,6 +18,9 @@ public class UserTypeRequest {
 
     @Autowired
     private UserTypeRequestEntryRepository userTypeRequestEntryRepository;
+
+    private final String DOCTOR_TYPE = "רופא";
+    private final String MEDICAL_STAFF_MEMBER_TYPE = "צוות רפואי";
 
     @GetMapping("/api/CreateNewUserTypeRequest")
     public void createNewUserTypeRequest(@RequestHeader(name = "idToken", required = false) String idToken,
@@ -61,16 +64,28 @@ public class UserTypeRequest {
 
         var entry = userTypeRequestEntryRepository.findByUuid(uuid);
 
-        if(entry != null){
+        if(entry != null) {
             entry.setRequestStatus(requestStatus);
             userTypeRequestEntryRepository.save(entry);
+
+            if(requestStatus == RequestStatus.APPROVED) {
+                var newUserType = MEDICAL_STAFF_MEMBER_TYPE;
+                if(entry.getRequestedType() == UserType.DOCTOR){
+                    newUserType = DOCTOR_TYPE;
+                }
+
+                var docRef = FirestoreClient.getFirestore().collection("users").document(uuid);
+                docRef.update("userType",newUserType);
+            }
+
+            //TODO send an alert to the user with the request's status.
         }
     }
 
-    @GetMapping("/api/GetAllUserTypePendingRequestsByStatus")
+    @GetMapping("/api/GetAllUserTypeRequestsByStatus")
     public List<UserTypeRequestEntry> getAllUserTypeRequestsByStatus(
             @RequestHeader(name = "idToken", required = false) String idToken,
-            @RequestParam RequestStatus requestStatus)
+            @RequestParam(name="requestStatus",required = true) RequestStatus requestStatus)
             throws TokenException {
 
         try {
