@@ -7,7 +7,7 @@ import Logout from '../../AuthArea/Logout/Logout';
 import Settings from "../../SettingArea/Settings";
 import MenuDrawer from "../Menu/MenuDrawer";
 import ApprovalRequests from "../../HomeArea/ApprovalRequests";
-
+import SharedMedicine from "../../HomeArea/SharedMedicine";
 
 function Routing() {
 	return (
@@ -20,6 +20,7 @@ function Routing() {
 					<Route path="/logout" element={<Logout/>} />
 					<Route path="/settings" element={<Settings/>} />
 					<Route path="/approval" element={<ApprovalRequests/>} />
+					<Route path="/shared_medicine" element={<SharedMedicine/>} />
 				</Routes>
 				<MenuDrawer/>
 			</HashRouter>

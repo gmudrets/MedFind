@@ -14,6 +14,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import ShareIcon from '@mui/icons-material/Share';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SearchIcon from '@mui/icons-material/Search';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
@@ -27,6 +28,8 @@ export default function MenuDrawer() {
   const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
   const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
   const isAdmin = profile.userType==='admin';
+  const DOCTOR = 'רופא'
+  const isDoctor = profile.userType===DOCTOR;
 
   const drawerWidth = 250;
   const anchor='right';
@@ -61,13 +64,17 @@ export default function MenuDrawer() {
     navigate("/logout");
   }
 
+  const handleSharedMedsClick = () => {
+    navigate("/shared_medicine");
+  };
+
   const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
   }));
 
   const list = () => (
@@ -96,6 +103,14 @@ export default function MenuDrawer() {
             </ListItemIcon>
             <ListItemText primary='השיתופים שלי' />
           </ListItemButton>
+          {isDoctor && (
+              <ListItemButton key='sharedMeds' onClick={handleSharedMedsClick}>
+                <ListItemIcon>
+                  <VolunteerActivismIcon/>
+                </ListItemIcon>
+                <ListItemText primary='תרופות משותפות' />
+              </ListItemButton>
+          )}
       </List>
       <Divider />
       <List>
@@ -134,22 +149,20 @@ export default function MenuDrawer() {
   );
 
   return (
-    <div>
-        <>
-          <Drawer
-            anchor={anchor}
-            open={isMenuOpen}
-            onClose={toggleMenu()}
-          >
-            <DrawerHeader>
-              <IconButton onClick={toggleMenu()}>
-                {anchor === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-              </IconButton>
-            </DrawerHeader>
-            <Divider />
-            {list()}
-          </Drawer>
-        </>
-    </div>
+      <>
+        <Drawer
+          anchor={anchor}
+          open={isMenuOpen}
+          onClose={toggleMenu()}
+        >
+          <DrawerHeader>
+            <IconButton onClick={toggleMenu()}>
+              {anchor === 'left' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          {list()}
+        </Drawer>
+      </>
   );
 }
