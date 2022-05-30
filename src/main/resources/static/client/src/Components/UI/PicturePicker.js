@@ -197,7 +197,7 @@ ProfilePicturePicker.defaultProps = {
 	loading: 'lazy',
 	takePicIconSize:'14px',
 	uploadPicIconSize:'16px'
-	
+
 }
 
 
