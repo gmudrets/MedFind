@@ -8,5 +8,17 @@ export default {
         sideMenu: {
             open: false
         }
+    },
+    userData: {
+        userProfile: {
+            uid: "",
+            userType: "משתמש רגיל",
+            email: "",
+            city: "",
+            firstName: "",
+            allowExtraEmails: true,
+            lastName: "",
+            telephone: "",
+        }
     }
 }
