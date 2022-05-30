@@ -40,14 +40,17 @@ export const WEEK_DAYS_SELECTED = 'weekDays';
 export const WEEKS_NUMBER = 'weeksNumber';
 export const UNTIL_DATE = 'untilDate';
 export const UNTIL_TYPE = 'untilType';
-export const REMINDERS_NUM = 'reminderNum'
-export const returnsTypeOptions = [
-    'לא חוזר',
-    'כל יום',
-    'כל כמה ימים',
-    'כל שבוע',
-    'כל כמה שבועות',
-];
+export const REMINDERS_NUM = 'reminderNum';
+export const EACH_MANY_DAYS = 'eachManyDAys';
+
+
+export const returnsTypeOptions = {
+    NOT_RETURN: 'לא חוזר',
+    EACH_DAY: 'כל יום',
+    EACH_FEW_DAYS: 'כל כמה ימים',
+    EACH_WEEK: 'כל שבוע',
+    EACH_FEW_WEEKS: 'כל כמה שבועות',
+};
 export const daysWeekOptions = [
     'ראשון',
     'שני',
@@ -57,20 +60,19 @@ export const daysWeekOptions = [
     'שישי',
     'שבת'
 ];
-export const untilTypeOptions = [
-    'תאריך',
-    'כמות תזכורת'
-];
+export const untilTypeOptions = {
+    DATE: 'תאריך',
+    NUM: 'כמות תזכורת'
+};
 
-
-const initilizeWeekDaysSelected = () => {
-    const today = new Date().getDay();
-    return [daysWeekOptions[today]];
-}
-const getTomorow = () => {
+export const getTomorow = () => {
     let date = new Date();
     date.setDate(date.getDate() + 1);
     return date;
+}
+const initilizeWeekDaysSelected = () => {
+    const today = new Date().getDay();
+    return [daysWeekOptions[today]];
 }
 
 function RemindersCreateForm(props) {
@@ -92,7 +94,7 @@ function RemindersCreateForm(props) {
     const [eachManyWeeks, setEachManyWeeks] = React.useState(props.eachManyWeeks);
     const [returnsType, setReturnsType] = useState(props.returnsType);
     const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
-    const [untilType, setUntilType] = React.useState(untilTypeOptions[0]);
+    const [untilType, setUntilType] = React.useState(props.untilType);
     const [remindersRemain, setRemindersRemain] = React.useState(2);//later if possible
     const [errorMessege, setErrorMessege] = React.useState(null);
     const [newFrom, setNewFrom] = React.useState(1);
@@ -219,8 +221,8 @@ function RemindersCreateForm(props) {
         setTimesArray(next);
     }
     const handleSelectReturnsType = (event) => {
-        if (event.target.value !== returnsTypeOptions[2]) {
-            setUntilType(untilTypeOptions[0]);
+        if (event.target.value !== returnsTypeOptions.EACH_FEW_WEEKS) {
+            setUntilType(untilTypeOptions.DATE);
         }
         setReturnsType(event.target.value);
     };
@@ -369,7 +371,7 @@ function RemindersCreateForm(props) {
                                         value={returnsType}
                                         onChange={handleSelectReturnsType}
                                     >
-                                        {returnsTypeOptions.map((type) => (
+                                        {Object.values(returnsTypeOptions).map((type) => (
                                             <MenuItem key={type} value={type}>
                                                 {type}
                                             </MenuItem>
@@ -377,11 +379,12 @@ function RemindersCreateForm(props) {
                                     </TextField>
                                 </Grid>
                                 {/*in case of repeat each few days*/}
-                                {returnsType == returnsTypeOptions[2] &&
+                                {returnsType == returnsTypeOptions.EACH_FEW_DAYS &&
                                     <Grid item xs={4}>
                                         <TextField
-                                            id="day number"
+                                            id={EACH_MANY_DAYS}
                                             label="מספר ימים"
+                                            name={EACH_MANY_DAYS}
                                             type="number"
                                             InputLabelProps={{
                                                 shrink: true,
@@ -393,7 +396,7 @@ function RemindersCreateForm(props) {
                                     </Grid>
                                 }
                                 {/*in case of repeat each few days*/}
-                                {returnsType == returnsTypeOptions[4] &&
+                                {returnsType == returnsTypeOptions.EACH_FEW_WEEKS &&
                                     <Grid item xs={4}>
                                         <TextField
                                             id={WEEKS_NUMBER}
@@ -410,7 +413,7 @@ function RemindersCreateForm(props) {
                                     </Grid>
                                 }
                                 {/*in case of repeat each few or each week weeks*/}
-                                {(returnsType == returnsTypeOptions[3] || returnsType == returnsTypeOptions[4]) &&
+                                {(returnsType == returnsTypeOptions.EACH_WEEK || returnsType == returnsTypeOptions.EACH_FEW_WEEKS) &&
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
                                             <InputLabel id="demo-multiple-checkbox-label">בימים</InputLabel>
@@ -435,9 +438,9 @@ function RemindersCreateForm(props) {
                                         </FormControl>
                                     </Grid>
                                 }
-                                {returnsType != returnsTypeOptions[0] &&
+                                {returnsType != returnsTypeOptions.NOT_RETURN &&
                                     <Grid item xs={12}><Divider/></Grid>}
-                                {returnsType == returnsTypeOptions[2] &&
+                                {returnsType == returnsTypeOptions.EACH_FEW_DAYS &&
 
                                     <Grid item xs={5}>
                                         <TextField
@@ -449,7 +452,7 @@ function RemindersCreateForm(props) {
                                             value={untilType}
                                             onChange={handleUntilTypeChange}
                                         >
-                                            {untilTypeOptions.map((type) => (
+                                            {Object.values(untilTypeOptions).map((type) => (
                                                 <MenuItem key={type} value={type}>
                                                     {type}
                                                 </MenuItem>
@@ -457,13 +460,13 @@ function RemindersCreateForm(props) {
                                         </TextField>
                                     </Grid>
                                 }
-                                {returnsType != returnsTypeOptions[0] && !(returnsType == returnsTypeOptions[2] && untilType != untilTypeOptions[0]) &&
+                                {returnsType != returnsTypeOptions.NOT_RETURN && !(returnsType == returnsTypeOptions.EACH_FEW_DAYS && untilType != untilTypeOptions.DATE) &&
                                     <Grid item xs={7}>
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <ThemeProvider theme={ltrTheme}>
                                                 <DatePicker
-                                                    label={returnsType == returnsTypeOptions[2] ? "תאריך (כולל)" : "חזור עד"}
+                                                    label={returnsType == returnsTypeOptions.EACH_FEW_DAYS ? "תאריך (כולל)" : "חזור עד"}
                                                     id={UNTIL_DATE}
                                                     name={UNTIL_DATE}
                                                     value={untilDate}
@@ -481,7 +484,7 @@ function RemindersCreateForm(props) {
                                     </Grid>
 
                                 }
-                                {returnsType == returnsTypeOptions[2] && untilType == untilTypeOptions[1] &&
+                                {returnsType == returnsTypeOptions.EACH_FEW_DAYS && untilType == untilTypeOptions.NUM &&
                                     <Grid item xs={7}>
                                         <TextField
                                             id={REMINDERS_NUM}
@@ -521,11 +524,12 @@ function RemindersCreateForm(props) {
 RemindersCreateForm.defaultProps = {
     timesArray: [null],
     name: "",
-    returnsType: returnsTypeOptions[0],
+    returnsType: returnsTypeOptions.NOT_RETURN,
     eachManyDays: 2,
     eachManyWeeks: 2,
     weekDays: initilizeWeekDaysSelected(),
     untilDate: getTomorow(),
+    untilType: untilTypeOptions.DATE,
     handleSubmit: (res) => {
         return true;
     }
