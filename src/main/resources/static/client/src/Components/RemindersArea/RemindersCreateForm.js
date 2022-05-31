@@ -443,7 +443,7 @@ function RemindersCreateForm(props) {
                                 }
                                 {returnsType != returnsTypeOptions.NOT_RETURN &&
                                     <Grid item xs={12}><Divider/></Grid>}
-                                {returnsType == returnsTypeOptions.EACH_FEW_DAYS &&
+                                {(returnsType == returnsTypeOptions.EACH_FEW_DAYS ||returnsType == returnsTypeOptions.EACH_DAY) &&
 
                                     <Grid item xs={5}>
                                         <TextField
@@ -463,13 +463,13 @@ function RemindersCreateForm(props) {
                                         </TextField>
                                     </Grid>
                                 }
-                                {returnsType != returnsTypeOptions.NOT_RETURN && !(returnsType == returnsTypeOptions.EACH_FEW_DAYS && untilType != untilTypeOptions.DATE) &&
+                                {returnsType != returnsTypeOptions.NOT_RETURN && !((returnsType == returnsTypeOptions.EACH_FEW_DAYS ||returnsType == returnsTypeOptions.EACH_DAY)&& untilType != untilTypeOptions.DATE) &&
                                     <Grid item xs={7}>
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <ThemeProvider theme={ltrTheme}>
                                                 <DatePicker
-                                                    label={returnsType == returnsTypeOptions.EACH_FEW_DAYS ? "תאריך (כולל)" : "חזור עד"}
+                                                    label={(returnsType == returnsTypeOptions.EACH_FEW_DAYS ||returnsType == returnsTypeOptions.EACH_DAY) ? "תאריך (כולל)" : "חזור עד"}
                                                     id={UNTIL_DATE}
                                                     name={UNTIL_DATE}
                                                     value={untilDate}
@@ -487,11 +487,11 @@ function RemindersCreateForm(props) {
                                     </Grid>
 
                                 }
-                                {returnsType == returnsTypeOptions.EACH_FEW_DAYS && untilType == untilTypeOptions.NUM &&
+                                {(returnsType == returnsTypeOptions.EACH_FEW_DAYS ||returnsType == returnsTypeOptions.EACH_DAY)   && untilType == untilTypeOptions.NUM &&
                                     <Grid item xs={7}>
                                         <TextField
                                             id={REMINDERS_NUM}
-                                            label="כמות תזכורת (שנותרו)"
+                                            label="כמות תזכורת"
                                             name={REMINDERS_NUM}
                                             type="number"
                                             InputLabelProps={{
