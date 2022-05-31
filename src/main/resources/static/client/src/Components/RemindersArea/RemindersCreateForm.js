@@ -64,6 +64,7 @@ export const untilTypeOptions = {
     DATE: 'תאריך',
     NUM: 'כמות תזכורת'
 };
+export const fakeExpiration = new Date('2500-01-01')
 
 export const getTomorow = () => {
     let date = new Date();

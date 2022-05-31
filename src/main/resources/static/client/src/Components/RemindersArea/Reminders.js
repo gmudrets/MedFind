@@ -40,12 +40,13 @@ import BarcodeScanner from "../BarcodeScanner/BarcodeScanner";
 import TransitionsModal from "../UI/Modal/Modal";
 import {useEffect, useState} from "react";
 import RemindersCreateForm, {
-    EACH_MANY_DAYS, EACH_MANY_WEEKS,
+    daysWeekOptions,
+    EACH_MANY_DAYS, EACH_MANY_WEEKS, fakeExpiration,
     getTomorow, MEDICINE, REMINDERS_NUM,
     RETURNS_TYPE,
     returnsTypeOptions,
-    TIMES_ARRAY,
-    UNTIL_DATE, UNTIL_TYPE, untilTypeOptions
+    TIMES_ARRAY, TITLE,
+    UNTIL_DATE, UNTIL_TYPE, untilTypeOptions, WEEK_DAYS_SELECTED
 } from "./RemindersCreateForm";
 import {useNavigate} from "react-router-dom";
 import {getRequest} from "../../Utils/AxiosRequests";
@@ -92,6 +93,8 @@ export default function Reminders() {
         newData[EACH_MANY_DAYS] = 1;
         newData[UNTIL_TYPE] = untilTypeOptions.NUM;
         newData[REMINDERS_NUM] = 1;
+        newData[UNTIL_DATE]= fakeExpiration;
+        console.log(fakeExpiration);
         return newData;
     }
     const convertEachDay = (newData) => {
@@ -138,9 +141,11 @@ export default function Reminders() {
         if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
             if (newData[UNTIL_TYPE] === untilTypeOptions.DATE) {
                 convertToUntilNum(newData);
+            } else {
+                newData[UNTIL_DATE] = fakeExpiration;
             }
             await sendEachFewDays(newData, originalData);
-            const data =await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
+            const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
             console.log(data);
             return true;
 
@@ -148,8 +153,9 @@ export default function Reminders() {
         if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
             convertEachWeek();
         }
+        await sendEachFewWeeks(newData, originalData);
+        const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
 
-        // sendEachFewWeeks(newData,originalData);
 
     }
     const dateToString = (date) => {
@@ -157,30 +163,36 @@ export default function Reminders() {
         const months = Math.floor((date.getMonth() + 1) / 10) === 0 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
         const years = date.getFullYear();//assuming all after 10000
         const hours = Math.floor(date.getHours() / 10) === 0 ? '0' + date.getHours() : date.getHours();
-        const minutes = Math.floor(date.getHours()) / 10 === 0 ? '0' + date.getMinutes() : date.getMinutes();
+        const minutes = Math.floor(date.getMinutes()) / 10 === 0 ? '0' + date.getMinutes() : date.getMinutes();
         return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
 
     }
-    // const sendEachFewWeeks = async (data, originalData) => {
-    //     let hours = [];
-    //     let minutes = [];
-    //     let weeks = [];
-    //     for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
-    //         hours.push(new Date(data[TIMES_ARRAY]).getHours());
-    //         minutes.push(new Date(data[TIMES_ARRAY]).getMinutes());
-    //
-    //     }
-    //     console.log()
-    //     let days = [];
-    //
-    //     const requastParams = {
-    //         'alertName': JSON.stringify(originalData),//TODO:
-    //         // 'alertName': 'abc',
-    //         "regNum": data[MEDICINE]['regNum'],
-    //         'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates,
-    //     }
-    //
-    // }
+    const sendEachFewWeeks = async (data, originalData) => {
+        let hours = [];
+        let minutes = [];
+        let days = [];
+        let weeks = [];
+        for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
+            for (let j = 0; j < data[WEEK_DAYS_SELECTED]; j++) {
+                hours.push(new Date(data[TIMES_ARRAY[i]]).getHours());
+                minutes.push(new Date(data[TIMES_ARRAY][i]).getMinutes());
+                days.push(daysWeekOptions.indexOf(data[TIMES_ARRAY][j]) + 1);
+                weeks.push(data[EACH_MANY_WEEKS]);
+            }
+
+        }
+
+        const requastParams = {
+            'alertName': data[TITLE],
+            "regNum": data[MEDICINE]['regNum'],
+            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])),
+            'days': days.join("&"),
+            'hours': hours.join("&"),
+            "minutes" : minutes.join("&"),
+            "weeks": weeks.join("&")
+        }
+        await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_SCHEDULE_ALERT, requastParams);
+    }
     const sendEachFewDays = async (data, originalData) => {
         const dates = [];
         console.log(data);
@@ -201,7 +213,7 @@ export default function Reminders() {
         }
         const requastParams = {
             // 'alertName': JSON.stringify(originalData).toString(),//TODO:
-            'alertName': 'abc',
+            'alertName': data[TITLE],
             "regNum": data[MEDICINE]['regNum'],
             'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&")
         }
