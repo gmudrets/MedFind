@@ -169,6 +169,19 @@ public class MedicineStock {
         return medicineEntryRepository.findAllByUuid(uuid);
     }
 
+    @GetMapping("/api/GetAllUserSharedStockMedicine")
+    public List<MedicineEntry> GetAllUserSharedStockMedicine(@RequestHeader(name = "idToken") String idToken) throws TokenException {
+        String uuid;
+
+        try {
+            uuid = FirebaseValidator.getUidFromIdToken(idToken);
+        } catch (FirebaseAuthException e) {
+            throw new TokenException("User not found.", e);
+        }
+
+        return medicineEntryRepository.findAllByUuidAndShared(uuid, true);
+    }
+
     @GetMapping("/api/GetAllSharedStockMedicine")
     public List<MedicineEntry> GetAllSharedStockMedicine(@RequestHeader(name = "idToken") String idToken) throws TokenException {
         try {
