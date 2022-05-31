@@ -29,7 +29,7 @@ import rtlPlugin from 'stylis-plugin-rtl';
 import {CacheProvider} from '@emotion/react';
 import createCache from '@emotion/cache';
 import {prefixer} from 'stylis';
-import {Button, Checkbox, Fab, FormControlLabel, FormGroup, Stack} from "@mui/material";
+import {Button, Checkbox, Fab, FormControlLabel, FormGroup, Paper, Stack} from "@mui/material";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
@@ -51,6 +51,7 @@ import {useNavigate} from "react-router-dom";
 import {getRequest} from "../../Utils/AxiosRequests";
 import {getAuth} from "firebase/auth";
 import {ServerConsts} from "../../Consts/apiPaths";
+import RecipeReviewCard from "./BasicCard";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -118,7 +119,7 @@ export default function Reminders() {
         return newData;
 
     }
-    const convertEachWeek = (newData)=>{
+    const convertEachWeek = (newData) => {
         newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
         newData[EACH_MANY_WEEKS] = 1;
     }
@@ -144,10 +145,10 @@ export default function Reminders() {
             return true;
 
         }
-        if(newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK){
+        if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
             convertEachWeek();
         }
-        sendEachFewWeeks(newData,originalData);
+        // sendEachFewWeeks(newData,originalData);
 
     }
     const dateToString = (date) => {
@@ -155,26 +156,26 @@ export default function Reminders() {
             (date.getMinutes())
 
     }
-    const sendEachFewWeeks = async (data, originalData) => {
-        let hours = [];
-        let minutes = [];
-        let weeks = [];
-        for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
-            hours.push(new Date(data[TIMES_ARRAY]).getHours());
-            minutes.push(new Date(data[TIMES_ARRAY]).getMinutes());
-
-        }
-        console.log()
-        let days = [];
-
-        const requastParams = {
-            'alertName': JSON.stringify(originalData),//TODO:
-            // 'alertName': 'abc',
-            "regNum": data[MEDICINE]['regNum'],
-            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates,
-        }
-
-    }
+    // const sendEachFewWeeks = async (data, originalData) => {
+    //     let hours = [];
+    //     let minutes = [];
+    //     let weeks = [];
+    //     for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
+    //         hours.push(new Date(data[TIMES_ARRAY]).getHours());
+    //         minutes.push(new Date(data[TIMES_ARRAY]).getMinutes());
+    //
+    //     }
+    //     console.log()
+    //     let days = [];
+    //
+    //     const requastParams = {
+    //         'alertName': JSON.stringify(originalData),//TODO:
+    //         // 'alertName': 'abc',
+    //         "regNum": data[MEDICINE]['regNum'],
+    //         'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates,
+    //     }
+    //
+    // }
     const sendEachFewDays = async (data, originalData) => {
         const dates = [];
         console.log(data);
@@ -199,13 +200,15 @@ export default function Reminders() {
         console.log(requastParams);
         const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
     }
-
+    // const createStringFromReminder  = (data){
+    //
+    // }
     return (
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
                 <React.Fragment>
                     <Box sx={{flexGrow: 1}}>
-                        <Grid container columnSpacing={5} rowSpacing={2}
+                        <Grid container columnSpacing={2} rowSpacing={2}
                               sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {padding: "40px"}}>
                             <Grid item md={12} sx={{textAlign: "center"}}>
                                 <Fab onClick={handleAddClick} color="primary" aria-label="add">
@@ -214,6 +217,35 @@ export default function Reminders() {
                             </Grid>
                         </Grid>
                     </Box>
+                    <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}>                       <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'scroll'}}>
+
+                        <Grid item md={3} >
+                            <RecipeReviewCard/>
+                        </Grid>
+                        <Grid item md={3} >
+                            <RecipeReviewCard/>
+                        </Grid>
+                        <Grid item md={3} >
+                            <RecipeReviewCard/>
+                        </Grid>
+                        <Grid item md={3} >
+                            <RecipeReviewCard/>
+                        </Grid>
+                        <Grid item md={3} >
+                            <RecipeReviewCard/>
+                        </Grid>
+                        <Grid item md={3} >
+                            <RecipeReviewCard/>
+                        </Grid>
+                        <Grid item md={3} >
+                            <RecipeReviewCard/>
+                        </Grid>
+                        <Grid item md={3} >
+                            <RecipeReviewCard/>
+                        </Grid>
+                         </Grid>
+                    </Box>
+
                     <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
                         <RemindersCreateForm handleSubmit={handleSubmit}/>
                     </TransitionsModal>
