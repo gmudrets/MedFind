@@ -8,7 +8,8 @@ module.exports = {
         GET_SHARED_MEDICINE : "/api/GetAllSharedStockMedicine",
         ADD_FIXED_ALERT:"/api/AddFixedAlert",
         ADD_SCHEDULE_ALERT: "/api/AddScheduleAlert",
-        GET_USER_ALERT_LIST:"/api/GetUserAlertsList"
+        GET_USER_ALERT_LIST:"/api/GetUserAlertsList",
+        DELETE_ALRET_BY_ID: "/api/DeleteAlertById"
 
 
         GET_USER_SHARED_MEDICINE : "/api/GetAllUserSharedStockMedicine",

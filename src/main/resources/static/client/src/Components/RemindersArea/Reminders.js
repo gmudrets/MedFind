@@ -29,7 +29,7 @@ import rtlPlugin from 'stylis-plugin-rtl';
 import {CacheProvider} from '@emotion/react';
 import createCache from '@emotion/cache';
 import {prefixer} from 'stylis';
-import {Button, Checkbox, Fab, FormControlLabel, FormGroup, Paper, Stack} from "@mui/material";
+import {Button, Checkbox, Dialog, Fab, FormControlLabel, FormGroup, Paper, Stack} from "@mui/material";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
@@ -55,6 +55,8 @@ import {ServerConsts} from "../../Consts/apiPaths";
 import RecipeReviewCard from "./BasicCard";
 import * as RemindersFields from "../../Consts/RemindersFields";
 import ReminderCard from "./ReminderCard";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 
 
 // Create rtl cache
@@ -72,6 +74,7 @@ export default function Reminders() {
     const navigate = useNavigate();
     const [RemindersList, setRemindersList] = React.useState(null);
     const [medicineList, setMedicineList] = React.useState(null);
+    const [deletedID, setDeletedID] = React.useState(null);
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     useEffect(() => {
@@ -84,15 +87,16 @@ export default function Reminders() {
     useEffect(() => {
         console.log(RemindersList);
     }, [RemindersList]);
-    useEffect(() => {
-        console.log(medicineList);
-    }, [medicineList]);
+    // useEffect(() => {
+    //     console.log(medicineList);
+    // }, [medicineList]);
 
     useEffect(async () => {
         if (getAuth() != null) {
             const token = await getAuth().currentUser.getIdToken(true);
             setMedicineList(await getRequest(token, ServerConsts.GET_ALL_MEDICINE));
-            setRemindersList(await getRequest(token, ServerConsts.GET_USER_ALERT_LIST));
+            const list = await getRequest(token, ServerConsts.GET_USER_ALERT_LIST);
+            setRemindersList(list.reverse());
         }
     }, []);
     const [onReminderCreation, setOnReminderCreation] = useState(false);
@@ -167,7 +171,7 @@ export default function Reminders() {
 
         }
         if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
-            convertEachWeek();
+            convertEachWeek(newData);
         }
         await sendEachFewWeeks(newData, originalData);
 
@@ -228,6 +232,8 @@ export default function Reminders() {
                 // console.log(curDate.getTime() > now.getTime());
                 // console.log(dateToString(curDate));
                 if (curDate.getTime() > now.getTime()) {
+                    console.log(curDate);
+                    console.log(data[EACH_MANY_DAYS]);
                     dates.push(dateToString(curDate));
                 } else if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM || originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
                     j--;
@@ -253,8 +259,6 @@ export default function Reminders() {
         let medicineImage = null;
         let regNum = data['regNum'];
         for (let i = 0; i < medicineList.length; i++) {
-            console.log(regNum);
-            console.log(medicineList[i]['regNum']);
             if (medicineList[i]['regNum'] == regNum) {
                 medicineName = medicineList[i]['hebName'];
                 medicineImage = medicineList[i]['image'];
@@ -263,7 +267,7 @@ export default function Reminders() {
 
         }
         result['image'] = medicineImage;
-        result["medicineName"] =  medicineName;
+        result["medicineName"] = medicineName;
         let info = "";
         if (data[RemindersFields.REM_TYPE] == RemindersFields.FIXED) {
             const fixedDate = new Date(data[RemindersFields.FIXED_DATE]);
@@ -274,10 +278,10 @@ export default function Reminders() {
             info += toOnlyDateString(newDateString)
             info += "\n"
             info += "שעה: "
-            info +=  toOnlyTimeString(newDateString);
+            info += toOnlyTimeString(newDateString);
         } else {
             let timeString = dateToString(new Date(), 18, 6, 2022, data[RemindersFields.HOUR], data[RemindersFields.MINUTE]);
-            console.log(data[RemindersFields.WEEK] );
+            console.log(data[RemindersFields.WEEK]);
             let expeartionDateString = dateToString(new Date(data[RemindersFields.REM_EXPERATION]));
             expeartionDateString = toOnlyDateString(expeartionDateString);
             timeString = toOnlyTimeString(timeString);
@@ -287,7 +291,7 @@ export default function Reminders() {
             info += "ביום: ";
             info += daysWeekOptions[data[RemindersFields.DAY_IN_WEEK] - 1];
             info += "\n";
-            if (data[RemindersFields.WEEK]=== 1) {
+            if (data[RemindersFields.WEEK] === 1) {
                 info += "כל שבוע"
             } else {
                 info += "כל "
@@ -302,7 +306,8 @@ export default function Reminders() {
             }
         }
         result['info'] = info;
-        result['id'] = data[RemindersFields.REM_UUID];
+        result['id'] = data[RemindersFields.REM_ID];
+        result['handleDelete'] = handleDelete;
         return result;
 
     }
@@ -312,7 +317,18 @@ export default function Reminders() {
     const toOnlyTimeString = (s) => {
         return s.slice(11, 16);
     }
+    const handleDelete = (id) => {
+        setDeletedID(id);
+    }
+    const handleDeleteDialogFinished = (event) => {
+        setDeletedID(null);
+    }
+    const handleFinalDelete = async () => {
+        setDeletedID(null);
+        await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_ID, {"id": deletedID});
 
+        ;
+    }
     return (
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
@@ -328,23 +344,38 @@ export default function Reminders() {
                             </Grid>
                         </Grid>
                     </Box>
-                    <Box style={{maxHeight: '50vh', overflow: 'auto'}}margin={'27px'}> <Grid container
-                                                                                              columnSpacing={5}
-                                                                                              rowSpacing={2.8}
-                                                                                              style={{overflowY: 'scroll'}}>
-                        {RemindersList!= null && RemindersList.map((item) => (
-                            <Grid item md={3}>
-                                <ReminderCard {...createPropsFromItem(item)}/>
-                            </Grid>
-                        ))}
+                    <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}>
+                        <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'auto'}}>
+                            {RemindersList != null && (RemindersList).map((item) => (
+                                <Grid item md={3}>
+                                    <ReminderCard  {...createPropsFromItem(item)}/>
+                                </Grid>
+                            ))}
 
 
-                    </Grid>
+                        </Grid>
                     </Box>
 
-                    <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
+                    <TransitionsModal open={onReminderCreation}  toggleModal={toggleOnReminderCreation}>
                         <RemindersCreateForm handleSubmit={handleSubmit} medicineList={medicineList}/>
                     </TransitionsModal>
+                    <Dialog
+                        open={deletedID != null}
+                        onClose={handleDeleteDialogFinished}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                    >
+                        <DialogTitle id="alert-dialog-title">
+                            {"האם אתה בטוח שברצונך למחוק את ההתראה?"}
+                        </DialogTitle>
+
+                        <DialogActions>
+                            <Button onClick={handleDeleteDialogFinished}>בטל מחיקה</Button>
+                            <Button onClick={handleFinalDelete} autoFocus>
+                                מחק
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </React.Fragment>
             </ThemeProvider>
         </CacheProvider>

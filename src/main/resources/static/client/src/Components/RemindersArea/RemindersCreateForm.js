@@ -31,6 +31,7 @@ import {getSafe} from "../../Utils/Utils";
 import {USER_PROFILE} from "../../Consts/StatePaths";
 import {getAuth} from "firebase/auth";
 import {ServerConsts} from "../../Consts/apiPaths";
+import {current} from "@reduxjs/toolkit";
 
 export const TITLE = 'title';
 export const MEDICINE = 'medicine';
@@ -105,8 +106,8 @@ function RemindersCreateForm(props) {
     const [medicine, setMedicine] = React.useState("טוען תרופות...");
     useEffect(async () => {
         let medicenes = [defualtMedicne];
-        for (let i = 0; i < curData.length; i++) {
-            medicenes[i + 1] = medicineFullList[i]['hebName'];
+        for (let i = 0; i < medicineFullList.length; i++) {
+            medicenes[i + 1] = medicineFullList[i]['hebName'] ;
         }
         setMedicineList(medicenes);
         setMedicine(medicenes[0]);
@@ -256,6 +257,7 @@ function RemindersCreateForm(props) {
         value[UNTIL_TYPE] = untilType;
         value[UNTIL_DATE] = untilDate;
         value[MEDICINE] = medicineFullList[medicineList.indexOf(medicine)];
+        console.log(value);
         props.handleSubmit(value);
         return true;
     };

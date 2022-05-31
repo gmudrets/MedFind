@@ -21,7 +21,8 @@ export default function ReminderCard(props) {
         medicineName,
         title,
         info,
-        id
+        id,
+        handleDelete
     } = props;
     const theme = createTheme({direction: 'rtl'});
     useEffect(() => {
@@ -40,13 +41,12 @@ export default function ReminderCard(props) {
     }
 
 
-
     return (
         <ThemeProvider theme={theme}>
-            <Card sx={{maxWidth: 300, width: '90%', marginBottom: 2, minWidth:200}}>
+            <Card sx={{maxWidth: 300, width: '90%', marginBottom: 2, minWidth: 200}}>
                 <CardHeader
-                    title={title===""?medicineName: title}
-                    subheader={title===""?"":medicineName}
+                    title={title === "" ? medicineName : title}
+                    subheader={title === "" ? "" : medicineName}
                 />
                 {/*<CardMedia*/}
                 {/*    component="img"*/}
@@ -61,7 +61,7 @@ export default function ReminderCard(props) {
                     </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
-                    <IconButton aria-label="deleteReminder">
+                    <IconButton aria-label="deleteReminder" onClick={() => handleDelete(id)}>
                         <DeleteIcon/>
                     </IconButton>
 
