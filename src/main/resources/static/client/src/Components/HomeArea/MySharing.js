@@ -20,13 +20,13 @@ import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import moment from "moment";
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import {red} from "@mui/material/colors";
 import CloseIcon from "@mui/icons-material/Close";
 import {Alert, Snackbar} from "@mui/material";
 import AlertDialog from "../UI/Dialog";
+import * as Utils from "../../Utils/Utils";
 
 function MySharing() {
 
@@ -90,12 +90,6 @@ function MySharing() {
         return count;
     }
 
-    const formatDate = (dateString) => {
-        let date = new moment(dateString);
-
-        return date.format('DD/MM/yyyy');
-    }
-
     const unshareMedicine = async (id) => {
         await getRequest(currentUser.stsTokenManager.accessToken,
             ServerConsts.UPDATE_MEDICINE_SHARING, {
@@ -152,7 +146,7 @@ function MySharing() {
                                                 />
                                                 <TableRow key={index}>
                                                     <TableCell align="right" component="th" scope="row">
-                                                        {formatDate(detailsRow.expiration)}
+                                                        {Utils.formatDate(detailsRow.expiration)}
                                                     </TableCell>
                                                     <TableCell align="right">{detailsRow.count}</TableCell>
                                                     <TableCell align="right">
@@ -195,7 +189,7 @@ function MySharing() {
     return (
         <>
             <CircularProgressBackdrop open={loading} toggle={setLoading}/>
-            <Typography align="right" variant="h6" gutterBottom component="div">
+            <Typography align="center" variant="h6" gutterBottom component="div">
                 התרופות המשותפות שלי
             </Typography>
             <Snackbar open={showUnshareMessage}

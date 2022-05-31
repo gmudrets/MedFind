@@ -15,17 +15,17 @@ import QrCode2Icon from '@mui/icons-material/QrCode2';
 import { getSafe } from '../../Utils/Utils'
 import * as STATE_PATHS from '../../Consts/StatePaths'
 import {getRequest} from "../../Utils/AxiosRequests";
-import {ServerConsts, External} from "../../Consts/apiPaths";
+import {ServerConsts} from "../../Consts/apiPaths";
 import TransitionsModal from '../UI/Modal/Modal';
 import BarcodeScanner from '../BarcodeScanner/BarcodeScanner';
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
-import icon from '../../Assets/Images/icon.png'
 import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoadingButton from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
 import { Autocomplete } from '@mui/material'
 import {auth} from '../../Configs/FirebaseConfig'
+import * as Utils from "../../Utils/Utils";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -83,17 +83,6 @@ function Home() {
 
     // Remove last character
     return final.slice(0, -1);
-  }
-
-  const getImageURL = (data) => {
-    let url = External.EXTERNAL_FILES_URL;
-    if (data[0] === undefined){
-        url = icon;
-    }
-    else {
-        url += data[0];
-    }
-    return url;
   }
 
   const search = async (newSearch, generic) => {
@@ -157,7 +146,7 @@ function Home() {
                     d["dragEnName"],
                     d["dragHebName"],
                     d["health"],
-                    getImageURL(d["images"]),
+                    Utils.getImageURL(d["images"]),
                     d["prescription"],
                     d["secondarySymptom"],
                     d["dragRegNum"],
@@ -174,10 +163,6 @@ function Home() {
         setIsFetching(false);
         setLoading(false);
     }
-
-  const handleSearchValueChange = (eventData) => {
-    setSearchValue(eventData.target.value);
-  }
 
   const toggleScanner = () => {
     setScannerOpen(!scannerOpen);

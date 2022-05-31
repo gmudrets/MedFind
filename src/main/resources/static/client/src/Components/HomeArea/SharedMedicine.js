@@ -27,9 +27,9 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import Button from "@mui/material/Button";
-import moment from "moment";
 import TransitionsModal from "../UI/Modal/Modal";
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
+import * as Utils from "../../Utils/Utils";
 
 function SharedMedicine() {
 
@@ -97,12 +97,6 @@ function SharedMedicine() {
         return count;
     }
 
-    const formatDate = (dateString) => {
-        let date = new moment(dateString);
-
-        return date.format('DD/MM/yyyy');
-    }
-
     const getContactDetails = async (uuid) => {
         let data = await getDoc(doc(db, "users", uuid));
         setContactDetails(data.data());
@@ -147,7 +141,7 @@ function SharedMedicine() {
                                         {row.sharingDetails.map((detailsRow) => (
                                             <TableRow key={detailsRow.expiration}>
                                                 <TableCell align="right" component="th" scope="row">
-                                                    {formatDate(detailsRow.expiration)}
+                                                    {Utils.formatDate(detailsRow.expiration)}
                                                 </TableCell>
                                                 <TableCell align="right">{detailsRow.count}</TableCell>
                                                 <TableCell align="right">
@@ -208,7 +202,7 @@ function SharedMedicine() {
                     </TransitionsModal>
                 </>
             }
-            <Typography align="right" variant="h6" gutterBottom component="div">
+            <Typography align="center" variant="h6" gutterBottom component="div">
                 רשימת תרופות משותפות
             </Typography>
             <TableContainer component={Paper}>
