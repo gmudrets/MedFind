@@ -16,7 +16,7 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 export default function PicturePicker(props) {
 	const fileInput = createRef();
-	const [img, setImg] = React.useState(defualtProfPic);
+	const [img, setImg] = React.useState(props.initPic);
 	const [pointerInUpload, setPointerInUpload] = React.useState(false);
 	const [pointerInTake, setPointerInTake] = React.useState(false);
 	const [cameraOpen, setCameraOpen] = React.useState(false);
