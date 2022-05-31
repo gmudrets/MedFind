@@ -104,10 +104,10 @@ export default function Reminders() {
     }
     const changeEndDate = (newData) => {
         let newEndDate = new Date(newData[UNTIL_DATE]);
-        newEndDate.setDate(newEndDate.getDate() + 1);
-        newEndDate.setHours(0);
-        newEndDate.setMinutes(0);
-        newEndDate.setSeconds(0);
+        newEndDate.setDate(newEndDate.getDate());
+        newEndDate.setHours(23);
+        newEndDate.setMinutes(59);
+        newEndDate.setSeconds(59);
         newData[UNTIL_DATE] = newEndDate;
         return newData;
     }
@@ -165,7 +165,7 @@ export default function Reminders() {
         const months = Math.floor((date.getMonth() + 1) / 10) === 0 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
         const years = date.getFullYear();//assuming all after 10000
         const hours = Math.floor(date.getHours() / 10) === 0 ? '0' + date.getHours() : date.getHours();
-        const minutes = Math.floor(date.getMinutes()) / 10 === 0 ? '0' + date.getMinutes() : date.getMinutes();
+        const minutes = Math.floor(date.getMinutes() / 10) === 0 ? '0' + date.getMinutes() : date.getMinutes();
         return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
 
     }
@@ -199,7 +199,7 @@ export default function Reminders() {
         console.log(requastParams);
         await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_SCHEDULE_ALERT, requastParams);
     }
-    const sendEachFewDays = async (data, originalData) => {
+    const sendEachFewDays = async (data, originalData, skipBefore) => {
         const dates = [];
         console.log(data);
         const now = new Date();
@@ -211,7 +211,7 @@ export default function Reminders() {
                 // console.log(dateToString(curDate));
                 if (curDate.getTime() > now.getTime()) {
                     dates.push(dateToString(curDate));
-                } else if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM) {
+                } else if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM || originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
                     j--;
                 }
                 curDate.setDate(curDate.getDate() + data[EACH_MANY_DAYS]);

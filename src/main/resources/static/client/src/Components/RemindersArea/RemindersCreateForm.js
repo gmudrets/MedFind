@@ -105,12 +105,6 @@ function RemindersCreateForm(props) {
     const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
     const [medicine, setMedicine] = React.useState("טוען תרופות...");
     useEffect(async () => {
-        setTriedSubmitted(false);
-        if (timesArray.length == maxTimes) {
-            setReachedMaxTimes(true);
-        } else {
-            setReachedMaxTimes(false);
-        }
         const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE);
         setMedicineFullList(curData);
         let medicenes = [defualtMedicne];
@@ -120,8 +114,14 @@ function RemindersCreateForm(props) {
         setMedicineList(medicenes);
         setMedicine(medicenes[0]);
 
-    }, [])
-
+    }, []);
+    useEffect(()=>{
+        if (timesArray.length == maxTimes) {
+            setReachedMaxTimes(true);
+        } else {
+            setReachedMaxTimes(false);
+        }
+    },[timesArray]);
     const handleMedicineChange = (event) => {
         if (medicineList[0] === defualtMedicne) {
             const next = [...medicineList];
