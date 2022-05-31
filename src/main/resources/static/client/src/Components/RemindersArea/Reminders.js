@@ -69,7 +69,6 @@ export default function Reminders() {
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     useEffect(() => {
-        console.log("HIIIIIII")
         if (currentUser === '') {
             navigate("/login");
 
@@ -125,7 +124,6 @@ export default function Reminders() {
     }
     const handleSubmit = async (originalData) => {
         toggleOnReminderCreation();
-
         const newData = JSON.parse(JSON.stringify(originalData));
         changeEndDate(newData);
         if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
@@ -142,18 +140,25 @@ export default function Reminders() {
                 convertToUntilNum(newData);
             }
             await sendEachFewDays(newData, originalData);
+            const data =await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
+            console.log(data);
             return true;
 
         }
         if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
             convertEachWeek();
         }
+
         // sendEachFewWeeks(newData,originalData);
 
     }
     const dateToString = (date) => {
-        return (date.getDate()) + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + "-" + (date.getHours()) + ':' +
-            (date.getMinutes())
+        const days = Math.floor(date.getDate() / 10) === 0 ? '0' + date.getDate() : date.getDate();
+        const months = Math.floor((date.getMonth() + 1) / 10) === 0 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
+        const years = date.getFullYear();//assuming all after 10000
+        const hours = Math.floor(date.getHours() / 10) === 0 ? '0' + date.getHours() : date.getHours();
+        const minutes = Math.floor(date.getHours()) / 10 === 0 ? '0' + date.getMinutes() : date.getMinutes();
+        return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
 
     }
     // const sendEachFewWeeks = async (data, originalData) => {
@@ -180,22 +185,25 @@ export default function Reminders() {
         const dates = [];
         console.log(data);
         const now = new Date();
+
         for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
             let curDate = new Date(data[TIMES_ARRAY][i]);
             for (let j = 0; j < data[REMINDERS_NUM]; j++) {
-                console.log(curDate.getTime() > now.getTime());
-                console.log(dateToString(curDate));
+                // console.log(curDate.getTime() > now.getTime());
+                // console.log(dateToString(curDate));
                 if (curDate.getTime() > now.getTime()) {
                     dates.push(dateToString(curDate));
+                } else if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM) {
+                    j--;
                 }
-                curDate.setDate(curDate.getDate() + 1);
+                curDate.setDate(curDate.getDate() + data[EACH_MANY_DAYS]);
             }
         }
         const requastParams = {
-            'alertName': JSON.stringify(originalData),//TODO:
-            // 'alertName': 'abc',
+            // 'alertName': JSON.stringify(originalData).toString(),//TODO:
+            'alertName': 'abc',
             "regNum": data[MEDICINE]['regNum'],
-            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates,
+            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&")
         }
         console.log(requastParams);
         const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
@@ -217,33 +225,36 @@ export default function Reminders() {
                             </Grid>
                         </Grid>
                     </Box>
-                    <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}>                       <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'scroll'}}>
+                    <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}> <Grid container
+                                                                                              columnSpacing={5}
+                                                                                              rowSpacing={2.8}
+                                                                                              style={{overflowY: 'scroll'}}>
 
-                        <Grid item md={3} >
+                        <Grid item md={3}>
                             <RecipeReviewCard/>
                         </Grid>
-                        <Grid item md={3} >
+                        <Grid item md={3}>
                             <RecipeReviewCard/>
                         </Grid>
-                        <Grid item md={3} >
+                        <Grid item md={3}>
                             <RecipeReviewCard/>
                         </Grid>
-                        <Grid item md={3} >
+                        <Grid item md={3}>
                             <RecipeReviewCard/>
                         </Grid>
-                        <Grid item md={3} >
+                        <Grid item md={3}>
                             <RecipeReviewCard/>
                         </Grid>
-                        <Grid item md={3} >
+                        <Grid item md={3}>
                             <RecipeReviewCard/>
                         </Grid>
-                        <Grid item md={3} >
+                        <Grid item md={3}>
                             <RecipeReviewCard/>
                         </Grid>
-                        <Grid item md={3} >
+                        <Grid item md={3}>
                             <RecipeReviewCard/>
                         </Grid>
-                         </Grid>
+                    </Grid>
                     </Box>
 
                     <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>

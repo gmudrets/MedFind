@@ -6,6 +6,11 @@ module.exports = {
         GET_BROCHURE: "/api/GetBrochure",
         REGISTER : "/api/User/Register",
         GET_SHARED_MEDICINE : "/api/GetAllSharedStockMedicine",
+        ADD_FIXED_ALERT:"/api/AddFixedAlert",
+        ADD_SCHEDULE_ALERT: "/api/AddScheduleAlert",
+        GET_USER_ALERT_LIST:"/api/GetUserAlertsList"
+
+
         GET_USER_SHARED_MEDICINE : "/api/GetAllUserSharedStockMedicine",
         UPDATE_MEDICINE_SHARING : "/api/ShareMedicineInStock",
         CREATE_NEW_USERTYPE_REQUEST : "/api/CreateNewUserTypeRequest",
