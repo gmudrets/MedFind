@@ -221,7 +221,7 @@ export default function Reminders() {
             // 'alertName': JSON.stringify(originalData).toString(),//TODO:
             'alertName': data[TITLE],
             "regNum": data[MEDICINE]['regNum'],
-            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&")
+            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&fixedDateList=")
         }
         console.log(requastParams);
         const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
