@@ -54,6 +54,8 @@ public class MedicineEntry {
     private String treatment;
 
     private String imageUrl;
+
+    private String brochureUrl;
     public void addCount(int count) {
         this.count += count;
     }
