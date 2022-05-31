@@ -93,7 +93,7 @@ export default function Reminders() {
         newData[EACH_MANY_DAYS] = 1;
         newData[UNTIL_TYPE] = untilTypeOptions.NUM;
         newData[REMINDERS_NUM] = 1;
-        newData[UNTIL_DATE]= fakeExpiration;
+        newData[UNTIL_DATE] = fakeExpiration;
         console.log(fakeExpiration);
         return newData;
     }
@@ -155,6 +155,8 @@ export default function Reminders() {
         }
         await sendEachFewWeeks(newData, originalData);
         const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
+        console.log(data);
+        return true;
 
 
     }
@@ -167,30 +169,34 @@ export default function Reminders() {
         return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
 
     }
+
+
     const sendEachFewWeeks = async (data, originalData) => {
+        console.log("hello")
         let hours = [];
         let minutes = [];
         let days = [];
         let weeks = [];
         for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
-            for (let j = 0; j < data[WEEK_DAYS_SELECTED]; j++) {
-                hours.push(new Date(data[TIMES_ARRAY[i]]).getHours());
+            for (let j = 0; j < data[WEEK_DAYS_SELECTED].length; j++) {
+                console.log(new Date(data[TIMES_ARRAY][i]).getHours());
+                hours.push(new Date(data[TIMES_ARRAY][i]).getHours());
                 minutes.push(new Date(data[TIMES_ARRAY][i]).getMinutes());
-                days.push(daysWeekOptions.indexOf(data[TIMES_ARRAY][j]) + 1);
+                days.push(daysWeekOptions.indexOf(data[WEEK_DAYS_SELECTED][j]) + 1);
                 weeks.push(data[EACH_MANY_WEEKS]);
             }
 
         }
-
         const requastParams = {
             'alertName': data[TITLE],
             "regNum": data[MEDICINE]['regNum'],
             'alertExpiration': dateToString(new Date(data[UNTIL_DATE])),
-            'days': days.join("&"),
-            'hours': hours.join("&"),
-            "minutes" : minutes.join("&"),
-            "weeks": weeks.join("&")
+            'days': days.join("&days="),
+            'hours': hours.join("&hours="),
+            "minutes": minutes.join("&minutes="),
+            "weeks": weeks.join("&weeks=")
         }
+        console.log(requastParams);
         await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_SCHEDULE_ALERT, requastParams);
     }
     const sendEachFewDays = async (data, originalData) => {

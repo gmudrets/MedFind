@@ -39,6 +39,22 @@ export const getRequest = async (idToken, apiPath, params = {}, config = {}) => 
         throw err;
     }
 };
+export const getRequestRaw = async (idToken, apiPath, params, config = {}) => {
+    try {
+        if (process.env.NODE_ENV !== "production") {
+            config = axiosConfig;
+        }
+
+        config['headers'] = {'idToken' : idToken};
+        let response = await axios.get(apiPath +'?'+ params, config);
+        if (Object.keys(response.data).includes('error')) {
+            throw Error(response.data);
+        }
+        return response.data;
+    } catch (err) {
+        throw err;
+    }
+};
 
 export const postRequest = async (idToken, apiPath, data, config = {}) => {
     try {
