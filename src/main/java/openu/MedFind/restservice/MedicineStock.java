@@ -32,6 +32,11 @@ public class MedicineStock {
                                      @RequestParam String drugRegNum,
                                      @RequestParam String hebName,
                                      @RequestParam String engName,
+                                     @RequestParam String activeComponents,
+                                     @RequestParam boolean healthBasket,
+                                     @RequestParam boolean prescription,
+                                     @RequestParam String treatment,
+                                     @RequestParam String imageUrl,
                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date expiration,
                                      @RequestParam MedicineUnits units,
                                      @RequestParam @Min(1) int count,
@@ -50,6 +55,11 @@ public class MedicineStock {
                 .regNum(drugRegNum)
                 .engName(engName)
                 .hebName(hebName)
+                .activeComponents(activeComponents)
+                .healthBasket(healthBasket)
+                .prescription(prescription)
+                .treatment(treatment)
+                .imageUrl(imageUrl)
                 .expiration(expiration)
                 .unitType(units)
                 .count(count)
@@ -80,7 +90,7 @@ public class MedicineStock {
 
     @GetMapping("/api/UpdateMedicineInStock")
     public void UpdateMedicineInStock(@RequestHeader(name = "idToken") String idToken,
-                                   @RequestParam String drugRegNum,
+                                   @RequestParam Long id,
                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date expiration,
                                    @RequestParam @Min(1) int count,
                                    @RequestParam boolean shared) throws TokenException {
@@ -93,7 +103,7 @@ public class MedicineStock {
             throw new TokenException("User not found.", e);
         }
 
-        var entry = medicineEntryRepository.findByRegNumAndUuid(drugRegNum, uuid);
+        var entry = medicineEntryRepository.findById(id);
 
         if(entry != null) {
             entry.setExpiration(expiration);
@@ -102,6 +112,49 @@ public class MedicineStock {
             medicineEntryRepository.save(entry);
         }
     }
+
+    @GetMapping("/api/ShareMedicineInStock")
+    public void ShareMedicineInStock(@RequestHeader(name = "idToken") String idToken,
+                                      @RequestParam Long id,
+                                      @RequestParam boolean shared) throws TokenException {
+
+        String uuid;
+
+        try {
+            uuid = FirebaseValidator.getUidFromIdToken(idToken);
+        } catch (FirebaseAuthException e) {
+            throw new TokenException("User not found.", e);
+        }
+
+        var entry = medicineEntryRepository.findById(id);
+
+        if(entry != null) {
+            entry.setShared(shared);
+            medicineEntryRepository.save(entry);
+        }
+    }
+
+    @GetMapping("/api/UpdateMedicineCountInStock")
+    public void UpdateMedicineCountInStock(@RequestHeader(name = "idToken") String idToken,
+                                      @RequestParam Long id,
+                                      @RequestParam @Min(1) int count) throws TokenException {
+
+        String uuid;
+
+        try {
+            uuid = FirebaseValidator.getUidFromIdToken(idToken);
+        } catch (FirebaseAuthException e) {
+            throw new TokenException("User not found.", e);
+        }
+
+        var entry = medicineEntryRepository.findById(id);
+
+        if(entry != null) {
+            entry.setCount(count);
+            medicineEntryRepository.save(entry);
+        }
+    }
+
 
     @GetMapping("/api/GetAllUserStockMedicine")
     public List<MedicineEntry> GetAllUserStockMedicine(@RequestHeader(name = "idToken") String idToken) throws TokenException {
