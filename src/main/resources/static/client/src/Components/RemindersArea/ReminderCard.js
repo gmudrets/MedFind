@@ -2,37 +2,30 @@ import * as React from 'react';
 import {createTheme, styled} from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import IconButton from '@mui/material/IconButton';
-import {TableCell} from "@mui/material";
-import TableRow from "@mui/material/TableRow";
-import Table from "@mui/material/Table";
+
 import {ThemeProvider} from "@emotion/react";
-import noPrescription from '../../../Assets/Images/no_perscription_logo.png';
-import needPrescription from '../../../Assets/Images/perscription_only_logo.png';
-import Link from "@mui/material/Link";
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
+
 import DeleteIcon from '@mui/icons-material/Delete';
-import {useSelector} from "react-redux";
-import {getSafe} from "../../../Utils/Utils";
-import * as STATE_PATHS from "../../../Consts/StatePaths";
-import {auth} from "../../../Configs/FirebaseConfig"
-import {MEDICINE, TITLE} from "./RemindersCreateForm";
 
 
+import Typography from "@mui/material/Typography";
+import {useEffect} from "react";
 
-export default function DetailedCard(props) {
+
+export default function ReminderCard(props) {
     const {
+        image,
         medicineName,
         title,
-        image,
-        relevantData,
-        uuid
+        info,
+        id
     } = props;
     const theme = createTheme({direction: 'rtl'});
-
+    useEffect(() => {
+    }, []);
 
     const getValue = (data) => {
         if (data === "null") {
@@ -46,17 +39,15 @@ export default function DetailedCard(props) {
         return data;
     }
 
-    const userDetails = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
 
     return (
         <ThemeProvider theme={theme}>
-            <Card sx={{maxWidth: 600, width: '90%', marginBottom: 2}}>
+            <Card sx={{maxWidth: 300, width: '90%', marginBottom: 2, minWidth:200}}>
                 <CardHeader
-                    title={medicineName}
-                    subheader={title}
+                    title={title===""?medicineName: title}
+                    subheader={title===""?"":medicineName}
                 />
-                {/*TODO later*/}
                 {/*<CardMedia*/}
                 {/*    component="img"*/}
                 {/*    height="300"*/}
@@ -64,33 +55,20 @@ export default function DetailedCard(props) {
                 {/*    alt="N/A"*/}
                 {/*/>*/}
 
-                <>
-                <CardContent>
-
-                    <Table size="small" style={{marginBottom: 15}}>
-                        {Object.entries(relevantData).map(([key, val]) => (
-                            <TableRow>
-                                <TableCell variant="head"
-                                           align="right">key</TableCell>
-                                <TableCell align="right">val</TableCell>
-                            </TableRow>
-                        ))}
-                    </Table>
-
+                <CardContent sx={{display: 'flex', flexDirection: 'row', justifyContent: "space-between"}}>
+                    <Typography variant="body2" color="text.secondary" style={{whiteSpace: 'pre-line'}}>
+                        {info}
+                    </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
-                    <IconButton aria-label="editMedicine">
-                        <ModeEditIcon/>
-                    </IconButton>
-                    <IconButton aria-label="add to my medicine">
+                    <IconButton aria-label="deleteReminder">
                         <DeleteIcon/>
                     </IconButton>
 
                 </CardActions>
-            </>
-            )}
-        </Card>
-</ThemeProvider>
-)
-    ;
+
+            </Card>
+        </ThemeProvider>
+    )
+        ;
 }

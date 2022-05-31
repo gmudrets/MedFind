@@ -53,6 +53,9 @@ import {getRequest} from "../../Utils/AxiosRequests";
 import {getAuth} from "firebase/auth";
 import {ServerConsts} from "../../Consts/apiPaths";
 import RecipeReviewCard from "./BasicCard";
+import * as RemindersFields from "../../Consts/RemindersFields";
+import ReminderCard from "./ReminderCard";
+
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -67,6 +70,8 @@ function RTL(props) {
 export default function Reminders() {
     const theme = createTheme({direction: 'rtl'});
     const navigate = useNavigate();
+    const [RemindersList, setRemindersList] = React.useState(null);
+    const [medicineList, setMedicineList] = React.useState(null);
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     useEffect(() => {
@@ -76,14 +81,25 @@ export default function Reminders() {
         }
 
     }, [currentUser]);
+    useEffect(() => {
+        console.log(RemindersList);
+    }, [RemindersList]);
+    useEffect(() => {
+        console.log(medicineList);
+    }, [medicineList]);
+
+    useEffect(async () => {
+        if (getAuth() != null) {
+            const token = await getAuth().currentUser.getIdToken(true);
+            setMedicineList(await getRequest(token, ServerConsts.GET_ALL_MEDICINE));
+            setRemindersList(await getRequest(token, ServerConsts.GET_USER_ALERT_LIST));
+        }
+    }, []);
     const [onReminderCreation, setOnReminderCreation] = useState(false);
     const toggleOnReminderCreation = () => {
         setOnReminderCreation((prevState => !prevState));
     }
-    const loadReminders = () => {
-        //TODO: load data, currently will create fake data
 
-    }
     const handleAddClick = () => {
         setOnReminderCreation(true);
         console.log(dateToString(new Date()));
@@ -154,18 +170,20 @@ export default function Reminders() {
             convertEachWeek();
         }
         await sendEachFewWeeks(newData, originalData);
-        const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
-        console.log(data);
+
         return true;
 
 
     }
-    const dateToString = (date) => {
-        const days = Math.floor(date.getDate() / 10) === 0 ? '0' + date.getDate() : date.getDate();
-        const months = Math.floor((date.getMonth() + 1) / 10) === 0 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
-        const years = date.getFullYear();//assuming all after 10000
-        const hours = Math.floor(date.getHours() / 10) === 0 ? '0' + date.getHours() : date.getHours();
-        const minutes = Math.floor(date.getMinutes() / 10) === 0 ? '0' + date.getMinutes() : date.getMinutes();
+    const rtl = (str) => {
+        return '\u202B' + str + '\u202C';
+    }
+    const dateToString = (date, d = date.getDate(), m = (date.getMonth() + 1), y = date.getFullYear(), h = date.getHours(), min = date.getMinutes()) => {
+        const days = Math.floor(d / 10) === 0 ? '0' + d : d;
+        const months = Math.floor((m) / 10) === 0 ? '0' + (m) : m;
+        const years = y;//assuming all after 10000
+        const hours = Math.floor(h / 10) === 0 ? '0' + h : h;
+        const minutes = Math.floor(min / 10) === 0 ? '0' + min : min;
         return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
 
     }
@@ -226,13 +244,80 @@ export default function Reminders() {
         console.log(requastParams);
         const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
     }
-    // const createStringFromReminder  = (data){
-    //
-    // }
+
+    const createPropsFromItem = (data) => {
+        let result = {};
+
+        result['title'] = data[RemindersFields.REM_TITLE];
+        let medicineName = null;
+        let medicineImage = null;
+        let regNum = data['regNum'];
+        for (let i = 0; i < medicineList.length; i++) {
+            console.log(regNum);
+            console.log(medicineList[i]['regNum']);
+            if (medicineList[i]['regNum'] == regNum) {
+                medicineName = medicineList[i]['hebName'];
+                medicineImage = medicineList[i]['image'];
+                break;
+            }
+
+        }
+        result['image'] = medicineImage;
+        result["medicineName"] =  medicineName;
+        let info = "";
+        if (data[RemindersFields.REM_TYPE] == RemindersFields.FIXED) {
+            const fixedDate = new Date(data[RemindersFields.FIXED_DATE]);
+            const newDateString = dateToString(fixedDate);
+            const alertExperation = new Date(data[RemindersFields.REM_EXPERATION]);
+            const alretExperationString = dateToString(alertExperation);
+            info += "תאריך: ";
+            info += toOnlyDateString(newDateString)
+            info += "\n"
+            info += "שעה: "
+            info +=  toOnlyTimeString(newDateString);
+        } else {
+            let timeString = dateToString(new Date(), 18, 6, 2022, data[RemindersFields.HOUR], data[RemindersFields.MINUTE]);
+            console.log(data[RemindersFields.WEEK] );
+            let expeartionDateString = dateToString(new Date(data[RemindersFields.REM_EXPERATION]));
+            expeartionDateString = toOnlyDateString(expeartionDateString);
+            timeString = toOnlyTimeString(timeString);
+            info += "שעה: "
+            info += timeString;
+            info += "\n";
+            info += "ביום: ";
+            info += daysWeekOptions[data[RemindersFields.DAY_IN_WEEK] - 1];
+            info += "\n";
+            if (data[RemindersFields.WEEK]=== 1) {
+                info += "כל שבוע"
+            } else {
+                info += "כל "
+                info += data[RemindersFields.WEEK];
+                info += " שבועות"
+            }
+            info += "\n";
+            if (data[RemindersFields.REM_EXPERATION] != fakeExpiration) {
+                info += "תאריך סיום: "
+                info += expeartionDateString;
+                info += "\n";
+            }
+        }
+        result['info'] = info;
+        result['id'] = data[RemindersFields.REM_UUID];
+        return result;
+
+    }
+    const toOnlyDateString = (s) => {
+        return s.slice(0, 10);
+    }
+    const toOnlyTimeString = (s) => {
+        return s.slice(11, 16);
+    }
+
     return (
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
                 <React.Fragment>
+
                     <Box sx={{flexGrow: 1}}>
                         <Grid container columnSpacing={2} rowSpacing={2}
                               sx={isMobile ? {padding: "2%", paddingLeft: "4%"} : {padding: "40px"}}>
@@ -243,40 +328,22 @@ export default function Reminders() {
                             </Grid>
                         </Grid>
                     </Box>
-                    <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}> <Grid container
+                    <Box style={{maxHeight: '50vh', overflow: 'auto'}}margin={'27px'}> <Grid container
                                                                                               columnSpacing={5}
                                                                                               rowSpacing={2.8}
                                                                                               style={{overflowY: 'scroll'}}>
+                        {RemindersList!= null && RemindersList.map((item) => (
+                            <Grid item md={3}>
+                                <ReminderCard {...createPropsFromItem(item)}/>
+                            </Grid>
+                        ))}
 
-                        <Grid item md={3}>
-                            <RecipeReviewCard/>
-                        </Grid>
-                        <Grid item md={3}>
-                            <RecipeReviewCard/>
-                        </Grid>
-                        <Grid item md={3}>
-                            <RecipeReviewCard/>
-                        </Grid>
-                        <Grid item md={3}>
-                            <RecipeReviewCard/>
-                        </Grid>
-                        <Grid item md={3}>
-                            <RecipeReviewCard/>
-                        </Grid>
-                        <Grid item md={3}>
-                            <RecipeReviewCard/>
-                        </Grid>
-                        <Grid item md={3}>
-                            <RecipeReviewCard/>
-                        </Grid>
-                        <Grid item md={3}>
-                            <RecipeReviewCard/>
-                        </Grid>
+
                     </Grid>
                     </Box>
 
                     <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
-                        <RemindersCreateForm handleSubmit={handleSubmit}/>
+                        <RemindersCreateForm handleSubmit={handleSubmit} medicineList={medicineList}/>
                     </TransitionsModal>
                 </React.Fragment>
             </ThemeProvider>
