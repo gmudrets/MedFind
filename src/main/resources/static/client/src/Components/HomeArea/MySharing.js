@@ -26,6 +26,7 @@ import {createTheme, ThemeProvider} from "@mui/material/styles";
 import {red} from "@mui/material/colors";
 import CloseIcon from "@mui/icons-material/Close";
 import {Alert, Snackbar} from "@mui/material";
+import AlertDialog from "../UI/Dialog";
 
 function MySharing() {
 
@@ -33,6 +34,7 @@ function MySharing() {
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     const [ updateTable, setUpdateTable ] = useState(true);
     const [rows, setRows] = useState([]);
+    const [openDialog, setOpenDialog] = React.useState(false);
     const [showUnshareMessage, setShowUnshareMessage] = useState(false);
     const [ loading, setLoading ] = useState(false);
 
@@ -127,7 +129,7 @@ function MySharing() {
                 </TableRow>
                 <TableRow>
                     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                        <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Collapse in={open} timeout="auto">
                             <Box sx={{ margin: 1 }}>
                                 <Table size="small" aria-label="shared-meds"  style={{backgroundColor:'whitesmoke'}}>
                                     <TableHead>
@@ -139,19 +141,29 @@ function MySharing() {
                                     </TableHead>
                                     <TableBody>
                                         {row.sharingDetails.map((detailsRow,index) => (
-                                            <TableRow key={index}>
-                                                <TableCell align="right" component="th" scope="row">
-                                                    {formatDate(detailsRow.expiration)}
-                                                </TableCell>
-                                                <TableCell align="right">{detailsRow.count}</TableCell>
-                                                <TableCell align="right">
-                                                    <ThemeProvider theme={theme}>
-                                                        <IconButton aria-label="deny" color="secondary" onClick={() => {unshareMedicine(detailsRow.id)}}>
-                                                            <CloseIcon />
-                                                        </IconButton>
-                                                    </ThemeProvider>
-                                                </TableCell>
-                                            </TableRow>
+                                            <>
+                                                <AlertDialog open={openDialog}
+                                                             setOpen={setOpenDialog}
+                                                             title="אישור הסרת שיתוף"
+                                                             textContent="האם לבטל את שיתוף התרופה?"
+                                                             acceptButtonText="אישור"
+                                                             declineButtonText="ביטול"
+                                                             onAccept={() => {unshareMedicine(detailsRow.id)}}
+                                                />
+                                                <TableRow key={index}>
+                                                    <TableCell align="right" component="th" scope="row">
+                                                        {formatDate(detailsRow.expiration)}
+                                                    </TableCell>
+                                                    <TableCell align="right">{detailsRow.count}</TableCell>
+                                                    <TableCell align="right">
+                                                        <ThemeProvider theme={theme}>
+                                                            <IconButton aria-label="deny" color="secondary" onClick={() => {setOpenDialog(true)}}>
+                                                                <CloseIcon />
+                                                            </IconButton>
+                                                        </ThemeProvider>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </>
                                         ))}
                                     </TableBody>
                                 </Table>
