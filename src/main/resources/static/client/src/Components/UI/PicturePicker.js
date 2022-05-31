@@ -29,11 +29,24 @@ export default function PicturePicker(props) {
 		facingMode: props.facingMode
 	};
 
+	const getBase64 = (file) => {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = error => reject(error);
+		});
+	}
+
 	const onSelectFile = (event) => {
 		const picture = event.target.files[0];
+
 		if (picture && picture['type'].split('/')[0] === 'image') {
-			const src = URL.createObjectURL(picture);
-			handleNewPicture(src);
+			getBase64(picture).then(
+				data => {
+					handleNewPicture(data);
+				}
+			);
 		}
 
 	}
