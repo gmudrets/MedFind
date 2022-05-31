@@ -37,6 +37,7 @@ public class MedicineStock {
                                      @RequestParam boolean prescription,
                                      @RequestParam String treatment,
                                      @RequestParam String imageUrl,
+                                     @RequestParam String brochureUrl,
                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date expiration,
                                      @RequestParam MedicineUnits units,
                                      @RequestParam @Min(1) int count,
@@ -60,6 +61,7 @@ public class MedicineStock {
                 .prescription(prescription)
                 .treatment(treatment)
                 .imageUrl(imageUrl)
+                .brochureUrl(brochureUrl)
                 .expiration(expiration)
                 .unitType(units)
                 .count(count)
