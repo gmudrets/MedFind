@@ -12,6 +12,7 @@ public interface MedicineEntryRepository extends CrudRepository<MedicineEntry, I
     void deleteById(Long id);
 
     MedicineEntry findByRegNumAndUuid(String regNum, String uuid);
+    MedicineEntry findById(Long id);
 
     List<MedicineEntry> findAllByUuid(String uuid);
 
