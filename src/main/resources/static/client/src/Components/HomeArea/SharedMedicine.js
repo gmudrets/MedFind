@@ -137,7 +137,7 @@ function SharedMedicine() {
                                 <Typography align="right" variant="h6" gutterBottom component="div">
                                     רשימת שיתוף
                                 </Typography>
-                                <Table size="small" aria-label="purchases">
+                                <Table size="small" aria-label="shared-meds">
                                     <TableHead>
                                         <TableRow>
                                             <TableCell align="right">{nameMapping.expirationDate}</TableCell>
