@@ -17,32 +17,24 @@ import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import {getRequest} from "../../Utils/AxiosRequests";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../Configs/FirebaseConfig";
 import {ServerConsts} from "../../Consts/apiPaths";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import ContactPageIcon from '@mui/icons-material/ContactPage';
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
-import HomeIcon from '@mui/icons-material/Home';
-import LoadingButton from "@mui/lab/LoadingButton";
 import moment from "moment";
-import TransitionsModal from "../UI/Modal/Modal";
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
+import {red} from "@mui/material/colors";
+import CloseIcon from "@mui/icons-material/Close";
+import {Alert, Snackbar} from "@mui/material";
 
 function MySharing() {
 
     const navigate = useNavigate();
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
-    const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
     const [ updateTable, setUpdateTable ] = useState(true);
     const [rows, setRows] = useState([]);
-    const [contactDetailsLoading, setContactDetailsLoading] = useState(false);
-    const [showContactDetails, setShowContactDetails] = useState(false);
-    const [contactDetails, setContactDetails] = useState({});
+    const [showUnshareMessage, setShowUnshareMessage] = useState(false);
     const [ loading, setLoading ] = useState(false);
-    //TODO: check that the user has a city and phone number, if not present an error meggase
 
     useEffect(() => {
         if (currentUser === ''){
@@ -63,8 +55,14 @@ function MySharing() {
         "dosageForm" : "צורת צריכה",
         "expirationDate" : "בתוקף עד",
         "amount" : "כמות",
-        "userDetails" : "פרטי משתמש",
+        "share" : "ביטול שיתוף",
     };
+
+    const theme = createTheme({
+        palette: {
+            secondary: red,
+        },
+    });
 
     const getShareData = async () => {
         setLoading(true);
@@ -77,7 +75,6 @@ function MySharing() {
             temp.sharingDetails.push(object);
             return r;
         }, []);
-
         setRows(result);
         setUpdateTable(false);
         setLoading(false);
@@ -97,10 +94,13 @@ function MySharing() {
         return date.format('DD/MM/yyyy');
     }
 
-    const getContactDetails = async (uuid) => {
-        let data = await getDoc(doc(db, "users", uuid));
-        setContactDetails(data.data());
-        setShowContactDetails(true);
+    const unshareMedicine = async (id) => {
+        await getRequest(currentUser.stsTokenManager.accessToken,
+            ServerConsts.UPDATE_MEDICINE_SHARING, {
+                id: id,
+                shared: false
+            });
+        setShowUnshareMessage(true);
     };
 
     function Row(props) {
@@ -110,7 +110,7 @@ function MySharing() {
         return (
             <React.Fragment>
                 <TableRow  sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell>
+                    <TableCell style={{ width: '50px' }}>
                         <IconButton
                             aria-label="expand row"
                             size="small"
@@ -129,35 +129,27 @@ function MySharing() {
                     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             <Box sx={{ margin: 1 }}>
-                                <Typography align="right" variant="h6" gutterBottom component="div">
-                                    רשימת שיתוף
-                                </Typography>
-                                <Table size="small" aria-label="shared-meds">
+                                <Table size="small" aria-label="shared-meds"  style={{backgroundColor:'whitesmoke'}}>
                                     <TableHead>
                                         <TableRow>
                                             <TableCell align="right">{nameMapping.expirationDate}</TableCell>
                                             <TableCell align="right">{nameMapping.amount}</TableCell>
-                                            <TableCell align="right">{nameMapping.userDetails}</TableCell>
+                                            <TableCell align="right">{nameMapping.share}</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {row.sharingDetails.map((detailsRow) => (
-                                            <TableRow key={detailsRow.expiration}>
+                                        {row.sharingDetails.map((detailsRow,index) => (
+                                            <TableRow key={index}>
                                                 <TableCell align="right" component="th" scope="row">
                                                     {formatDate(detailsRow.expiration)}
                                                 </TableCell>
                                                 <TableCell align="right">{detailsRow.count}</TableCell>
                                                 <TableCell align="right">
-                                                    <LoadingButton
-                                                        variant="contained"
-                                                        size="small"
-                                                        endIcon={<ContactPageIcon style={{marginRight: 12}}/>}
-                                                        onClick={() => {getContactDetails(detailsRow.uuid);}}
-                                                        loading={contactDetailsLoading}
-                                                        loadingPosition="end"
-                                                    >
-                                                        פרטי משתמש
-                                                    </LoadingButton>
+                                                    <ThemeProvider theme={theme}>
+                                                        <IconButton aria-label="deny" color="secondary" onClick={() => {unshareMedicine(detailsRow.id)}}>
+                                                            <CloseIcon />
+                                                        </IconButton>
+                                                    </ThemeProvider>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -191,23 +183,21 @@ function MySharing() {
     return (
         <>
             <CircularProgressBackdrop open={loading} toggle={setLoading}/>
-            {showContactDetails &&
-                <>
-                    <TransitionsModal open={showContactDetails} toggleModal={()=>{setShowContactDetails(!showContactDetails)}}>
-                        <h4>{contactDetails.firstName} {contactDetails.lastName}</h4>
-                        <Box paddingBottom={'8px'} display={'flex'}>
-                            <EmailIcon/> &nbsp;&nbsp;{contactDetails.email}
-                        </Box>
-                        <Box paddingBottom={'8px'} display={'flex'}>
-                            <PhoneIcon/> &nbsp;&nbsp;{contactDetails.telephone}
-                        </Box>
-                        <Box paddingBottom={'8px'} display={'flex'}>
-                            <HomeIcon/> &nbsp;&nbsp;{contactDetails.city}
-                        </Box>
-                    </TransitionsModal>
-                </>
-            }
-
+            <Typography align="right" variant="h6" gutterBottom component="div">
+                התרופות המשותפות שלי
+            </Typography>
+            <Snackbar open={showUnshareMessage}
+                      autoHideDuration={1500}
+                      onClose={() => {
+                          setShowUnshareMessage(false);
+                          setUpdateTable(true);
+                      }}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+                <Alert severity="success">
+                    שיתוף התרופה בוטל
+                </Alert>
+            </Snackbar>
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
@@ -219,8 +209,8 @@ function MySharing() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
-                            <Row key={row.name} row={row} />
+                        {rows.map((row, index) => (
+                            <Row key={index} row={row} />
                         ))}
                     </TableBody>
                 </Table>
