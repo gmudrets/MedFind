@@ -1,3 +1,4 @@
+import React from "react";
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import Home from '../../HomeArea/Home';
 import Login from '../../AuthArea/Login/Login';
@@ -5,7 +6,7 @@ import Register from '../../AuthArea/Register/Register';
 import Logout from '../../AuthArea/Logout/Logout';
 import Settings from "../../SettingArea/Settings";
 import MenuDrawer from "../Menu/MenuDrawer";
-import React from "react";
+import ApprovalRequests from "../../HomeArea/ApprovalRequests";
 import SharedMedicine from "../../HomeArea/SharedMedicine";
 
 function Routing() {
@@ -18,6 +19,7 @@ function Routing() {
 					<Route path="/login" element={<Login/>} />
 					<Route path="/logout" element={<Logout/>} />
 					<Route path="/settings" element={<Settings/>} />
+					<Route path="/approval" element={<ApprovalRequests/>} />
 					<Route path="/shared_medicine" element={<SharedMedicine/>} />
 				</Routes>
 				<MenuDrawer/>
