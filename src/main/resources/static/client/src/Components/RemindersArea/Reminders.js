@@ -75,6 +75,7 @@ export default function Reminders() {
     const [RemindersList, setRemindersList] = React.useState(null);
     const [medicineList, setMedicineList] = React.useState(null);
     const [deletedID, setDeletedID] = React.useState(null);
+    const [loadingNew, setLoadingNew] = React.useState(false);
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     useEffect(() => {
@@ -146,6 +147,7 @@ export default function Reminders() {
         newData[EACH_MANY_WEEKS] = 1;
     }
     const handleSubmit = async (originalData) => {
+        setLoadingNew(true);
         toggleOnReminderCreation();
         const newData = JSON.parse(JSON.stringify(originalData));
         changeEndDate(newData);
@@ -168,7 +170,8 @@ export default function Reminders() {
             // }
             await sendEachFewDays(newData, originalData);
             const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
-            console.log(data);
+            setRemindersList(data.reverse());
+            setLoadingNew(false);
             return true;
 
         }
@@ -176,7 +179,9 @@ export default function Reminders() {
             convertEachWeek(newData);
         }
         await sendEachFewWeeks(newData, originalData);
-
+        const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
+        setRemindersList(data.reverse());
+        setLoadingNew(false);
         return true;
 
 
@@ -241,10 +246,11 @@ export default function Reminders() {
                     } else {
                         j--;
                     }
+                    curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
+
                 }
-                curDate.setDate(curDate.getDate() + data[EACH_MANY_DAYS]);
             } else {
-                while (curDate < data[UNTIL_DATE])
+                while (curDate.getTime() < data[UNTIL_DATE].getTime()) {
                     // console.log(curDate.getTime() > now.getTime());
                     // console.log(dateToString(curDate));
                     if (curDate.getTime() > now.getTime()) {
@@ -252,8 +258,10 @@ export default function Reminders() {
                         console.log(data[EACH_MANY_DAYS]);
                         dates.push(dateToString(curDate));
                     }
+                    curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
+                }
+
             }
-            curDate.setDate(curDate.getDate() + data[EACH_MANY_DAYS]);
 
         }
         const requastParams = {
@@ -339,7 +347,16 @@ export default function Reminders() {
         setDeletedID(null);
     }
     const handleFinalDelete = async () => {
+        for (let i = 0; i < RemindersList.length; i++) {
+            if (RemindersList[i][RemindersFields.REM_ID] === deletedID) {
+                const newRem = [...RemindersList];
+                newRem.splice(i, 1);
+                setRemindersList(newRem);
+                break;
+            }
+        }
         setDeletedID(null);
+
         await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_ID, {"id": deletedID});
 
         ;
@@ -361,11 +378,20 @@ export default function Reminders() {
                     </Box>
                     <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}>
                         <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'auto'}}>
-                            {RemindersList != null && (RemindersList).map((item) => (
+                            {loadingNew &&
+                                <Grid item xs={12} sx={{textAlign: "left"}}>
+                                    <Typography component="h1" variant="h6" marginBottom={'5px'}>טוען התראות חדשות....
+                                    </Typography>
+                                </Grid>}
+                            {RemindersList != null ? (RemindersList).map((item) => (
                                 <Grid item md={3}>
                                     <ReminderCard  {...createPropsFromItem(item)}/>
                                 </Grid>
-                            ))}
+                            )) : <Grid item xs={12} sx={{textAlign: "left"}}>
+                                <Typography component="h1" variant="h6" marginBottom={'5px'}>טוען התראות....
+                                </Typography>
+                            </Grid>
+                            }
 
 
                         </Grid>
