@@ -16,7 +16,7 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 export default function PicturePicker(props) {
 	const fileInput = createRef();
-	const [img, setImg] = React.useState(defualtProfPic);
+	const [img, setImg] = React.useState(props.initPic);
 	const [pointerInUpload, setPointerInUpload] = React.useState(false);
 	const [pointerInTake, setPointerInTake] = React.useState(false);
 	const [cameraOpen, setCameraOpen] = React.useState(false);
@@ -29,11 +29,24 @@ export default function PicturePicker(props) {
 		facingMode: props.facingMode
 	};
 
+	const getBase64 = (file) => {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = error => reject(error);
+		});
+	}
+
 	const onSelectFile = (event) => {
 		const picture = event.target.files[0];
+
 		if (picture && picture['type'].split('/')[0] === 'image') {
-			const src = URL.createObjectURL(picture);
-			handleNewPicture(src);
+			getBase64(picture).then(
+				data => {
+					handleNewPicture(data);
+				}
+			);
 		}
 
 	}

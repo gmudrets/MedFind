@@ -29,14 +29,16 @@ import {auth, db} from "../../../Configs/FirebaseConfig";
 import {createUserWithEmailAndPassword, signOut} from "firebase/auth";
 import {collection, doc, setDoc} from "firebase/firestore";
 import * as ProfileFields from '../../../Consts/ProfileFields.js'
+import PicturePicker from "../../UI/PicturePicker";
+import certificatePlaceHolder from "../../../Assets/Images/certificatePlaceHolder.jpg";
 
 const theme = createTheme({direction: 'rtl'});
 
 function Register() {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
+  const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
   useEffect(() => {
     if (currentUser !== ''){
@@ -55,6 +57,8 @@ function Register() {
     MEDICAL_STAFF_MEMBER : 'צוות רפואי',
   };
 
+  const snackBarDuration = 1500;
+
   const [userType, setUserType] = useState(types.REGULAR_USER);
 
   // states of fields errors
@@ -71,6 +75,18 @@ function Register() {
   const handleSelectUserType = (event) => {
     setUserType(event.target.value);
   };
+
+  const [certificateImage, setCertificateImage] = useState(certificatePlaceHolder);
+
+  const [missingCertError, setMissingCertError] = useState(false);
+
+  const handleMissingCertError = () => {
+      setMissingCertError(false);
+  }
+
+  const handleCertificateUpload = (src) => {
+      setCertificateImage(src);
+  }
 
   // checks if the user email is not in use and password meets requirements.
   // if not, raise an error. else, register the user to firebase + saving user info in "users" collection firestore.
@@ -96,19 +112,20 @@ function Register() {
             console.log(error);
           }
 
-          signOut(auth).then();
-
-          if(data.get("userType") !== types.REGULAR_USER){
+          if(data.get("userType") === types.DOCTOR ||
+             data.get("userType") === types.MEDICAL_STAFF_MEMBER){
             await getRequest(await auth.currentUser.getIdToken(true),
                 ServerConsts.CREATE_NEW_USERTYPE_REQUEST,
                 {"email" : data.get("email").toString(),
                 "firstName" : data.get("firstName").toString(),
                 "lastName" : data.get("lastName").toString(),
-                "requestedType" : data.get("userType") === types.DOCTOR ? "DOCTOR":"MEDICAL_STAFF_MEMBER",
-                "certificateImage" : "defaultValueForNow"});
+                "requestedType" : data.get("userType") === types.DOCTOR ? "DOCTOR" : "MEDICAL_STAFF_MEMBER",
+                "certificateImage" : certificateImage});
           }
 
           setRegisterSuccessMessage(true);
+
+          signOut(auth).then();
 
         }).catch(error =>{
           if(error.code === 'auth/email-already-in-use'){
@@ -135,8 +152,6 @@ function Register() {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        let formValidationsPassed = true;
-
         // setting all errors as false before validations.
         setEmailError("");
         setPasswordError("");
@@ -155,18 +170,31 @@ function Register() {
         const cityValidated = validations.cityFullValidate(data.get(ProfileFields.CITY), setCityError);
 
 
-        if ((cityValidated && phoneNumValidated && firstNameValidated && lastNameValidated && mailValidated && passwordValidated && secondPasswordValidated)) {
-            await registerNewUser(data);
+        if ((cityValidated &&
+            phoneNumValidated &&
+            firstNameValidated &&
+            lastNameValidated &&
+            mailValidated &&
+            passwordValidated &&
+            secondPasswordValidated)) {
+
+            if((userType === types.DOCTOR || userType === types.MEDICAL_STAFF_MEMBER) &&
+               certificateImage === certificatePlaceHolder){
+                setMissingCertError(true);
+            }
+            else{
+                await registerNewUser(data);
+            }
         } else {
             setRegisterErrorMessage(true);
         }
     };
-  
+
     return (
         <CacheProvider value={cacheRtl}>
             <ThemeProvider theme={theme}>
                 <Snackbar open={registerSuccessMessage}
-                          autoHideDuration={1500}
+                          autoHideDuration={snackBarDuration}
                           onClose={handleRegisterSuccess}
                           anchorOrigin={{vertical: 'top', horizontal: 'center'}}
                 >
@@ -176,12 +204,22 @@ function Register() {
                 </Snackbar>
 
                 <Snackbar open={registerErrorMessage}
-                          autoHideDuration={1500}
+                          autoHideDuration={snackBarDuration}
                           onClose={handleRegisterError}
                           anchorOrigin={{vertical: 'top', horizontal: 'center'}}
                 >
                     <Alert severity="error">
                         אחד (או יותר) מהפרטים שהזנת שגויים. אנא בדוק ונסה שנית.
+                    </Alert>
+                </Snackbar>
+
+                <Snackbar open={missingCertError}
+                          autoHideDuration={snackBarDuration}
+                          onClose={handleMissingCertError}
+                          anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                >
+                    <Alert severity="error">
+                        כדי להירשם כרופא/ה או חבר/ת צוות, עלייך להוסיף תעודה בתוקף
                     </Alert>
                 </Snackbar>
 
@@ -306,6 +344,19 @@ function Register() {
                                         helperText={passwordError.length !== 0 ? passwordError : null}
                                     />
                                 </Grid>
+                                {
+                                    (userType !== types.REGULAR_USER) &&
+                                    (
+                                        <Grid item xs={12}>
+                                            <PicturePicker
+                                                onUpdateProfilePic = {handleCertificateUpload}
+                                                initPic = {certificateImage}
+                                                title = "צילום תעודה"
+                                                circleImage = {false}
+                                            />
+                                        </Grid>
+                                    )
+                                }
                                 <Grid item xs={12}>
                                     <FormControlLabel
                                         control={<Checkbox id="allowExtraEmails" value="allowExtraEmails"

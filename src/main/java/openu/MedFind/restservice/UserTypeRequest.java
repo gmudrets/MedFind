@@ -38,6 +38,8 @@ public class UserTypeRequest {
             throw new TokenException("User not found.", e);
         }
 
+        String fixedCertImage = certificateImage.replace(" ", "+");
+
         userTypeRequestEntryRepository.save(
                 UserTypeRequestEntry.builder()
                 .uuid(uuid)
@@ -46,7 +48,7 @@ public class UserTypeRequest {
                 .lastName(lastName)
                 .requestedType(requestedType)
                 .requestStatus(RequestStatus.PENDING)
-                .certificateImage(certificateImage)
+                .certificateImage(fixedCertImage)
                 .build());
     }
 

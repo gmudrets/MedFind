@@ -7,7 +7,7 @@ module.exports = {
         REGISTER : "/api/User/Register",
         GET_SHARED_MEDICINE : "/api/GetAllSharedStockMedicine",
         CREATE_NEW_USERTYPE_REQUEST : "/api/CreateNewUserTypeRequest",
-        GET_PENDING_REQUESTS : "/api/GetAllUserTypePendingRequestsByStatus",
+        GET_PENDING_REQUESTS : "/api/GetAllUserTypeRequestsByStatus",
         CHANGE_REQUEST_STATUS : "/api/changeUserTypeRequestStatus",
     },
     External: {
