@@ -17,6 +17,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import MedicationIcon from '@mui/icons-material/Medication';
 import SearchIcon from '@mui/icons-material/Search';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import {ListItemButton} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import * as STATE_PATHS from "../../../Consts/StatePaths";
@@ -26,9 +27,9 @@ export default function MenuDrawer() {
 
   const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
   const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
+  const isAdmin = profile.userType==='admin';
   const DOCTOR = 'רופא'
   const isDoctor = profile.userType===DOCTOR;
-
 
   const drawerWidth = 250;
   const anchor='right';
@@ -51,6 +52,10 @@ export default function MenuDrawer() {
     navigate("/settings");
   }
 
+  const handleApprovalClick = () => {
+    navigate("/approval");
+  }
+
   const handleSearchClick = () => {
     navigate("/");
   }
@@ -61,6 +66,10 @@ export default function MenuDrawer() {
 
   const handleSharedMedsClick = () => {
     navigate("/shared_medicine");
+  };
+
+  const handleMySharesClick = () => {
+    navigate("/my_sharing");
   };
 
   const DrawerHeader = styled('div')(({ theme }) => ({
@@ -92,7 +101,7 @@ export default function MenuDrawer() {
             </ListItemIcon>
             <ListItemText primary='התרופות שלי' />
           </ListItemButton>
-          <ListItemButton key='myShares'>
+          <ListItemButton key='myShares' onClick={handleMySharesClick}>
             <ListItemIcon>
               <ShareIcon/>
             </ListItemIcon>
@@ -115,6 +124,14 @@ export default function MenuDrawer() {
             </ListItemIcon>
             <ListItemText primary='תזכורות' />
           </ListItemButton>
+          {isAdmin && (
+            <ListItemButton onClick= {handleApprovalClick} key='approval'>
+              <ListItemIcon>
+                <AssignmentTurnedInIcon />
+              </ListItemIcon>
+              <ListItemText primary='בקשות לאישור' />
+            </ListItemButton>
+          )}
           <ListItemButton onClick= {handleSettingClick} key='settings'>
             <ListItemIcon>
               <SettingsIcon />

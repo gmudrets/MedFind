@@ -26,7 +26,7 @@ import ContactPageIcon from '@mui/icons-material/ContactPage';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
-import LoadingButton from "@mui/lab/LoadingButton";
+import Button from "@mui/material/Button";
 import moment from "moment";
 import TransitionsModal from "../UI/Modal/Modal";
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
@@ -37,7 +37,7 @@ function SharedMedicine() {
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
     const [rows, setRows] = useState([]);
-    const [contactDetailsLoading, setContactDetailsLoading] = useState(false);
+    const [ updateTable, setUpdateTable ] = useState(true);
     const [showContactDetails, setShowContactDetails] = useState(false);
     const [contactDetails, setContactDetails] = useState({});
     const [ loading, setLoading ] = useState(false);
@@ -57,10 +57,10 @@ function SharedMedicine() {
     }, [currentUser]);
 
     useEffect(() => {
-        if(rows.length===0){
+        if(updateTable){
             getShareData();
         }
-    });
+    }, [updateTable]);
 
     const nameMapping = {
         "drugName" : "שם התרופה",
@@ -85,6 +85,7 @@ function SharedMedicine() {
         }, []);
 
         setRows(result);
+        setUpdateTable(false);
         setLoading(false);
     }
 
@@ -115,7 +116,7 @@ function SharedMedicine() {
         return (
             <React.Fragment>
                 <TableRow  sx={{ '& > *': { borderBottom: 'unset' } }}>
-                    <TableCell>
+                    <TableCell style={{ width: '50px' }}>
                         <IconButton
                             aria-label="expand row"
                             size="small"
@@ -134,10 +135,7 @@ function SharedMedicine() {
                     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             <Box sx={{ margin: 1 }}>
-                                <Typography align="right" variant="h6" gutterBottom component="div">
-                                    רשימת שיתוף
-                                </Typography>
-                                <Table size="small" aria-label="purchases">
+                                <Table size="small" aria-label="shared-meds" style={{backgroundColor:'whitesmoke'}}>
                                     <TableHead>
                                         <TableRow>
                                             <TableCell align="right">{nameMapping.expirationDate}</TableCell>
@@ -153,16 +151,14 @@ function SharedMedicine() {
                                                 </TableCell>
                                                 <TableCell align="right">{detailsRow.count}</TableCell>
                                                 <TableCell align="right">
-                                                    <LoadingButton
+                                                    <Button
                                                         variant="contained"
                                                         size="small"
                                                         endIcon={<ContactPageIcon style={{marginRight: 12}}/>}
                                                         onClick={() => {getContactDetails(detailsRow.uuid);}}
-                                                        loading={contactDetailsLoading}
-                                                        loadingPosition="end"
                                                     >
                                                         פרטי משתמש
-                                                    </LoadingButton>
+                                                    </Button>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -212,7 +208,9 @@ function SharedMedicine() {
                     </TransitionsModal>
                 </>
             }
-
+            <Typography align="right" variant="h6" gutterBottom component="div">
+                רשימת תרופות משותפות
+            </Typography>
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
