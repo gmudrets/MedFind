@@ -68,6 +68,10 @@ export default function MenuDrawer() {
     navigate("/shared_medicine");
   };
 
+  const handleMySharesClick = () => {
+    navigate("/my_sharing");
+  };
+
   const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -97,7 +101,7 @@ export default function MenuDrawer() {
             </ListItemIcon>
             <ListItemText primary='התרופות שלי' />
           </ListItemButton>
-          <ListItemButton key='myShares'>
+          <ListItemButton key='myShares' onClick={handleMySharesClick}>
             <ListItemIcon>
               <ShareIcon/>
             </ListItemIcon>
