@@ -137,7 +137,7 @@ export default function Reminders() {
         let start = new Date(newData[TIMES_ARRAY][0]);
         let difference = end.getTime() - start.getTime();
         let daysDiff = Math.ceil(difference / (1000 * 3600 * 24));
-        newData[REMINDERS_NUM] = daysDiff;
+        newData[REMINDERS_NUM] = Math.floor(daysDiff / newData[EACH_MANY_DAYS]);
         return newData;
 
     }
@@ -159,11 +159,13 @@ export default function Reminders() {
         }
         console.log(newData);
         if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
-            if (newData[UNTIL_TYPE] === untilTypeOptions.DATE) {
-                convertToUntilNum(newData);
-            } else {
+            if (newData[UNTIL_TYPE] !== untilTypeOptions.DATE) {
                 newData[UNTIL_DATE] = fakeExpiration;
+
             }
+            // convertToUntilNum(newData);
+            // } else {
+            // }
             await sendEachFewDays(newData, originalData);
             const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
             console.log(data);
@@ -228,18 +230,31 @@ export default function Reminders() {
 
         for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
             let curDate = new Date(data[TIMES_ARRAY][i]);
-            for (let j = 0; j < data[REMINDERS_NUM]; j++) {
-                // console.log(curDate.getTime() > now.getTime());
-                // console.log(dateToString(curDate));
-                if (curDate.getTime() > now.getTime()) {
-                    console.log(curDate);
-                    console.log(data[EACH_MANY_DAYS]);
-                    dates.push(dateToString(curDate));
-                } else if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM || originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
-                    j--;
+            if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM) {
+                for (let j = 0; j < data[REMINDERS_NUM]; j++) {
+                    // console.log(curDate.getTime() > now.getTime());
+                    // console.log(dateToString(curDate));
+                    if (curDate.getTime() > now.getTime()) {
+                        console.log(curDate);
+                        console.log(data[EACH_MANY_DAYS]);
+                        dates.push(dateToString(curDate));
+                    } else {
+                        j--;
+                    }
                 }
                 curDate.setDate(curDate.getDate() + data[EACH_MANY_DAYS]);
+            } else {
+                while (curDate < data[UNTIL_DATE])
+                    // console.log(curDate.getTime() > now.getTime());
+                    // console.log(dateToString(curDate));
+                    if (curDate.getTime() > now.getTime()) {
+                        console.log(curDate);
+                        console.log(data[EACH_MANY_DAYS]);
+                        dates.push(dateToString(curDate));
+                    }
             }
+            curDate.setDate(curDate.getDate() + data[EACH_MANY_DAYS]);
+
         }
         const requastParams = {
             // 'alertName': JSON.stringify(originalData).toString(),//TODO:
@@ -356,7 +371,7 @@ export default function Reminders() {
                         </Grid>
                     </Box>
 
-                    <TransitionsModal open={onReminderCreation}  toggleModal={toggleOnReminderCreation}>
+                    <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
                         <RemindersCreateForm handleSubmit={handleSubmit} medicineList={medicineList}/>
                     </TransitionsModal>
                     <Dialog
