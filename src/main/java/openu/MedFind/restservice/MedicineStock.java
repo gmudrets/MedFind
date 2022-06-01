@@ -2,7 +2,6 @@ package openu.MedFind.restservice;
 
 import com.google.firebase.auth.FirebaseAuthException;
 import openu.MedFind.dto.MedicineEntry;
-import openu.MedFind.dto.MedicineUnits;
 import openu.MedFind.exceptions.TokenException;
 import openu.MedFind.repositories.MedicineEntryRepository;
 import openu.MedFind.services.FirebaseValidator;
@@ -39,7 +38,7 @@ public class MedicineStock {
                                      @RequestParam String imageUrl,
                                      @RequestParam String brochureUrl,
                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date expiration,
-                                     @RequestParam MedicineUnits units,
+                                     @RequestParam String units,
                                      @RequestParam @Min(1) int count,
                                      @RequestParam double dosage,
                                      @RequestParam boolean shared) throws TokenException {
