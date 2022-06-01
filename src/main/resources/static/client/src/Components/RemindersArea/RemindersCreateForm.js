@@ -113,12 +113,14 @@ function RemindersCreateForm(props) {
     const [weekDaysError,setWeekDaysError] = React.useState(false);
     
     useEffect(async () => {
-        let medicenes = [defualtMedicne];
-        for (let i = 0; i < medicineFullList.length; i++) {
-            medicenes[i + 1] = medicineFullList[i]['hebName'] ;
+        if(medicineFullList!=[]) {
+            let medicenes = [defualtMedicne];
+            for (let i = 0; i < medicineFullList.length; i++) {
+                medicenes[i + 1] = medicineFullList[i]['hebName'];
+            }
+            setMedicineList(medicenes);
+            setMedicine(medicenes[0]);
         }
-        setMedicineList(medicenes);
-        setMedicine(medicenes[0]);
 
     }, [medicineFullList]);
     useEffect(()=>{

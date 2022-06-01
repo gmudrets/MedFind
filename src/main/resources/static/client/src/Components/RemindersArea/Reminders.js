@@ -93,12 +93,11 @@ export default function Reminders() {
     // }, [medicineList]);
 
     useEffect(async () => {
-        if (getAuth() != null) {
-            const token = await getAuth().currentUser.getIdToken(true);
-            setMedicineList(await getRequest(token, ServerConsts.GET_ALL_MEDICINE));
-            const list = await getRequest(token, ServerConsts.GET_USER_ALERT_LIST);
+
+            setMedicineList(await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE));
+            const list = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
             setRemindersList(list.reverse());
-        }
+
     }, []);
     const [onReminderCreation, setOnReminderCreation] = useState(false);
     const toggleOnReminderCreation = () => {

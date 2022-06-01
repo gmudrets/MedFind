@@ -47,7 +47,6 @@ function RTL(props) {
 }
 
 export default function Settings() {
-	const navigate = useNavigate();
 	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 	useEffect(() => {
 		if (currentUser === ''){

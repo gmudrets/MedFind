@@ -74,10 +74,7 @@ function Login() {
 			password)
 			.then(async userCredential => {
 				dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
-
-				})
 				setSignInSuccessMessage(true);
-
 				const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
 				dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
 
