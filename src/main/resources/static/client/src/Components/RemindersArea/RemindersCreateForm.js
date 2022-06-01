@@ -90,7 +90,6 @@ function RemindersCreateForm(props) {
     const maxTimes = 15;
     const ltrTheme = createTheme({direction: 'ltr'});
     const defualtMedicne = "בחר תרופה";
-    const timeErroRef = useRef(false);
     const [hasErrorOnSomeField, set] = React.useState(false);
     const [stopStream, setStopStream] = useState(false);
     const [timesArray, setTimesArray] = useState(props.timesArray);
@@ -181,12 +180,12 @@ function RemindersCreateForm(props) {
     const navigate = useNavigate();
 
 
-    const showError = (time, index, triedSumit2 = false) => {
+    const showError = (time, index, triedSumit2 = false, newFrom2 = 0) => {
         let hasError = !validateTime(time, index);
-        if (index >= newFrom || (!triedSubmit && !triedSumit2 && time == null)) {
+        if (!triedSumit2 && ((newFrom2 == 0 ? index >= newFrom : index >= newFrom2) || (!triedSubmit && time == null))) {
             return false;
         } else {
-            timeErroRef.current = true;
+
             return hasError;
         }
 
@@ -254,7 +253,7 @@ function RemindersCreateForm(props) {
         setTriedSubmitted(true);
         setNewFrom(timesArray.length);
         for (let i = 0; i < timesArray.length; i++) {
-            if (timesArray[i] == null || showError(timesArray[i], i, true)) {
+            if (timesArray[i] == null || showError(timesArray[i], i, true, timesArray.length)) {
                 setErrorMessege(true);
                 return false;
             }
@@ -278,15 +277,10 @@ function RemindersCreateForm(props) {
         value[UNTIL_TYPE] = untilType;
         value[UNTIL_DATE] = untilDate;
         value[MEDICINE] = medicineFullList[medicineList.indexOf(medicine)];
-        if (!timeErroRef) {
-            console.log(value);
-            props.handleSubmit(value);
-            return true;
-        }else{
-            timeErroRef.current = false;
-            setErrorMessege(true);
-            return false;
-        }
+        console.log(value);
+        props.handleSubmit(value);
+        return true;
+
 
     };
 
