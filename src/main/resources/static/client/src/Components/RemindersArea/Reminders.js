@@ -1,28 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import FilledInput from '@mui/material/FilledInput';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 import {createTheme} from "@mui/material/styles";
 import {ThemeProvider} from "@emotion/react";
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 
-import LogoutIcon from '@mui/icons-material/Logout';
-import HomeIcon from '@mui/icons-material/Home';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ClearIcon from '@mui/icons-material/Clear';
-
-import CheckIcon from '@mui/icons-material/Check';
-import SendIcon from '@mui/icons-material/Send';
 import Grid from "@mui/material/Grid";
 //rtl stuff https://mui.com/material-ui/guides/right-to-left/
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -34,9 +16,7 @@ import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import Typography from "@mui/material/Typography";
-import {CheckBox} from "@mui/icons-material";
 import {isMobile} from "react-device-detect";
-import BarcodeScanner from "../BarcodeScanner/BarcodeScanner";
 import TransitionsModal from "../UI/Modal/Modal";
 import {useEffect, useState} from "react";
 import RemindersCreateForm, {
@@ -52,7 +32,6 @@ import {useNavigate} from "react-router-dom";
 import {getRequest} from "../../Utils/AxiosRequests";
 import {getAuth} from "firebase/auth";
 import {ServerConsts} from "../../Consts/apiPaths";
-import RecipeReviewCard from "./BasicCard";
 import * as RemindersFields from "../../Consts/RemindersFields";
 import ReminderCard from "./ReminderCard";
 import DialogTitle from "@mui/material/DialogTitle";
