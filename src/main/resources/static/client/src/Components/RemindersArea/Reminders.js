@@ -235,7 +235,7 @@ export default function Reminders() {
 
         for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
             let curDate = new Date(data[TIMES_ARRAY][i]);
-            if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM) {
+            if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM || originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
                 for (let j = 0; j < data[REMINDERS_NUM]; j++) {
                     // console.log(curDate.getTime() > now.getTime());
                     // console.log(dateToString(curDate));
