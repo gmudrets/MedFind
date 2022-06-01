@@ -191,7 +191,7 @@ function Home() {
   const toggleNoResults = () => {
     setNoResultsFound(!noResultsFound);
   }
-    const readSocket = (data){
+    const readSocket = (data) =>{
       if(data ===[]){
 
       }
@@ -199,7 +199,7 @@ function Home() {
   return (
     <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
-            <ReadSocket readSocket={readSocket()}/>
+            {/*<ReadSocket readSocket={readSocket()}/>*/}
             <CssBaseline />
             <Box
             sx={{

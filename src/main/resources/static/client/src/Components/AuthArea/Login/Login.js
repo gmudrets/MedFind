@@ -19,7 +19,7 @@ import * as AUTH from "../../../Redux/Auth";
 import * as USER_DATA from "../../../Redux/UserData";
 import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
-import {auth} from "../../../Configs/FirebaseConfig";
+import {auth, myGetToken} from "../../../Configs/FirebaseConfig";
 import {signInWithEmailAndPassword} from "firebase/auth"
 import {Alert, Snackbar} from "@mui/material";
 import createCache from "@emotion/cache";
@@ -44,7 +44,7 @@ function Login() {
 	const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
 	const [signInErrorMessage, setSignInErrorMessage] = useState(false);
 	const [isSignedInAlready, setIsSignedInAlready] = useState(true);
-	const [initialized, setInitialized] = useState(false);
+	const [tokenFound,setTokenFound] = React.useState(false);
 
 	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
@@ -53,7 +53,9 @@ function Login() {
 			navigate("/");
 		}
 	}, [currentUser]);
-
+	useEffect(()=>{
+		console.log(tokenFound);
+	})
 
 	const handleSignInSuccess = () => {
 		navigate("/");
@@ -73,10 +75,16 @@ function Login() {
 			email,
 			password)
 			.then(async userCredential => {
+				console.log("MAKore")
 				dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
 				setSignInSuccessMessage(true);
+				const token =myGetToken(setTokenFound);
 				const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
 				dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
+
+
+
+
 
 			}).catch(error => {
 			console.log("error code: " + error.code + " and message: " + error.message);
