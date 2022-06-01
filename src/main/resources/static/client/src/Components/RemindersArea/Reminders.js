@@ -379,7 +379,7 @@ export default function Reminders() {
                         <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'auto'}}>
                             {loadingNew &&
                                 <Grid item xs={12} sx={{textAlign: "left"}}>
-                                    <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען התראות חדשות....
+                                    <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען תזכורות חדשות....
                                     </Typography>
                                 </Grid>}
                             {RemindersList != null ? (RemindersList).map((item) => (
@@ -387,7 +387,7 @@ export default function Reminders() {
                                     <ReminderCard  {...createPropsFromItem(item)}/>
                                 </Grid>
                             )) : <Grid item xs={12} sx={{textAlign: "left"}}>
-                                <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען התראות....
+                                <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען תזכורת....
                                 </Typography>
                             </Grid>
                             }
@@ -406,7 +406,7 @@ export default function Reminders() {
                         aria-describedby="alert-dialog-description"
                     >
                         <DialogTitle id="alert-dialog-title">
-                            {"האם אתה בטוח שברצונך למחוק את ההתראה?"}
+                            {"האם אתה בטוח שברצונך למחוק את התזכורת?"}
                         </DialogTitle>
 
                         <DialogActions>
