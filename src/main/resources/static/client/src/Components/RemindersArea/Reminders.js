@@ -383,7 +383,7 @@ export default function Reminders() {
                                     </Typography>
                                 </Grid>}
                             {RemindersList != null ? (RemindersList).map((item) => (
-                                <Grid item md={3}>
+                                <Grid item md={3} key = {item[RemindersFields.REM_ID]}>
                                     <ReminderCard  {...createPropsFromItem(item)}/>
                                 </Grid>
                             )) : <Grid item xs={12} sx={{textAlign: "left"}}>
