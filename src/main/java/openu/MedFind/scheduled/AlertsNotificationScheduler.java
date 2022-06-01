@@ -66,7 +66,7 @@ public class AlertsNotificationScheduler {
         return activeAlerts;
     }
 
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = 20000)
     public void scheduleFixedRateTask() {
         template.convertAndSend("/wss-alerts/message", getAllAlerts());
     }
