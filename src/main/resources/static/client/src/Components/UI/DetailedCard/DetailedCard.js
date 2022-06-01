@@ -13,19 +13,24 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {getRequest} from "../../../Utils/AxiosRequests";
 import {External, ServerConsts} from "../../../Consts/apiPaths";
 import ArticleIcon from "@mui/icons-material/Article";
+import ShareIcon from '@mui/icons-material/Share';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import LoadingButton from "@mui/lab/LoadingButton";
 import {useState} from "react";
-import {TableCell} from "@mui/material";
+import {Stack, TableCell} from "@mui/material";
 import TableRow from "@mui/material/TableRow";
 import Table from "@mui/material/Table";
 import {ThemeProvider} from "@emotion/react";
 import noPrescription from '../../../Assets/Images/no_perscription_logo.png';
 import needPrescription from '../../../Assets/Images/perscription_only_logo.png';
 import Link from "@mui/material/Link";
-import {useSelector} from "react-redux";
-import {getSafe} from "../../../Utils/Utils";
-import * as STATE_PATHS from "../../../Consts/StatePaths";
 import {auth} from "../../../Configs/FirebaseConfig"
+import * as Utils from "../../../Utils/Utils";
+import Paper from "@mui/material/Paper";
+import CssBaseline from "@mui/material/CssBaseline";
+import {red} from "@mui/material/colors";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -36,6 +41,15 @@ const ExpandMore = styled((props) => {
     transition: theme.transitions.create('transform', {
         duration: theme.transitions.duration.shortest,
     }),
+}));
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : 'whitesmoke',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+    marginLeft: '16px',
 }));
 
 export default function DetailedCard(props) {
@@ -49,8 +63,16 @@ export default function DetailedCard(props) {
         prescription,
         setGenericSearchValue,
         triggerSearch,
+        handleAddClick,
+        handleDeleteClick,
+        handleShareClick,
+        handleAlertClick,
     } = props;
-    const theme = createTheme({direction: 'rtl'});
+    const theme = createTheme({
+        direction: 'rtl',
+        palette: {
+            secondary: red,
+        },});
 
     const [ expanded, setExpanded ] = useState(false);
     const [ brochureLoading, setBrochureLoading ] = useState(false);
@@ -87,8 +109,6 @@ export default function DetailedCard(props) {
         return data;
     }
 
-    const userDetails = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
-
     const getBrochure = async (drugRegNum) => {
         setBrochureLoading(true);
         let data = await getRequest(
@@ -121,7 +141,7 @@ export default function DetailedCard(props) {
                     <Typography variant="body2" color="text.secondary">
                         {getValue(body)}
                     </Typography>
-                    {type === 'drug' && (
+                    {(type === 'drug' || type ==='myDrug') && (
                         prescription ?
                             <img src={needPrescription} className="prescription-logo" alt="logo" width="30%" height="30%" /> :
                             <img src={noPrescription} className="prescription-logo" alt="logo" width="60" height="60" />
@@ -131,7 +151,7 @@ export default function DetailedCard(props) {
                 {type === 'drug' && (
                     <>
                         <CardActions disableSpacing>
-                            <IconButton aria-label="add to my medicine">
+                            <IconButton aria-label="add to my medicine" onClick={handleAddClick}>
                                 <AddCardIcon />
                             </IconButton>
                             <ExpandMore
@@ -153,6 +173,46 @@ export default function DetailedCard(props) {
                                 חפש תכשירים עם חומר פעיל זהה
                             </Link>
                         </CardActions>
+                    </>)}
+                {type === 'myDrug' && (
+                    <>
+                        <CardActions disableSpacing>
+                            <IconButton aria-label="delete medicine" onClick={handleDeleteClick}>
+                                <DeleteIcon />
+                            </IconButton>
+                            {expandData.shared ?
+                                <ThemeProvider theme={theme}>
+                                    <IconButton aria-label="share medicine" color='secondary' onClick={handleShareClick}>
+                                        <ShareOutlinedIcon />
+                                    </IconButton>
+                                </ThemeProvider>:
+                                <IconButton aria-label="share medicine" onClick={handleShareClick}>
+                                    <ShareIcon />
+                                </IconButton>
+                            }
+                            <IconButton aria-label="set alert" onClick={handleAlertClick}>
+                                <NotificationsActiveIcon />
+                            </IconButton>
+                            <ExpandMore
+                                expand={expanded}
+                                onClick={handleExpandClick}
+                                aria-expanded={expanded}
+                                aria-label="show more"
+                            >
+                                <ExpandMoreIcon />
+                            </ExpandMore>
+                            <CssBaseline>
+                            <Stack direction="row" >
+                                <Item>{"תאריך תפוגה: " + Utils.formatDate(expandData.expiration)}</Item>
+                                <Item>{"כמות זמינה: " + expandData.count}</Item>
+                            </Stack>
+                            </CssBaseline>
+                        </CardActions>
+                    </>
+
+                )}
+                {(type === 'drug' || type ==='myDrug') && (
+                    <>
                         <Collapse in={expanded} timeout="auto" unmountOnExit>
                             <CardContent>
                                 <Typography paragraph>פרטים נוספים:</Typography>
@@ -162,17 +222,31 @@ export default function DetailedCard(props) {
                                             <TableCell variant="head" align="right">{nameMapping["activeComponents"]}</TableCell>
                                             <TableCell align="right">{expandData.activeComponents}</TableCell>
                                         </TableRow>
-                                        <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["customerPrice"]}</TableCell>
-                                            <TableCell align="right">{expandData.customerPrice} &#8362;</TableCell>
-                                        </TableRow>
+                                        {type === 'drug' && (
+                                            <TableRow>
+                                                <TableCell variant="head" align="right">{nameMapping["customerPrice"]}</TableCell>
+                                                <TableCell align="right">{expandData.customerPrice} &#8362;</TableCell>
+                                            </TableRow>
+                                        )}
                                         <TableRow>
                                             <TableCell variant="head" align="right">{nameMapping["dosageForm"]}</TableCell>
-                                            <TableCell align="right">{getValue(expandData.dosageForm)}</TableCell>
+                                            <TableCell align="right">
+                                                {
+                                                    type === 'drug' ?
+                                                    getValue(expandData.dosageForm) :
+                                                        (expandData.unitType==='CAPLET'?<>טבליה</>:<>נוזל</>)
+                                                }
+                                            </TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell variant="head" align="right">{nameMapping["health"]}</TableCell>
-                                            <TableCell align="right">{getValue(expandData.health)}</TableCell>
+                                            <TableCell align="right">
+                                                {
+                                                    type === 'drug' ?
+                                                    getValue(expandData.health) :
+                                                        getValue(expandData.healthBasket)
+                                                }
+                                            </TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell variant="head" align="right">{nameMapping["prescription"]}</TableCell>
@@ -183,7 +257,12 @@ export default function DetailedCard(props) {
                                         variant="contained"
                                         size="small"
                                         endIcon={<ArticleIcon style={{marginRight: 12}}/>}
-                                        onClick={() => {getBrochure(expandData.brochure);}}
+                                        onClick={() => {
+                                            type === 'drug' ?
+                                                getBrochure(expandData.brochure):
+                                                getBrochure(expandData.brochureUrl)
+
+                                            ;}}
                                         loading={brochureLoading}
                                         loadingPosition="end"
                                     >

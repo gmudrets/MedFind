@@ -75,6 +75,10 @@ export default function MenuDrawer() {
     navigate("/my_sharing");
   };
 
+  const handleMyMedsClick = () => {
+    navigate("/my_medicine");
+  }
+
   const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -98,7 +102,7 @@ export default function MenuDrawer() {
             </ListItemIcon>
             <ListItemText primary='חיפוש תרופה' />
           </ListItemButton>
-          <ListItemButton key='myMeds'>
+          <ListItemButton key='myMeds' onClick={handleMyMedsClick}>
             <ListItemIcon>
               <MedicationIcon/>
             </ListItemIcon>
