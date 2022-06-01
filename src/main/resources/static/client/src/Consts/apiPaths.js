@@ -6,7 +6,11 @@ module.exports = {
         GET_BROCHURE: "/api/GetBrochure",
         REGISTER : "/api/User/Register",
         GET_SHARED_MEDICINE : "/api/GetAllSharedStockMedicine",
+        GET_USER_SHARED_MEDICINE : "/api/GetAllUserSharedStockMedicine",
+        UPDATE_MEDICINE_SHARING : "/api/ShareMedicineInStock",
         CREATE_NEW_USERTYPE_REQUEST : "/api/CreateNewUserTypeRequest",
+        GET_PENDING_REQUESTS : "/api/GetAllUserTypeRequestsByStatus",
+        CHANGE_REQUEST_STATUS : "/api/changeUserTypeRequestStatus",
     },
     External: {
         EXTERNAL_FILES_URL: "https://mohpublic.z6.web.core.windows.net/IsraelDrugs/"
