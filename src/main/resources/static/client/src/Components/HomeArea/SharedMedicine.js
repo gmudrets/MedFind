@@ -123,6 +123,7 @@ function SharedMedicine() {
                         {row.hebName}
                     </TableCell>
                     <TableCell align="right">{row.dosage}{row.unitType==='CAPLET'?<>&nbsp;(mg)</>:<>&nbsp;(ml)</>}</TableCell>
+                    TODO: fix dosage units treatment
                     <TableCell align="right">{calculateTotalAvailable(row)}</TableCell>
                 </TableRow>
                 <TableRow>

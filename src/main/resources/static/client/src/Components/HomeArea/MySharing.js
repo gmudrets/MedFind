@@ -119,6 +119,7 @@ function MySharing() {
                         {row.hebName}
                     </TableCell>
                     <TableCell align="right">{row.dosage}{row.unitType==='CAPLET'?<>&nbsp;(mg)</>:<>&nbsp;(ml)</>}</TableCell>
+                    {/*TODO: fix dosage units treatment*/}
                     <TableCell align="right">{calculateTotalAvailable(row)}</TableCell>
                 </TableRow>
                 <TableRow>
@@ -138,10 +139,10 @@ function MySharing() {
                                             <>
                                                 <AlertDialog open={openDialog}
                                                              setOpen={setOpenDialog}
-                                                             title="אישור הסרת שיתוף"
+                                                             title="ביטול שיתוף תרופה"
                                                              textContent="האם לבטל את שיתוף התרופה?"
                                                              acceptButtonText="אישור"
-                                                             declineButtonText="ביטול"
+                                                             declineButtonText="חזור"
                                                              onAccept={() => {unshareMedicine(detailsRow.id)}}
                                                 />
                                                 <TableRow key={index}>

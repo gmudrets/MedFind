@@ -33,7 +33,7 @@ public class MedicineEntry {
 
     private Date expiration;
 
-    private MedicineUnits unitType;
+    private String unitType;
 
     private boolean shared;
 

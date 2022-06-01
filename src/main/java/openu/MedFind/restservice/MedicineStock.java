@@ -38,8 +38,8 @@ public class MedicineStock {
                                      @RequestParam String treatment,
                                      @RequestParam String imageUrl,
                                      @RequestParam String brochureUrl,
-                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date expiration,
-                                     @RequestParam MedicineUnits units,
+                                     @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") Date expiration,
+                                     @RequestParam String units,
                                      @RequestParam @Min(1) int count,
                                      @RequestParam double dosage,
                                      @RequestParam boolean shared) throws TokenException {

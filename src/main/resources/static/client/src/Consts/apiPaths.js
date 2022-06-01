@@ -9,6 +9,8 @@ module.exports = {
         GET_USER_SHARED_MEDICINE : "/api/GetAllUserSharedStockMedicine",
         GET_USER_MEDICINE : "/api/GetAllUserStockMedicine",
         UPDATE_MEDICINE_SHARING : "/api/ShareMedicineInStock",
+        DELETE_MEDICINE : "/api/DeleteMedicineFromStock",
+        ADD_MEDICINE : "/api/AddMedicineToStock",
         CREATE_NEW_USERTYPE_REQUEST : "/api/CreateNewUserTypeRequest",
         GET_PENDING_REQUESTS : "/api/GetAllUserTypeRequestsByStatus",
         CHANGE_REQUEST_STATUS : "/api/changeUserTypeRequestStatus",

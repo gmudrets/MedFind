@@ -15,7 +15,7 @@ import QrCode2Icon from '@mui/icons-material/QrCode2';
 import { getSafe } from '../../Utils/Utils'
 import * as STATE_PATHS from '../../Consts/StatePaths'
 import {getRequest} from "../../Utils/AxiosRequests";
-import {ServerConsts} from "../../Consts/apiPaths";
+import {External, ServerConsts} from "../../Consts/apiPaths";
 import TransitionsModal from '../UI/Modal/Modal';
 import BarcodeScanner from '../BarcodeScanner/BarcodeScanner';
 import CircularProgressBackdrop from "../UI/CircularProgressBackdrop/CircularProgressBackdrop";
@@ -23,9 +23,17 @@ import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoadingButton from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
-import { Autocomplete } from '@mui/material'
+import {Autocomplete, Stack} from '@mui/material'
 import {auth} from '../../Configs/FirebaseConfig'
 import * as Utils from "../../Utils/Utils";
+import TextField from "@mui/material/TextField";
+import {DesktopDatePicker, LocalizationProvider} from "@mui/lab";
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import Button from "@mui/material/Button";
+import {prefixer} from "stylis";
+import rtlPlugin from "stylis-plugin-rtl";
+import createCache from "@emotion/cache";
+import {CacheProvider} from "@emotion/react";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -45,6 +53,12 @@ function Home() {
   const [ isGeneric, setIsGeneric ] = useState(false);
   const [ genericSearchValue, setGenericSearchValue ] = useState(null)
   const [ noResultsFound, setNoResultsFound ] = useState(false);
+  const [dialogItem, setDialogItem] = React.useState({});
+  const [openAddDialog, setOpenAddDialog] = React.useState(false);
+  const [showAddMessage, setShowAddMessage] = useState(false);
+  const [unitsAmount, setUnitsAmount] = useState(1);
+  const [dosageAmount, setDosageAmount] = useState(1);
+  const [expirationDate, setExpirationDate] = useState();
 
   useEffect(() => {
     if (currentUser === ''){
@@ -66,10 +80,15 @@ function Home() {
     }
   }, [triggerGenericSearch]);
 
+    const cacheRtl = createCache({
+        key: 'muirtl',
+        stylisPlugins: [prefixer, rtlPlugin],
+    });
+
   const createData = (activeComponents, barcodes, customerPrice, dosageForm, dragEnName,
-                      dragHebName, health, images, prescription, secondarySymptom, brochure, activeComponentsCompareName) => {
+                      dragHebName, health, images, prescription, secondarySymptom, brochure, dragRegNum, activeComponentsCompareName) => {
       return { activeComponents, barcodes, customerPrice, dosageForm, dragEnName, dragHebName, health,
-                  images, prescription, secondarySymptom, brochure, activeComponentsCompareName };
+                  images, prescription, secondarySymptom, brochure, dragRegNum, activeComponentsCompareName };
   }
 
   const generateMultiField = (data) => {
@@ -150,6 +169,7 @@ function Home() {
                     d["prescription"],
                     d["secondarySymptom"],
                     d["dragRegNum"],
+                    d["dragRegNum"],
                     d["activeComponentsCompareName"],
                 ))
             }
@@ -176,110 +196,229 @@ function Home() {
     setNoResultsFound(!noResultsFound);
   }
 
+  const toggleAddDialog = () => {
+    setOpenAddDialog(!openAddDialog);
+  }
+
+  const handleExpirationDate = (newDate) => {
+      setExpirationDate(newDate.format("DD/MM/yyyy HH:mm:ss"));
+  }
+
+  const handleUnitsAmount = (newAmount) => {
+      setUnitsAmount(newAmount.target.value);
+  }
+
+  const handleDosageAmount = (newAmount) => {
+      setDosageAmount(newAmount.target.value);
+  }
+  
+  const handleAdd = async () => {
+      let data = await getRequest(
+          await auth.currentUser.getIdToken(true),
+          ServerConsts.GET_BROCHURE,
+          { "drugRegNum" : dialogItem.dragRegNum});
+      let brochureUrl = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
+      await getRequest(currentUser.stsTokenManager.accessToken,
+          ServerConsts.ADD_MEDICINE, {
+              drugRegNum: dialogItem.dragRegNum,
+              hebName: dialogItem.dragHebName,
+              engName: dialogItem.dragEnName,
+              activeComponents: dialogItem.activeComponents,
+              healthBasket: dialogItem.health,
+              prescription: dialogItem.prescription,
+              treatment: dialogItem.secondarySymptom ? dialogItem.secondarySymptom : "N/A",
+              imageUrl: dialogItem.images,
+              brochureUrl: brochureUrl,
+              expiration: expirationDate,
+              units: dialogItem.dosageForm,
+              count: unitsAmount,
+              dosage: dosageAmount,
+              shared: false
+          });
+      // setShowDeleteMessage(true);
+      console.log("Adding item:", dialogItem);
+  }
+
   return (
-    <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="xs">
-            <CssBaseline />
-            <Box
-            sx={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}
-            >
-                <Paper
-                component="form"
-                sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+         <ThemeProvider theme={theme}>
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
                 >
-                <IconButton sx={{ p: '10px' }} aria-label="menu">
-                    <MenuIcon/>
-                </IconButton>
-                <Autocomplete
-                    sx={{ ml: 1, flex: 1 }}
-                    freeSolo
-                    onInputChange={(event, newInputValue) => {
-                        setSearchValue(newInputValue);
-                        autocomplete(newInputValue);
-                    }}
-                    options={autoCompleteLines}
-                    renderInput={(params) => {
-                        const {InputLabelProps,InputProps,...rest} = params;
-                        return (
-                        <InputBase
-                            {...params.InputProps} {...rest}
-                            placeholder="חיפוש תרופה"
-                            value={searchValue}
-                        />
-                    )}}
-                    onKeyPress={
-                        (e) => {
-                            if (e.key === 'Enter') {
-                                setAutocompleteLines([]);
-                                search(true);
-                                e.preventDefault();
+                    <Paper
+                    component="form"
+                    sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+                    >
+                    <IconButton sx={{ p: '10px' }} aria-label="menu">
+                        <MenuIcon/>
+                    </IconButton>
+                    <Autocomplete
+                        sx={{ ml: 1, flex: 1 }}
+                        freeSolo
+                        onInputChange={(event, newInputValue) => {
+                            setSearchValue(newInputValue);
+                            autocomplete(newInputValue);
+                        }}
+                        options={autoCompleteLines}
+                        renderInput={(params) => {
+                            const {InputLabelProps,InputProps,...rest} = params;
+                            return (
+                            <InputBase
+                                {...params.InputProps} {...rest}
+                                placeholder="חיפוש תרופה"
+                                value={searchValue}
+                            />
+                        )}}
+                        onKeyPress={
+                            (e) => {
+                                if (e.key === 'Enter') {
+                                    setAutocompleteLines([]);
+                                    search(true);
+                                    e.preventDefault();
+                                }
                             }
                         }
-                    }
-                />
-                <IconButton sx={{ p: '10px' }} aria-label="search" onClick={() => {search(true)}}>
-                    <SearchIcon />
-                </IconButton>
-                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                <IconButton color="primary" sx={{ p: '10px' }} aria-label="barcode" onClick={toggleScanner}>
-                    <QrCode2Icon />
-                </IconButton>
-                </Paper>
-            </Box>
-        </Container>
-          <TransitionsModal open={scannerOpen} toggleModal={toggleScanner}>
-            <BarcodeScanner setScannedData={searchBarcode} triggerSearch={setTriggerSearch} closeModal={toggleScanner}/>
-          </TransitionsModal>
-        <TransitionsModal open={noResultsFound} toggleModal={toggleNoResults}>
-            <Typography sx={{ mt: 2 }} align={"center"}>
-                לא נמצאו תוצאות
-            </Typography>
-        </TransitionsModal>
-        <CircularProgressBackdrop open={loading} toggle={setLoading}/>
-        { items.length > 0 ? (
-            <>
-            {items.map((item,index) => (
-                    <Box
-                        key={index}
-                        marginTop='65px'
-                        marginBottom='45px'
-                        display='flex'
-                        flexDirection='column'
-                        justifyContent="center"
-                        alignItems='center'
-                    >
-                        <DetailedCard data={item} type='drug' title={item.dragHebName} subheader={item.dragEnName} image={item.images} body={item.secondarySymptom} expandData={item} prescription={item.prescription} setGenericSearchValue={setGenericSearchValue} triggerSearch={setTriggerGenericSearch}/>
-                    </Box>
-            ))}
-            {HasMore && (
-                <Box
-                    sx={{
-                        marginBottom: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <LoadingButton
-                        variant="contained"
-                        size="small"
-                        endIcon={<KeyboardArrowDownIcon style={{marginRight: 12}}/>}
-                        onClick={() => {search(false, isGeneric)}}
-                        loading={isFetching}
-                        loadingPosition="end"
-                    >
-                        תוצאות נוספות
-                    </LoadingButton>
+                    />
+                    <IconButton sx={{ p: '10px' }} aria-label="search" onClick={() => {search(true)}}>
+                        <SearchIcon />
+                    </IconButton>
+                    <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                    <IconButton color="primary" sx={{ p: '10px' }} aria-label="barcode" onClick={toggleScanner}>
+                        <QrCode2Icon />
+                    </IconButton>
+                    </Paper>
                 </Box>
-            )}
-            </>
-        ) : (<p align="center"> אין מידע להצגה </p>) }
-    </ThemeProvider>
+            </Container>
+              <TransitionsModal open={scannerOpen} toggleModal={toggleScanner}>
+                <BarcodeScanner setScannedData={searchBarcode} triggerSearch={setTriggerSearch} closeModal={toggleScanner}/>
+              </TransitionsModal>
+            <TransitionsModal open={noResultsFound} toggleModal={toggleNoResults}>
+                <Typography sx={{ mt: 2 }} align={"center"}>
+                    לא נמצאו תוצאות
+                </Typography>
+            </TransitionsModal>
+            <CircularProgressBackdrop open={loading} toggle={setLoading}/>
+            <TransitionsModal open={openAddDialog} toggleModal={toggleAddDialog}>
+                <CacheProvider value={cacheRtl}>
+                    <Typography sx={{ mt: 2 }} align={"center"} marginBottom={'20px'}>
+                        הוספת תרופה למאגר האישי
+                    </Typography><Typography variant="h5" sx={{ mt: 2 }} align={"center"} marginBottom={'20px'}>
+                        {dialogItem.dragHebName}
+                    </Typography>
+                    <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Stack spacing={3}>
+                            <TextField
+                                required
+                                id="outlined-number"
+                                label="כמות יחידות"
+                                type="number"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                value={unitsAmount}
+                                onChange={handleUnitsAmount}
+                            />
+                            <TextField
+                                required
+                                id="outlined-number"
+                                label="מינון ליחידה"
+                                type="number"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                value={dosageAmount}
+                                onChange={handleDosageAmount}
+                            />
+                            <DesktopDatePicker
+                                required
+                                label="תאריך תפוגה"
+                                inputFormat="DD/MM/yyyy"
+                                value={expirationDate}
+                                onChange={handleExpirationDate}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </Stack>
+                        <Box
+                            marginTop='20px'
+                            display='flex'
+                            flexDirection='row'
+                            justifyContent="center"
+                            alignItems='center'
+                        >
+                            <Button onClick={() => {
+                                setUnitsAmount(1);
+                                setExpirationDate(null);
+                                toggleAddDialog();
+                            }}>ביטול</Button>
+                            <Button onClick={() => {
+                                toggleAddDialog();
+                                handleAdd();
+                            } } autoFocus>
+                                אישור
+                            </Button>
+                        </Box>
+                    </LocalizationProvider>
+                </CacheProvider>
+            </TransitionsModal>
+            { items.length > 0 ? (
+                <>
+                {items.map((item,index) => (
+                        <Box
+                            key={index}
+                            marginTop='65px'
+                            marginBottom='45px'
+                            display='flex'
+                            flexDirection='column'
+                            justifyContent="center"
+                            alignItems='center'
+                        >
+                            <DetailedCard data={item}
+                                          type='drug'
+                                          title={item.dragHebName}
+                                          subheader={item.dragEnName}
+                                          image={item.images}
+                                          body={item.secondarySymptom}
+                                          expandData={item}
+                                          prescription={item.prescription}
+                                          setGenericSearchValue={setGenericSearchValue}
+                                          triggerSearch={setTriggerGenericSearch}
+                                          handleAddClick={() => {
+                                              setDialogItem(item);
+                                              setOpenAddDialog(true);
+                                          }}
+                            />
+                        </Box>
+                ))}
+                {HasMore && (
+                    <Box
+                        sx={{
+                            marginBottom: 8,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <LoadingButton
+                            variant="contained"
+                            size="small"
+                            endIcon={<KeyboardArrowDownIcon style={{marginRight: 12}}/>}
+                            onClick={() => {search(false, isGeneric)}}
+                            loading={isFetching}
+                            loadingPosition="end"
+                        >
+                            תוצאות נוספות
+                        </LoadingButton>
+                    </Box>
+                )}
+                </>
+            ) : (<p align="center"> אין מידע להצגה </p>) }
+        </ThemeProvider>
   );
 }
 

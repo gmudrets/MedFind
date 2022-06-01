@@ -14,6 +14,7 @@ import {getRequest} from "../../../Utils/AxiosRequests";
 import {External, ServerConsts} from "../../../Consts/apiPaths";
 import ArticleIcon from "@mui/icons-material/Article";
 import ShareIcon from '@mui/icons-material/Share';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -27,7 +28,9 @@ import needPrescription from '../../../Assets/Images/perscription_only_logo.png'
 import Link from "@mui/material/Link";
 import {auth} from "../../../Configs/FirebaseConfig"
 import * as Utils from "../../../Utils/Utils";
-import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import CssBaseline from "@mui/material/CssBaseline";
+import {red} from "@mui/material/colors";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -38,6 +41,15 @@ const ExpandMore = styled((props) => {
     transition: theme.transitions.create('transform', {
         duration: theme.transitions.duration.shortest,
     }),
+}));
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : 'whitesmoke',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+    marginLeft: '16px',
 }));
 
 export default function DetailedCard(props) {
@@ -51,8 +63,16 @@ export default function DetailedCard(props) {
         prescription,
         setGenericSearchValue,
         triggerSearch,
+        handleAddClick,
+        handleDeleteClick,
+        handleShareClick,
+        handleAlertClick,
     } = props;
-    const theme = createTheme({direction: 'rtl'});
+    const theme = createTheme({
+        direction: 'rtl',
+        palette: {
+            secondary: red,
+        },});
 
     const [ expanded, setExpanded ] = useState(false);
     const [ brochureLoading, setBrochureLoading ] = useState(false);
@@ -131,7 +151,7 @@ export default function DetailedCard(props) {
                 {type === 'drug' && (
                     <>
                         <CardActions disableSpacing>
-                            <IconButton aria-label="add to my medicine">
+                            <IconButton aria-label="add to my medicine" onClick={handleAddClick}>
                                 <AddCardIcon />
                             </IconButton>
                             <ExpandMore
@@ -157,14 +177,21 @@ export default function DetailedCard(props) {
                 {type === 'myDrug' && (
                     <>
                         <CardActions disableSpacing>
-                            <IconButton aria-label="delete medicine">
-                                <DeleteIcon onClick={()=>console.log("Delete medicine")}/>
+                            <IconButton aria-label="delete medicine" onClick={handleDeleteClick}>
+                                <DeleteIcon />
                             </IconButton>
-                            <IconButton aria-label="share medicine">
-                                <ShareIcon onClick={()=>console.log("Share medicine")}/>
-                            </IconButton>
-                            <IconButton aria-label="set notification">
-                                <NotificationsActiveIcon onClick={()=>console.log("Set notification")}/>
+                            {expandData.shared ?
+                                <ThemeProvider theme={theme}>
+                                    <IconButton aria-label="share medicine" color='secondary' onClick={handleShareClick}>
+                                        <ShareOutlinedIcon />
+                                    </IconButton>
+                                </ThemeProvider>:
+                                <IconButton aria-label="share medicine" onClick={handleShareClick}>
+                                    <ShareIcon />
+                                </IconButton>
+                            }
+                            <IconButton aria-label="set alert" onClick={handleAlertClick}>
+                                <NotificationsActiveIcon />
                             </IconButton>
                             <ExpandMore
                                 expand={expanded}
@@ -174,14 +201,12 @@ export default function DetailedCard(props) {
                             >
                                 <ExpandMoreIcon />
                             </ExpandMore>
-                            <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem />}>
-                                <Typography align="right" variant="h8" textAlign='center' gutterBottom component="div">
-                                    {"תאריך תפוגה: " + Utils.formatDate(expandData.expiration)}
-                                </Typography>
-                                <Typography align="right" variant="h8" textAlign='center' gutterBottom component="div">
-                                    {"כמות זמינה: " + expandData.count}
-                                </Typography>
+                            <CssBaseline>
+                            <Stack direction="row" >
+                                <Item>{"תאריך תפוגה: " + Utils.formatDate(expandData.expiration)}</Item>
+                                <Item>{"כמות זמינה: " + expandData.count}</Item>
                             </Stack>
+                            </CssBaseline>
                         </CardActions>
                     </>
 
