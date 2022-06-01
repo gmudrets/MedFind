@@ -44,7 +44,9 @@ function Login() {
 	const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
 	const [signInErrorMessage, setSignInErrorMessage] = useState(false);
 	const [isSignedInAlready, setIsSignedInAlready] = useState(true);
-	const [tokenFound,setTokenFound] = React.useState(false);
+	const [notficationBlockedSB,setNotficationBlockedSB] = React.useState(false);
+	
+	const [tokenFound,setTokenFound] = React.useState(null);
 
 	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
@@ -55,8 +57,13 @@ function Login() {
 	}, [currentUser]);
 	useEffect(()=>{
 		console.log(tokenFound);
-	})
-
+		if(tokenFound ===false){
+			setNotficationBlockedSB(true);
+		}
+	},[tokenFound])
+	const handleNotficationBlockedSB = ()=>{
+		setNotficationBlockedSB(false);
+	}
 	const handleSignInSuccess = () => {
 		navigate("/");
 	}
@@ -110,6 +117,15 @@ function Login() {
 				>
 					<Alert severity="success">
 						התחברת בהצלחה, מיד תעבור לדף הבית!
+					</Alert>
+				</Snackbar>
+				<Snackbar open={notficationBlockedSB}
+						  autoHideDuration={1500}
+						  onClose={handleNotficationBlockedSB}
+						  anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+				>
+					<Alert severity="success">
+						לא אישרת התראות, חלק מהאפשריות לא יהיו זמינות עבורך, באפשרותך לאשר התראות בהגדרות הדפדפן
 					</Alert>
 				</Snackbar>
 
