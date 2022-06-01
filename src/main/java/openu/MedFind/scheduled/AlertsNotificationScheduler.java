@@ -49,8 +49,8 @@ public class AlertsNotificationScheduler {
             } else {
                 var dateNow = LocalDateTime.now();
 
-                if (alert.getDay() == dateNow.getDayOfWeek().getValue() &&
-                        DAYS.between(alert.getLastTriggered(), dateNow) > WEEK_DAYS * alert.getWeek()) {
+                if (alert.getDay() == dateNow.getDayOfWeek().getValue() + 1 &&
+                        DAYS.between(alert.getLastTriggered(), dateNow) >= WEEK_DAYS * (alert.getWeek() - 1)) {
                     var alertDate = LocalDate.now().atTime(alert.getHour(), alert.getMinute());
 
                     if (alertDate.isAfter(dateNow)) {
@@ -68,7 +68,11 @@ public class AlertsNotificationScheduler {
 
     @Scheduled(fixedRate = 600000)
     public void scheduleFixedRateTask() {
-        template.convertAndSend("/wss-alerts/message", getAllAlerts());
+        var alerts = getAllAlerts();
+
+        if(!alerts.isEmpty()) {
+            template.convertAndSend("/wss-alerts/message", alerts);
+        }
     }
 
 }
