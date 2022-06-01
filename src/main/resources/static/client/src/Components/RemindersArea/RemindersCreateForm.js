@@ -118,7 +118,10 @@ function RemindersCreateForm(props) {
                 medicenes[i + 1] = medicineFullList[i]['hebName'];
             }
             setMedicineList(medicenes);
-            setMedicine(medicenes[0]);
+            setMedicine(medicenes[props.medicine + 1]);
+            if (props.medicine + 1 !== 0) {
+                handleMedicineChange2(medicenes[props.medicine + 1],medicenes);
+            }
         }
 
     }, [medicineFullList]);
@@ -130,12 +133,17 @@ function RemindersCreateForm(props) {
         }
     }, [timesArray]);
     const handleMedicineChange = (event) => {
-        if (medicineList[0] === defualtMedicne) {
-            const next = [...medicineList];
+        handleMedicineChange2(event.target.value);
+    }
+    const handleMedicineChange2 = (value,medLis = medicineList) => {
+        console.log(medLis);
+        console.log(medLis[0]);
+        if (medLis[0] === defualtMedicne) {
+            const next = [...medLis];
             next.splice(0, 1);
             setMedicineList(next);
         }
-        setMedicine(event.target.value);
+        setMedicine(value);
     }
 
 
@@ -560,7 +568,8 @@ RemindersCreateForm.defaultProps = {
     handleSubmit: (res) => {
         return true;
     },
-    medicineList: []
+    medicineList: [],
+    medicine: -1
 
 
 }
