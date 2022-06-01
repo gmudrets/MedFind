@@ -28,8 +28,7 @@ import rtlPlugin from "stylis-plugin-rtl";
 import {CacheProvider} from "@emotion/react";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "../../../Configs/FirebaseConfig.js"
-import OneSignal from "react-onesignal";
-import * as ONE_SIGNAL from "../../../Consts/OneSignalInfo";
+
 import {phoneNumLength} from "../Validators/Validators";
 
 function Login() {
@@ -76,16 +75,6 @@ function Login() {
 			.then(async userCredential => {
 				dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
 
-				OneSignal.init({appId: ONE_SIGNAL.APP_ID,autoResubscribe: true, allowLocalhostAsSecureOrigin: true}).then(() => {
-					setInitialized(true);
-					console.log('worked');
-					OneSignal.showSlidedownPrompt().then(() => {
-						console.log('worked2')
-					});
-					OneSignal.setExternalUserId(userCredential.user.uid);
-					//TODO: maybe phone notfications later
-					// OneSignal.setEmail(userCredential.user.email);
-					// OneSignal.s
 				})
 				setSignInSuccessMessage(true);
 
