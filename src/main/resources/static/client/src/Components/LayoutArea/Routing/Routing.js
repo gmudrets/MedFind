@@ -9,6 +9,7 @@ import MenuDrawer from "../Menu/MenuDrawer";
 import ApprovalRequests from "../../HomeArea/ApprovalRequests";
 import SharedMedicine from "../../HomeArea/SharedMedicine";
 import MySharing from "../../HomeArea/MySharing";
+import Test from "../HeaderArea/Test";
 
 function Routing() {
 	return (
@@ -22,7 +23,8 @@ function Routing() {
 					<Route path="/settings" element={<Settings/>} />
 					<Route path="/approval" element={<ApprovalRequests/>} />
 					<Route path="/shared_medicine" element={<SharedMedicine/>} />
-					<Route path="/my_sharing" element={<MySharing/>} />
+					<Route path="/my_sharing" element={<MySharing/>}/>
+					<Route path="/test" element={<Test/>}/>
 				</Routes>
 				<MenuDrawer/>
 			</HashRouter>
