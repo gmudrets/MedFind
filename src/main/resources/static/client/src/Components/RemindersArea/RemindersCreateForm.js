@@ -72,6 +72,11 @@ export const getTomorow = () => {
     date.setDate(date.getDate() + 1);
     return date;
 }
+export const getAfterWeek = () => {
+    let date = new Date();
+    date.setDate(date.getDate() + 7);
+    return date;
+}
 const initilizeWeekDaysSelected = () => {
     const today = new Date().getDay();
     return [daysWeekOptions[today]];
@@ -86,6 +91,7 @@ function RemindersCreateForm(props) {
     const ltrTheme = createTheme({direction: 'ltr'});
     const defualtMedicne = "בחר תרופה";
 
+    const [hasErrorOnSomeField,set] = React.useState(false);
     const [stopStream, setStopStream] = useState(false);
     const [timesArray, setTimesArray] = useState(props.timesArray);
     const [name, setName] = React.useState(props.name);
@@ -104,6 +110,8 @@ function RemindersCreateForm(props) {
     const [medicineFullList, setMedicineFullList] = React.useState(props.medicineList);
     const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
     const [medicine, setMedicine] = React.useState("טוען תרופות...");
+    const [weekDaysError,setWeekDaysError] = React.useState(false);
+    
     useEffect(async () => {
         let medicenes = [defualtMedicne];
         for (let i = 0; i < medicineFullList.length; i++) {
@@ -149,10 +157,10 @@ function RemindersCreateForm(props) {
         setUntilType(event.target.value);
     }
     const handleEachManyWeeksChange = (event) => {
-        setEachManyWeeks(event.target.value);
+        setEachManyWeeks(event.target.value < 1 ? 1 : event.target.value);
     }
     const handleEachManyDaysChange = (event) => {
-        setEachManyDays(event.target.value);
+        setEachManyDays(event.target.value < 1 ? 1 : event.target.value);
     }
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -166,6 +174,7 @@ function RemindersCreateForm(props) {
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
+        setWeekDaysError(false);
     };
     const navigate = useNavigate();
 
@@ -223,7 +232,9 @@ function RemindersCreateForm(props) {
         if (event.target.value !== returnsTypeOptions.EACH_FEW_WEEKS) {
             setUntilType(untilTypeOptions.DATE);
         }
+        setWeekDaysError(false);
         setReturnsType(event.target.value);
+
     };
     const showMedicineError = (triedSubmitted2 = false) => {
         if (medicine === defualtMedicne && (triedSubmit || triedSubmitted2)) {
@@ -246,10 +257,17 @@ function RemindersCreateForm(props) {
             }
         }
         if (showMedicineError(true)) {
-            setErrorMessege(true);
+            setErrorMessege( true);
             return false;
         }
-
+        if(returnsType === returnsTypeOptions.EACH_WEEK || returnsType === returnsTypeOptions.EACH_FEW_WEEKS){
+            if(weekDaysSelected == ""){
+                setErrorMessege(true);
+                setWeekDaysError(true);
+                return false;
+            }
+        }
+        console.log(weekDaysSelected);
         const data = new FormData(event.currentTarget);
         const value = Object.fromEntries(data.entries());
         value[TIMES_ARRAY] = timesArray;
@@ -406,6 +424,7 @@ function RemindersCreateForm(props) {
                                             label="מספר שבועות"
                                             name={EACH_MANY_WEEKS}
                                             type="number"
+
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
@@ -424,6 +443,7 @@ function RemindersCreateForm(props) {
                                                 labelId="demo-multiple-checkbox-label"
                                                 id="demo-multiple-checkbox"
                                                 multiple
+                                                error={weekDaysError}
                                                 value={weekDaysSelected}
                                                 onChange={handleWeekDaysSelectedChange}
                                                 input={<OutlinedInput label="ימים בשבוע"/>}
@@ -531,7 +551,7 @@ RemindersCreateForm.defaultProps = {
     eachManyDays: 2,
     eachManyWeeks: 2,
     weekDays: initilizeWeekDaysSelected(),
-    untilDate: getTomorow(),
+    untilDate: getAfterWeek(),
     untilType: untilTypeOptions.DATE,
     handleSubmit: (res) => {
         return true;
