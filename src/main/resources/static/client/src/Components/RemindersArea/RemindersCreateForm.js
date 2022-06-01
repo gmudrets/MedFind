@@ -323,7 +323,7 @@ function RemindersCreateForm(props) {
                                         fullWidth
                                         id={TITLE}
                                         name={TITLE}
-                                        label="כותרת"
+                                        label="כותרת (אופציונלי)"
                                         value={name}
                                         onChange={handleNameChange}
                                     />
@@ -489,7 +489,7 @@ function RemindersCreateForm(props) {
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <ThemeProvider theme={ltrTheme}>
                                                 <DatePicker
-                                                    label={(returnsType == returnsTypeOptions.EACH_FEW_DAYS ||returnsType == returnsTypeOptions.EACH_DAY) ? "תאריך (כולל)" : "חזור עד"}
+                                                    label={(returnsType == returnsTypeOptions.EACH_FEW_DAYS ||returnsType == returnsTypeOptions.EACH_DAY) ? "תאריך (כולל)" : "חזור עד (כולל)"}
                                                     id={UNTIL_DATE}
                                                     name={UNTIL_DATE}
                                                     value={untilDate}

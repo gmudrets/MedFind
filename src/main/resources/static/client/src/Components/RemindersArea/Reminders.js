@@ -380,7 +380,7 @@ export default function Reminders() {
                         <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'auto'}}>
                             {loadingNew &&
                                 <Grid item xs={12} sx={{textAlign: "left"}}>
-                                    <Typography component="h1" variant="h6" marginBottom={'5px'}>טוען התראות חדשות....
+                                    <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען התראות חדשות....
                                     </Typography>
                                 </Grid>}
                             {RemindersList != null ? (RemindersList).map((item) => (
@@ -388,7 +388,7 @@ export default function Reminders() {
                                     <ReminderCard  {...createPropsFromItem(item)}/>
                                 </Grid>
                             )) : <Grid item xs={12} sx={{textAlign: "left"}}>
-                                <Typography component="h1" variant="h6" marginBottom={'5px'}>טוען התראות....
+                                <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען התראות....
                                 </Typography>
                             </Grid>
                             }
