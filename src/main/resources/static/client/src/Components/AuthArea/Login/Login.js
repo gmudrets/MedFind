@@ -29,6 +29,8 @@ import {CacheProvider} from "@emotion/react";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "../../../Configs/FirebaseConfig.js"
 
+import {phoneNumLength} from "../Validators/Validators";
+
 function Login() {
 	const theme = createTheme({direction: 'rtl'});
 	const dispatch = useDispatch();
@@ -42,6 +44,7 @@ function Login() {
 	const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
 	const [signInErrorMessage, setSignInErrorMessage] = useState(false);
 	const [isSignedInAlready, setIsSignedInAlready] = useState(true);
+	const [initialized, setInitialized] = useState(false);
 
 	const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
 
@@ -74,6 +77,7 @@ function Login() {
 				setSignInSuccessMessage(true);
 				const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
 				dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
+
 			}).catch(error => {
 			console.log("error code: " + error.code + " and message: " + error.message);
 
