@@ -26,6 +26,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
 import { Autocomplete } from '@mui/material'
 import {auth} from '../../Configs/FirebaseConfig'
+import ReadSocket from "../LayoutArea/HeaderArea/ReadSocket";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -190,10 +191,15 @@ function Home() {
   const toggleNoResults = () => {
     setNoResultsFound(!noResultsFound);
   }
+    const readSocket = (data){
+      if(data ===[]){
 
+      }
+    }
   return (
     <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
+            <ReadSocket readSocket={readSocket()}/>
             <CssBaseline />
             <Box
             sx={{

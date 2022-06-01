@@ -4,7 +4,7 @@ import {Client} from '@stomp/stompjs';
 
 const SOCKET_URL = 'wss://localhost:8080/wss-messages';
 
-export default function Test(props) {
+export default function ReadSocket(props) {
     const [messege, setMessege] = React.useState("Your server message here");
 
 
@@ -14,10 +14,7 @@ export default function Test(props) {
             client.subscribe('/wss-alerts/message', function (msg) {
                 if (msg.body) {
                     console.log(msg.body);
-                    var jsonBody = JSON.parse(msg.body);
-                    if (jsonBody.message) {
-                        setMessege(jsonBody.message)
-                    }
+                    props.readSocket(msg.body);
                 }
             });
         }
@@ -37,11 +34,8 @@ export default function Test(props) {
 
         client.activate();
     });
-
     return (
-        <div>
-            <div>{messege}</div>
-        </div>
+        <></>
     );
 
 
