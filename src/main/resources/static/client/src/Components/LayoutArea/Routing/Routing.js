@@ -11,6 +11,7 @@ import SharedMedicine from "../../HomeArea/SharedMedicine";
 import MySharing from "../../HomeArea/MySharing";
 import ReadSocket from "../HeaderArea/ReadSocket";
 import Reminders from "../../RemindersArea/Reminders";
+import Test3 from "../../RemindersArea/Test3";
 
 function Routing() {
 	return (
@@ -25,7 +26,7 @@ function Routing() {
 					<Route path="/approval" element={<ApprovalRequests/>} />
 					<Route path="/shared_medicine" element={<SharedMedicine/>} />
 					<Route path="/my_sharing" element={<MySharing/>}/>
-					<Route path="/test" element={<ReadSocket/>}/>
+					<Route path="/test3" element={<Test3/>}/>
 					<Route path="/reminders" element={<Reminders/>} />
 				</Routes>
 				<MenuDrawer/>

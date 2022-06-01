@@ -1,7 +1,7 @@
 import {initializeApp} from "firebase/app"
 import {getAuth} from "firebase/auth";
 import {getFirestore} from "firebase/firestore"
-import {getMessaging, getToken,onMessage} from "firebase/messaging";
+import {getMessaging, getToken, onMessage} from "firebase/messaging";
 
 // To add consts into .env file
 const GENERATED_MESSAGING_KEY = "BLnqijghBzcwuO0l_vHQcb5ktCLWXMusw4hS2-Lda-CTyr8XG8XzlVh6bCOF9ohAmLTEZ4mxS_zVZC1bqi1LB5Y"
@@ -35,4 +35,11 @@ export const myGetToken = (setTokenFound) => {
         console.log('An error occurred while retrieving token. ', err);
         // catch error while creating client token
     });
+
 }
+export const onMessageListener = () =>
+    new Promise((resolve) => {
+        onMessage(messaging, (payload) => {
+            resolve(payload);
+        });
+    });
