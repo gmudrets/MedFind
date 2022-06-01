@@ -63,6 +63,9 @@ export default function MenuDrawer() {
   const handleLogoutClick = () => {
     navigate("/logout");
   }
+  const handleRemindersClick = () => {
+    navigate("/reminders");
+  }
 
   const handleSharedMedsClick = () => {
     navigate("/shared_medicine");
@@ -122,7 +125,7 @@ export default function MenuDrawer() {
       </List>
       <Divider />
       <List>
-          <ListItemButton key='reminders'>
+          <ListItemButton onClick= {handleRemindersClick} key='reminders' >
             <ListItemIcon>
               <NotificationsActiveIcon />
             </ListItemIcon>

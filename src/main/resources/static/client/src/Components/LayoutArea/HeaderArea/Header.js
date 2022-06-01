@@ -14,6 +14,7 @@ import { getSafe } from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
 import {Actions} from "../../../Redux/UI";
 
+
 function Header() {
 //   const navigate = useNavigate();
   const dispatch = useDispatch();

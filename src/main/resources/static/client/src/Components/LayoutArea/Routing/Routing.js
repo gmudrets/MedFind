@@ -10,6 +10,7 @@ import ApprovalRequests from "../../HomeArea/ApprovalRequests";
 import SharedMedicine from "../../HomeArea/SharedMedicine";
 import MySharing from "../../HomeArea/MySharing";
 import MyMedicine from "../../HomeArea/MyMedicine";
+import Reminders from "../../RemindersArea/Reminders";
 
 function Routing() {
 	return (
@@ -25,6 +26,7 @@ function Routing() {
 					<Route path="/shared_medicine" element={<SharedMedicine/>} />
 					<Route path="/my_sharing" element={<MySharing/>} />
 					<Route path="/my_medicine" element={<MyMedicine/>} />
+					<Route path="/reminders" element={<Reminders/>} />
 				</Routes>
 				<MenuDrawer/>
 			</HashRouter>
