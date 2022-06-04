@@ -4,12 +4,13 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compa
 
 // Initialize the Firebase app in the service worker by passing the generated config
 var firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCTzg6q58wI40x00qMBQVyyy9oh2u4E5S0",
+    authDomain: "medfind-cbaba.firebaseapp.com",
+    projectId: "medfind-cbaba",
+    storageBucket: "medfind-cbaba.appspot.com",
+    messagingSenderId: "1049344956166",
+    appId: "1:1049344956166:web:d7ee2568609d33d4907087",
+    measurementId: "G-VSSDZCWGZN"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -17,7 +18,7 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve firebase messaging
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
+messaging.onBackgroundMessage(function(payload) {
     console.log('Received background message ', payload);
 
     const notificationTitle = payload.notification.title;

@@ -85,7 +85,7 @@ function Login() {
 				console.log("MAKore")
 				dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
 				setSignInSuccessMessage(true);
-				const token =myGetToken(setTokenFound);
+				// const token =myGetToken(setTokenFound);
 				const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
 				dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
 

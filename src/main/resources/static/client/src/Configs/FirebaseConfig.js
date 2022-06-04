@@ -4,8 +4,8 @@ import {getFirestore} from "firebase/firestore"
 import {getMessaging, getToken, onMessage} from "firebase/messaging";
 
 // To add consts into .env file
-const GENERATED_MESSAGING_KEY = "BLnqijghBzcwuO0l_vHQcb5ktCLWXMusw4hS2-Lda-CTyr8XG8XzlVh6bCOF9ohAmLTEZ4mxS_zVZC1bqi1LB5Y"
-const firebaseConfig = {
+const GENERATED_MESSAGING_KEY = "BIanvfKyHEiAiIjNN-thjHMkcLInWc83dg7a7gVfiwV8Cwv2SyMwA9mM96xdoKELmoiPPMy7hDWxzZzBKPcQmxU"
+export const firebaseConfig = {
     apiKey: "AIzaSyCTzg6q58wI40x00qMBQVyyy9oh2u4E5S0",
     authDomain: "medfind-cbaba.firebaseapp.com",
     projectId: "medfind-cbaba",
@@ -16,9 +16,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+export const messaging = getMessaging(app);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+// messaging.getToken();
 export const myGetToken = (setTokenFound) => {
     return getToken(messaging, {vapidKey: GENERATED_MESSAGING_KEY}).then((currentToken) => {
         if (currentToken) {
