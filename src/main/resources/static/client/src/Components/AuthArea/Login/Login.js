@@ -20,7 +20,7 @@ import * as USER_DATA from "../../../Redux/UserData";
 import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
 import {auth} from "../../../Configs/FirebaseConfig";
-import {signInWithEmailAndPassword} from "firebase/auth"
+import {signInWithEmailAndPassword, signOut} from "firebase/auth"
 import {Alert, Snackbar} from "@mui/material";
 import createCache from "@emotion/cache";
 import {prefixer} from "stylis";
@@ -43,6 +43,7 @@ function Login() {
 	});
 	const [signInSuccessMessage, setSignInSuccessMessage] = useState(false);
 	const [signInErrorMessage, setSignInErrorMessage] = useState(false);
+	const [emailNotVerifiedError, setEmailNotVerifiedError] = useState(false);
 	const [isSignedInAlready, setIsSignedInAlready] = useState(true);
 	const [initialized, setInitialized] = useState(false);
 
@@ -63,6 +64,9 @@ function Login() {
 		setSignInErrorMessage(false);
 	}
 
+	const handleEmailNotVerifiedError = () => {
+		setEmailNotVerifiedError(false);
+	}
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -73,11 +77,16 @@ function Login() {
 			email,
 			password)
 			.then(async userCredential => {
-				dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
-				setSignInSuccessMessage(true);
-				const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
-				dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
-
+				if(auth.currentUser.emailVerified) {
+					dispatch(AUTH.Actions.requestUserLogin(userCredential.user));
+					setSignInSuccessMessage(true);
+					const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
+					dispatch(USER_DATA.Actions.initializeUserData(docSnap.data()));
+				}
+				else {
+					setEmailNotVerifiedError(true);
+					await signOut(auth).then();
+				}
 			}).catch(error => {
 			console.log("error code: " + error.code + " and message: " + error.message);
 
@@ -114,6 +123,17 @@ function Login() {
 						כתובת מייל או סיסמא שגויים. אנא נסה שנית.
 					</Alert>
 				</Snackbar>
+
+				<Snackbar open={emailNotVerifiedError}
+						  autoHideDuration={3000}
+						  onClose={handleEmailNotVerifiedError}
+						  anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+				>
+					<Alert severity="warning">
+						כתובת המייל של המשתמש לא אושרה. אנא בצע/י אישור ע"י לחיצה על הקישור שנשלח במייל.
+					</Alert>
+				</Snackbar>
+
 
 
 				<Container component="main" maxWidth="xs">
