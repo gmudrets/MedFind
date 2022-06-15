@@ -42,7 +42,7 @@ export const EACH_MANY_WEEKS = 'weeksNumber';
 export const UNTIL_DATE = 'untilDate';
 export const UNTIL_TYPE = 'untilType';
 export const REMINDERS_NUM = 'reminderNum';
-export const EACH_MANY_DAYS = 'eachManyDAys';
+export const EACH_MANY_DAYS = 'eachManyDays';
 
 
 export const returnsTypeOptions = {
