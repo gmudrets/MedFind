@@ -63,14 +63,15 @@ function Header() {
         }
     };
     const readSocket = (data) => {
-        if (data === []) {
+        if (data !== []) {
+            console.log(msg.body);
 
         }
     }
     return (
         <Box sx={{flexGrow: 1}}>
             {auth &&
-                <ReadSocket readSocket={readSocket}/>
+                <ReadSocket  readSocket={readSocket}/>
             }
             <AppBar position="static" color="grey">
                 <Toolbar>

@@ -13,7 +13,6 @@ export default function ReadSocket(props) {
             console.log("Connected!!")
             client.subscribe('/wss-alerts/message', function (msg) {
                 if (msg.body) {
-                    console.log(msg.body);
                     props.readSocket(msg.body);
                 }
             });
