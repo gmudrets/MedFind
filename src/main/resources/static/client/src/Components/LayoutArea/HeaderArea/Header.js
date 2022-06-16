@@ -64,7 +64,7 @@ function Header() {
     };
     const readSocket = (data) => {
         if (data !== []) {
-            console.log(msg.body);
+            console.log(data.body);
 
         }
     }

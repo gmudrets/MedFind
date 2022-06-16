@@ -30,6 +30,7 @@ import {doc, getDoc} from "firebase/firestore";
 import {db} from "../../../Configs/FirebaseConfig.js"
 
 import {phoneNumLength} from "../Validators/Validators";
+import {messagingAdmin} from "../../../Configs/firebaseInit";
 
 function Login() {
 	const theme = createTheme({direction: 'rtl'});
@@ -78,6 +79,7 @@ function Login() {
 		const data = new FormData(event.currentTarget);
 		let email = data.get('email').toString();
 		let password = data.get('password').toString();
+		console.log(messagingAdmin)
 		signInWithEmailAndPassword(auth,
 			email,
 			password)
