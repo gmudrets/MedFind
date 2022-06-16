@@ -1,14 +1,25 @@
 module.exports = {
     style: {
-        postOptions : {
+        postOptions: {
             plugins: [
                 require('tailwindcss'),
                 require('autoprefixer'),
             ],
         },
     },
-    // resolve: {
-    //     fallback:
-    //         {"stream": require.resolve("stream-browserify")}
+    // webpack: {
+    //     configure: (webpackConfig, { env, paths }) => {
+    //         // eslint-disable-next-line no-param-reassign
+    //         webpackConfig.resolve.fallback = {
+    //             stream: require.resolve("stream-browserify")
+    //         };
+    //         return webpackConfig;
+    //     },
     // },
+    // webpack: {
+    //     resolve: {
+    //         fallback:
+    //             {"stream": require.resolve("stream-browserify")}
+    //     },
+    // }
 }
