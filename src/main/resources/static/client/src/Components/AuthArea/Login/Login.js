@@ -130,7 +130,7 @@ function Login() {
 						  anchorOrigin={{vertical: 'top', horizontal: 'center'}}
 				>
 					<Alert severity="warning">
-						כתובת המייל של המשתמש לא אושרה. אנא בצע/י אישור ע"י לחיצה על הקישור שנשלח במייל.
+						כתובת המייל של המשתמש לא אומתה. אנא בצע/י אימות ע"י לחיצה על הקישור שנשלח במייל.
 					</Alert>
 				</Snackbar>
 
