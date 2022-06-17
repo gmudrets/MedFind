@@ -24,5 +24,11 @@ public class FirebaseConfig {
             log.info("Initializing firebase");
             FirebaseApp.initializeApp(options);
         }
+        FirebaseOptions options = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.getApplicationDefault())
+                .setDatabaseUrl("https://<DATABASE_NAME>.firebaseio.com/")
+                .build();
+
+        FirebaseApp.initializeApp(options);
     }
 }
