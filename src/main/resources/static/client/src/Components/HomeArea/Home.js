@@ -35,12 +35,12 @@ import rtlPlugin from "stylis-plugin-rtl";
 import createCache from "@emotion/cache";
 import {CacheProvider} from "@emotion/react";
 import {now} from "moment";
-import { format } from 'date-fns';
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
   const navigate = useNavigate();
   const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
+  const format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
   const [ items, setItems ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
@@ -141,17 +141,19 @@ function Home() {
   }
 
   const autocomplete = async (newValue) => {
-      let data;
-      if (newValue===""){
-          setAutocompleteLines([]);
-      }
-      else{
-          data = await getRequest("", ServerConsts.AUTOCOMPLETE, { "val" : newValue });
-          if ("results" in data){
-            setAutocompleteLines(data.results);
+      if (!format.test(newValue)){
+          let data;
+          if (newValue===""){
+              setAutocompleteLines([]);
           }
           else{
-            setAutocompleteLines([]);
+              data = await getRequest("", ServerConsts.AUTOCOMPLETE, { "val" : newValue });
+              if ("results" in data){
+                setAutocompleteLines(data.results);
+              }
+              else{
+                setAutocompleteLines([]);
+              }
           }
       }
   }
