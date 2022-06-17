@@ -35,12 +35,13 @@ import rtlPlugin from "stylis-plugin-rtl";
 import createCache from "@emotion/cache";
 import {CacheProvider} from "@emotion/react";
 import {now} from "moment";
+import { format } from 'date-fns';
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
   const navigate = useNavigate();
   const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
-  const format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+  const specialChars = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
   const [ items, setItems ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
@@ -141,7 +142,7 @@ function Home() {
   }
 
   const autocomplete = async (newValue) => {
-      if (!format.test(newValue)){
+      if (!specialChars.test(newValue)){
           let data;
           if (newValue===""){
               setAutocompleteLines([]);
