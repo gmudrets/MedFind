@@ -1,25 +1,16 @@
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+
+const path = require('path')
+
 module.exports = {
-    style: {
-        postOptions: {
-            plugins: [
-                require('tailwindcss'),
-                require('autoprefixer'),
-            ],
+
+    webpack: {
+        plugins: {
+            add: [
+                new NodePolyfillPlugin()
+            ]
         },
+
     },
-    // webpack: {
-    //     configure: (webpackConfig, { env, paths }) => {
-    //         // eslint-disable-next-line no-param-reassign
-    //         webpackConfig.resolve.fallback = {
-    //             stream: require.resolve("stream-browserify")
-    //         };
-    //         return webpackConfig;
-    //     },
-    // },
-    // webpack: {
-    //     resolve: {
-    //         fallback:
-    //             {"stream": require.resolve("stream-browserify")}
-    //     },
-    // }
+
 }
