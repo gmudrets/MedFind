@@ -110,16 +110,26 @@ export default function DetailedCard(props) {
         return data;
     }
 
-    const getBrochure = async (drugRegNum) => {
+    const getBrochure = async (payload) => {
         setBrochureLoading(true);
-        let data = await getRequest(
-            await auth.currentUser.getIdToken(true),
-            ServerConsts.GET_BROCHURE,
-            { "drugRegNum" : drugRegNum});
-        let url = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
-        if (url){
+        let url;
+        let data = null;
+        let download;
+        if (type === 'drug'){
+            data = await getRequest(
+                await auth.currentUser.getIdToken(true),
+                ServerConsts.GET_BROCHURE,
+                { "drugRegNum" : payload});
+            url = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+            download = data["consumerBrochure"] ? data["consumerBrochure"] : null;
+        }
+        else {
+            url = payload;
+            download = payload !== 'null' ? payload : null;
+        }
+        if (url && url !== 'null'){
             const link = document.createElement("a");
-            link.download = data["consumerBrochure"];
+            link.download = download;
             link.href = url;
             link.click();
         }
@@ -217,68 +227,66 @@ export default function DetailedCard(props) {
 
                 )}
                 {(type === 'drug' || type ==='myDrug') && (
-                    <>
-                        <Collapse in={expanded} timeout="auto" unmountOnExit>
-                            <CardContent>
-                                <Typography paragraph>פרטים נוספים:</Typography>
-                                <Typography paragraph>
-                                    <Table size="small" style={{marginBottom:15}}>
+                    <Collapse in={expanded} timeout="auto" unmountOnExit>
+                        <CardContent>
+                            <Typography paragraph>פרטים נוספים:</Typography>
+                            <Typography paragraph>
+                                <Table size="small" style={{marginBottom:15}}>
+                                    <TableRow>
+                                        <TableCell variant="head" align="right">{nameMapping["activeComponents"]}</TableCell>
+                                        <TableCell align="right">{expandData.activeComponents}</TableCell>
+                                    </TableRow>
+                                    {type === 'drug' && (
                                         <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["activeComponents"]}</TableCell>
-                                            <TableCell align="right">{expandData.activeComponents}</TableCell>
+                                            <TableCell variant="head" align="right">{nameMapping["customerPrice"]}</TableCell>
+                                            <TableCell align="right">{expandData.customerPrice} &#8362;</TableCell>
                                         </TableRow>
-                                        {type === 'drug' && (
-                                            <TableRow>
-                                                <TableCell variant="head" align="right">{nameMapping["customerPrice"]}</TableCell>
-                                                <TableCell align="right">{expandData.customerPrice} &#8362;</TableCell>
-                                            </TableRow>
-                                        )}
-                                        <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["dosageForm"]}</TableCell>
-                                            <TableCell align="right">
-                                                {
-                                                    type === 'drug' ?
-                                                    getValue(expandData.dosageForm) :
-                                                        (expandData.unitType==='CAPLET'?<>טבליה</>:<>נוזל</>)
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["health"]}</TableCell>
-                                            <TableCell align="right">
-                                                {
-                                                    type === 'drug' ?
-                                                    getValue(expandData.health) :
-                                                        getValue(expandData.healthBasket)
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["prescription"]}</TableCell>
-                                            <TableCell align="right">{getValue(expandData.prescription)}</TableCell>
-                                        </TableRow>
-                                    </Table>
-                                    {showBrochureError ? <p style={{color: 'red'}}>לא קיים עלון לצרכן במאגר משרד הבריאות</p> :
-                                        <LoadingButton
-                                            variant="contained"
-                                            size="small"
-                                            endIcon={<ArticleIcon style={{marginRight: 12}}/>}
-                                            onClick={() => {
+                                    )}
+                                    <TableRow>
+                                        <TableCell variant="head" align="right">{nameMapping["dosageForm"]}</TableCell>
+                                        <TableCell align="right">
+                                            {
                                                 type === 'drug' ?
-                                                    getBrochure(expandData.brochure):
-                                                    getBrochure(expandData.brochureUrl)
+                                                getValue(expandData.dosageForm) :
+                                                    expandData.unitType
+                                            }
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell variant="head" align="right">{nameMapping["health"]}</TableCell>
+                                        <TableCell align="right">
+                                            {
+                                                type === 'drug' ?
+                                                getValue(expandData.health) :
+                                                    getValue(expandData.healthBasket)
+                                            }
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell variant="head" align="right">{nameMapping["prescription"]}</TableCell>
+                                        <TableCell align="right">{getValue(expandData.prescription)}</TableCell>
+                                    </TableRow>
+                                </Table>
+                                {showBrochureError ? (<p style={{color: 'red'}}>לא קיים עלון לצרכן במאגר משרד הבריאות</p>) :
+                                    <LoadingButton
+                                        variant="contained"
+                                        size="small"
+                                        endIcon={<ArticleIcon style={{marginRight: 12}}/>}
+                                        onClick={() => {
+                                            type === 'drug' ?
+                                                getBrochure(expandData.brochure):
+                                                getBrochure(expandData.brochureUrl)
 
-                                                ;}}
-                                            loading={brochureLoading}
-                                            loadingPosition="end"
-                                        >
-                                            עלון לצרכן
-                                        </LoadingButton>
-                                    }
-                                </Typography>
-                            </CardContent>
-                        </Collapse>
-                    </>
+                                            ;}}
+                                        loading={brochureLoading}
+                                        loadingPosition="end"
+                                    >
+                                        עלון לצרכן
+                                    </LoadingButton>
+                                }
+                            </Typography>
+                        </CardContent>
+                    </Collapse>
                 )}
             </Card>
         </ThemeProvider>

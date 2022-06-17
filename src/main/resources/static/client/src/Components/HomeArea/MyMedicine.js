@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {createTheme} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
@@ -85,7 +84,7 @@ function MyMedicine() {
         console.log("Alert!");
     };
 
-    //TODO: when clocking share check that the user has a city and phone number, if not present an error meggase dialog and suggest to go to settings to update the details.
+    //TODO: when clicking share check that the user has a city and phone number, if not present an error meggase dialog and suggest to go to settings to update the details.
     return (
         <>
             <CircularProgressBackdrop open={loading} toggle={setLoading}/>
@@ -142,36 +141,34 @@ function MyMedicine() {
                                  }}
                     />
                     {items.map((item,index) => (
-                        <>
-                            <Box
-                                key={index}
-                                marginTop='65px'
-                                marginBottom='45px'
-                                display='flex'
-                                flexDirection='column'
-                                justifyContent="center"
-                                alignItems='center'
-                            >
-                                <DetailedCard data={item}
-                                              type='myDrug'
-                                              title={item.hebName}
-                                              subheader={item.engName}
-                                              image={item.imageUrl}
-                                              body={item.treatment}
-                                              expandData={item}
-                                              prescription={item.prescription}
-                                              handleDeleteClick={() => {
-                                                  setDialogItem(item);
-                                                  setOpenDeleteDialog(true);
-                                              }}
-                                              handleShareClick={() => {
-                                                  setDialogItem(item);
-                                                  setOpenShareDialog(true);
-                                              }}
-                                              handleAlertClick={handleAlertClick}
-                                />
-                            </Box>
-                        </>
+                        <Box
+                            key={index}
+                            marginTop='65px'
+                            marginBottom='45px'
+                            display='flex'
+                            flexDirection='column'
+                            justifyContent="center"
+                            alignItems='center'
+                        >
+                            <DetailedCard data={item}
+                                          type='myDrug'
+                                          title={item.hebName}
+                                          subheader={item.engName}
+                                          image={item.imageUrl}
+                                          body={item.treatment}
+                                          expandData={item}
+                                          prescription={item.prescription}
+                                          handleDeleteClick={() => {
+                                              setDialogItem(item);
+                                              setOpenDeleteDialog(true);
+                                          }}
+                                          handleShareClick={() => {
+                                              setDialogItem(item);
+                                              setOpenShareDialog(true);
+                                          }}
+                                          handleAlertClick={handleAlertClick}
+                            />
+                        </Box>
                     ))}
                 </>
             )}

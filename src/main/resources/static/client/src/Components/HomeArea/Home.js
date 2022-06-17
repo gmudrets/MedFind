@@ -28,12 +28,14 @@ import {auth} from '../../Configs/FirebaseConfig'
 import * as Utils from "../../Utils/Utils";
 import TextField from "@mui/material/TextField";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/lab";
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Button from "@mui/material/Button";
 import {prefixer} from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import createCache from "@emotion/cache";
 import {CacheProvider} from "@emotion/react";
+import {now} from "moment";
+import { format } from 'date-fns';
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -59,7 +61,7 @@ function Home() {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [unitsAmount, setUnitsAmount] = useState(1);
   const [dosageAmount, setDosageAmount] = useState(1);
-  const [expirationDate, setExpirationDate] = useState();
+  const [expirationDate, setExpirationDate] = useState(new Date(now()));
 
   useEffect(() => {
     if (currentUser === ''){
@@ -202,7 +204,7 @@ function Home() {
   }
 
   const handleExpirationDate = (newDate) => {
-      setExpirationDate(newDate.format("DD/MM/yyyy HH:mm:ss"));
+      setExpirationDate(newDate);
   }
 
   const handleUnitsAmount = (newAmount) => {
@@ -220,6 +222,7 @@ function Home() {
           ServerConsts.GET_BROCHURE,
           { "drugRegNum" : dialogItem.dragRegNum});
       let brochureUrl = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+      let formattedDate = format(new Date(expirationDate.getFullYear(), expirationDate.getMonth(), expirationDate.getDate()), 'dd/MM/yyyy HH:mm:ss');
       try {
           await getRequest(currentUser.stsTokenManager.accessToken,
               ServerConsts.ADD_MEDICINE, {
@@ -232,7 +235,7 @@ function Home() {
                   treatment: dialogItem.secondarySymptom ? dialogItem.secondarySymptom : "N/A",
                   imageUrl: dialogItem.images,
                   brochureUrl: brochureUrl,
-                  expiration: expirationDate,
+                  expiration: formattedDate,
                   units: dialogItem.dosageForm,
                   count: unitsAmount,
                   dosage: dosageAmount,
@@ -319,7 +322,7 @@ function Home() {
                     </Typography><Typography variant="h5" sx={{ mt: 2 }} align={"center"} marginBottom={'20px'}>
                         {dialogItem.dragHebName}
                     </Typography>
-                    <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <Stack spacing={3}>
                             <TextField
                                 required
@@ -346,7 +349,7 @@ function Home() {
                             <DesktopDatePicker
                                 required
                                 label="תאריך תפוגה"
-                                inputFormat="DD/MM/yyyy"
+                                inputFormat="dd/MM/yyyy"
                                 value={expirationDate}
                                 onChange={handleExpirationDate}
                                 renderInput={(params) => <TextField {...params} />}
@@ -361,7 +364,7 @@ function Home() {
                         >
                             <Button onClick={() => {
                                 setUnitsAmount(1);
-                                setExpirationDate(null);
+                                setExpirationDate(new Date(now()));
                                 toggleAddDialog();
                             }}>ביטול</Button>
                             <Button onClick={() => {
