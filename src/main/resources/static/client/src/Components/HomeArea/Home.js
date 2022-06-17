@@ -399,7 +399,7 @@ function Home() {
                       anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             >
                 <Alert severity="error">
-                    אראה שגיאה בהוספת התרופה למאגר
+                    אירעה שגיאה בהוספת התרופה למאגר
                 </Alert>
             </Snackbar>
             { items.length > 0 ? (
