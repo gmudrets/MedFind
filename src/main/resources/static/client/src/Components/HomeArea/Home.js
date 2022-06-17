@@ -23,7 +23,7 @@ import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoadingButton from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
-import {Autocomplete, Stack} from '@mui/material'
+import {Alert, Autocomplete, Snackbar, Stack} from '@mui/material'
 import {auth} from '../../Configs/FirebaseConfig'
 import * as Utils from "../../Utils/Utils";
 import TextField from "@mui/material/TextField";
@@ -56,6 +56,7 @@ function Home() {
   const [dialogItem, setDialogItem] = React.useState({});
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [showAddMessage, setShowAddMessage] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [unitsAmount, setUnitsAmount] = useState(1);
   const [dosageAmount, setDosageAmount] = useState(1);
   const [expirationDate, setExpirationDate] = useState();
@@ -213,30 +214,36 @@ function Home() {
   }
   
   const handleAdd = async () => {
+      setLoading(true);
       let data = await getRequest(
           await auth.currentUser.getIdToken(true),
           ServerConsts.GET_BROCHURE,
           { "drugRegNum" : dialogItem.dragRegNum});
-      let brochureUrl = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
-      await getRequest(currentUser.stsTokenManager.accessToken,
-          ServerConsts.ADD_MEDICINE, {
-              drugRegNum: dialogItem.dragRegNum,
-              hebName: dialogItem.dragHebName,
-              engName: dialogItem.dragEnName,
-              activeComponents: dialogItem.activeComponents,
-              healthBasket: dialogItem.health,
-              prescription: dialogItem.prescription,
-              treatment: dialogItem.secondarySymptom ? dialogItem.secondarySymptom : "N/A",
-              imageUrl: dialogItem.images,
-              brochureUrl: brochureUrl,
-              expiration: expirationDate,
-              units: dialogItem.dosageForm,
-              count: unitsAmount,
-              dosage: dosageAmount,
-              shared: false
-          });
-      // setShowDeleteMessage(true);
-      console.log("Adding item:", dialogItem);
+      let brochureUrl = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+      try {
+          await getRequest(currentUser.stsTokenManager.accessToken,
+              ServerConsts.ADD_MEDICINE, {
+                  drugRegNum: dialogItem.dragRegNum,
+                  hebName: encodeURIComponent(dialogItem.dragHebName),
+                  engName:encodeURIComponent(dialogItem.dragEnName),
+                  activeComponents: encodeURIComponent(dialogItem.activeComponents),
+                  healthBasket: dialogItem.health,
+                  prescription: dialogItem.prescription,
+                  treatment: dialogItem.secondarySymptom ? dialogItem.secondarySymptom : "N/A",
+                  imageUrl: dialogItem.images,
+                  brochureUrl: brochureUrl,
+                  expiration: expirationDate,
+                  units: dialogItem.dosageForm,
+                  count: unitsAmount,
+                  dosage: dosageAmount,
+                  shared: false
+              });
+          setShowAddMessage(true);
+      }
+      catch (error){
+          setShowErrorMessage(true);
+      }
+      setLoading(false);
   }
 
   return (
@@ -265,6 +272,7 @@ function Home() {
                             setSearchValue(newInputValue);
                             autocomplete(newInputValue);
                         }}
+                        value={searchValue}
                         options={autoCompleteLines}
                         renderInput={(params) => {
                             const {InputLabelProps,InputProps,...rest} = params;
@@ -366,6 +374,28 @@ function Home() {
                     </LocalizationProvider>
                 </CacheProvider>
             </TransitionsModal>
+            <Snackbar open={showAddMessage}
+                      autoHideDuration={1500}
+                      onClose={() => {
+                          setShowAddMessage(false);
+                      }}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+                <Alert severity="success">
+                    התרופה הוספה למאגר
+                </Alert>
+            </Snackbar>
+             <Snackbar open={showErrorMessage}
+                      autoHideDuration={1500}
+                      onClose={() => {
+                          setShowErrorMessage(false);
+                      }}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+                <Alert severity="error">
+                    אראה שגיאה בהוספת התרופה למאגר
+                </Alert>
+            </Snackbar>
             { items.length > 0 ? (
                 <>
                 {items.map((item,index) => (

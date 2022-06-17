@@ -76,6 +76,7 @@ export default function DetailedCard(props) {
 
     const [ expanded, setExpanded ] = useState(false);
     const [ brochureLoading, setBrochureLoading ] = useState(false);
+    const [ showBrochureError, setShowBrochureError ] = useState(false);
 
     const nameMapping = {
         "activeComponents" : "חומרים פעילים",
@@ -115,12 +116,16 @@ export default function DetailedCard(props) {
             await auth.currentUser.getIdToken(true),
             ServerConsts.GET_BROCHURE,
             { "drugRegNum" : drugRegNum});
-        let url = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
-
-        const link = document.createElement("a");
-        link.download = data["consumerBrochure"];
-        link.href = url;
-        link.click();
+        let url = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+        if (url){
+            const link = document.createElement("a");
+            link.download = data["consumerBrochure"];
+            link.href = url;
+            link.click();
+        }
+        else{
+            setShowBrochureError(true);
+        }
         setBrochureLoading(false);
     }
 
@@ -253,21 +258,23 @@ export default function DetailedCard(props) {
                                             <TableCell align="right">{getValue(expandData.prescription)}</TableCell>
                                         </TableRow>
                                     </Table>
-                                    <LoadingButton
-                                        variant="contained"
-                                        size="small"
-                                        endIcon={<ArticleIcon style={{marginRight: 12}}/>}
-                                        onClick={() => {
-                                            type === 'drug' ?
-                                                getBrochure(expandData.brochure):
-                                                getBrochure(expandData.brochureUrl)
+                                    {showBrochureError ? <p style={{color: 'red'}}>לא קיים עלון לצרכן במאגר משרד הבריאות</p> :
+                                        <LoadingButton
+                                            variant="contained"
+                                            size="small"
+                                            endIcon={<ArticleIcon style={{marginRight: 12}}/>}
+                                            onClick={() => {
+                                                type === 'drug' ?
+                                                    getBrochure(expandData.brochure):
+                                                    getBrochure(expandData.brochureUrl)
 
-                                            ;}}
-                                        loading={brochureLoading}
-                                        loadingPosition="end"
-                                    >
-                                        עלון לצרכן
-                                    </LoadingButton>
+                                                ;}}
+                                            loading={brochureLoading}
+                                            loadingPosition="end"
+                                        >
+                                            עלון לצרכן
+                                        </LoadingButton>
+                                    }
                                 </Typography>
                             </CardContent>
                         </Collapse>
