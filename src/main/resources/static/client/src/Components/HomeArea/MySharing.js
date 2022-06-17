@@ -118,8 +118,7 @@ function MySharing() {
                     <TableCell component="th" scope="row" align="right">
                         {row.hebName}
                     </TableCell>
-                    <TableCell align="right">{row.dosage}{row.unitType==='CAPLET'?<>&nbsp;(mg)</>:<>&nbsp;(ml)</>}</TableCell>
-                    {/*TODO: fix dosage units treatment*/}
+                    <TableCell align="right">{row.dosage}{Utils.dosageUnits(row.unitType)}</TableCell>
                     <TableCell align="right">{calculateTotalAvailable(row)}</TableCell>
                 </TableRow>
                 <TableRow>

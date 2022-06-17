@@ -248,7 +248,7 @@ export default function DetailedCard(props) {
                                             {
                                                 type === 'drug' ?
                                                 getValue(expandData.dosageForm) :
-                                                    expandData.unitType
+                                                    (expandData.unitType === 'null' ? '' : expandData.unitType)
                                             }
                                         </TableCell>
                                     </TableRow>

@@ -44,7 +44,6 @@ function MyMedicine() {
         let data = await getRequest(currentUser.stsTokenManager.accessToken,
             ServerConsts.GET_USER_MEDICINE);
 
-        console.log(data);
         if(data.length>0){
             setItems(data);
             setResultsFound(true);
