@@ -146,6 +146,77 @@ function Login() {
                     </Alert>
                 </Snackbar>
 
+                <Container component="main" maxWidth="xs">
+                    <CssBaseline/>
+                    <Box
+                        sx={{
+                            marginTop: 8,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                            <LockOutlinedIcon/>
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            התחברות
+                        </Typography>
+                        <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="כתובת מייל"
+                                name="email"
+                                autoComplete="email"
+                                autoFocus
+                            />
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="סיסמה"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                            />
+                            <FormControlLabel
+                                control={<Checkbox value="remember" color="primary"/>}
+                                label="זכור אותי"
+                            />
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{mt: 3, mb: 2}}
+                            >
+                                התחבר
+                            </Button>
+                            <Grid container>
+                                <Grid item xs>
+                                    <Link href="#/forgotpass" variant="body2" onClick={() => {
+                                        navigate("/forgotpass");
+                                    }}>
+                                        שכחת סיסמה?
+                                    </Link>
+                                </Grid>
+                                <Grid item>
+                                    <Link href="#/register" variant="body2" onClick={() => {
+                                        navigate("/register");
+                                    }}>
+                                        אינך משתמש רשום? הרשם
+                                    </Link>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Box>
+                </Container>
+            </ThemeProvider>
+        </CacheProvider>
+    );
 
                 <Container component="main" maxWidth="xs">
                     <CssBaseline/>
