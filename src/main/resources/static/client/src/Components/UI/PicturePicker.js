@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {createRef} from 'react';
+import {createRef, useState} from 'react';
 
 import IconButton from '@mui/material/IconButton';
-import {Stack} from "@mui/material";
+import {Alert, Snackbar, Stack} from "@mui/material";
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import TransitionsModal from "../UI/Modal/Modal";
 import Webcam from "react-webcam";
@@ -23,6 +23,9 @@ export default function PicturePicker(props) {
 	const [pointerInCameraTake, setPointerInCameraTake] = React.useState(false);
 	const webcamRef = React.useRef(null);
 
+	const IMAGE_MAX_SIZE = 2000000; // for maximum of 1MB~
+	const [overMaxSizeError, setOverMaxSizeError] = useState(false);
+
 	const videoConstraints = {
 		width: props.widthResultion,
 		height: props.heightResultion,
@@ -40,16 +43,24 @@ export default function PicturePicker(props) {
 
 	const onSelectFile = (event) => {
 		const picture = event.target.files[0];
-
 		if (picture && picture['type'].split('/')[0] === 'image') {
 			getBase64(picture).then(
 				data => {
-					handleNewPicture(data);
+					if(data.length <= IMAGE_MAX_SIZE){
+						handleNewPicture(data);
+					}
+					else{
+						setOverMaxSizeError(true);
+					}
 				}
 			);
 		}
-
 	}
+
+	const handleOverMaxSizeError = () =>{
+		setOverMaxSizeError(false);
+	}
+
 	const handleNewPicture = (picture) => {
 		if (picture) {
 			props.onUpdateProfilePic(picture);
@@ -90,12 +101,27 @@ export default function PicturePicker(props) {
 	const capture = React.useCallback(
 		() => {
 			const imageSrc = webcamRef.current.getScreenshot();
-			handleNewPicture(imageSrc);
+			if(imageSrc !== null && imageSrc.length <= IMAGE_MAX_SIZE){
+				handleNewPicture(imageSrc);
+			}
+			else{
+				setOverMaxSizeError(true);
+			}
 		},
 		[webcamRef]
 	);
 	return (
 		<>
+			<Snackbar open={overMaxSizeError}
+					  autoHideDuration={2000}
+					  onClose={handleOverMaxSizeError}
+					  anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+			>
+				<Alert severity="error">
+					גודל התמונה שנבחרה גדול מהמותר. אנא בחר/י תמונה עד לגודל של 2MB.
+				</Alert>
+			</Snackbar>
+
 			<TransitionsModal open={cameraOpen} toggleModal={toggleCamerOpen}>
 				<Stack style={{width: "fit-content"}}>
 					<Webcam
