@@ -57,10 +57,6 @@ export default function PicturePicker(props) {
 		}
 	}
 
-	const handleOverMaxSizeError = () =>{
-		setOverMaxSizeError(false);
-	}
-
 	const handleNewPicture = (picture) => {
 		if (picture) {
 			props.onUpdateProfilePic(picture);
