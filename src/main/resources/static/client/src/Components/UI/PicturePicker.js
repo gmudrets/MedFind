@@ -114,7 +114,7 @@ export default function PicturePicker(props) {
 		<>
 			<Snackbar open={overMaxSizeError}
 					  autoHideDuration={2000}
-					  onClose={handleOverMaxSizeError}
+					  onClose={() => setOverMaxSizeError(false);}
 					  anchorOrigin={{vertical: 'top', horizontal: 'center'}}
 			>
 				<Alert severity="error">
