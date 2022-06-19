@@ -36,6 +36,8 @@ import createCache from "@emotion/cache";
 import {CacheProvider} from "@emotion/react";
 import {now} from "moment";
 import { format } from 'date-fns';
+import UpcomingAlerts from "./UpcomingAlerts";
+import SystemMessages from "./SystemMessages";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -217,7 +219,7 @@ function Home() {
   const handleDosageAmount = (newAmount) => {
       setDosageAmount(newAmount.target.value);
   }
-  
+
   const handleAdd = async () => {
       setLoading(true);
       let data = await getRequest(
@@ -455,7 +457,12 @@ function Home() {
                     </Box>
                 )}
                 </>
-            ) : (<p align="center"> אין מידע להצגה </p>) }
+            ) : (
+                <>
+                    <UpcomingAlerts/>
+                    <SystemMessages/>
+                </>
+            )}
         </ThemeProvider>
   );
 }

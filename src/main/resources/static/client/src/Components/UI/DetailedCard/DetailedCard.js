@@ -168,7 +168,7 @@ export default function DetailedCard(props) {
                     image={image}
                     alt="N/A"
                 />
-                <CardContent sx={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between" }}>
+                <CardContent>
                     <Typography variant="body2" color="text.secondary">
                         {getValue(body)}
                     </Typography>
