@@ -71,7 +71,7 @@ function Header() {
             <MenuIcon />
           </IconButton>}
           <Typography component="div" sx={{ flexGrow: 1 }}>
-            <img src={logo} className="Logo" alt="logo" style={{ maxWidth: '115px' }} />
+            <a href="/"><img src={logo} className="Logo" alt="logo" style={{ maxWidth: '115px' }} /></a>
           </Typography>
           {auth && (
             <div>
