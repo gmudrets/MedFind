@@ -23,7 +23,7 @@ export default function PicturePicker(props) {
 	const [pointerInCameraTake, setPointerInCameraTake] = React.useState(false);
 	const webcamRef = React.useRef(null);
 
-	const IMAGE_MAX_SIZE = 2000000; // for maximum of 1MB~
+	const IMAGE_MAX_SIZE = 2000000;
 	const [overMaxSizeError, setOverMaxSizeError] = useState(false);
 
 	const videoConstraints = {
