@@ -225,6 +225,7 @@ function Home() {
           ServerConsts.GET_BROCHURE,
           { "drugRegNum" : dialogItem.dragRegNum});
       let brochureUrl = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+      let docBrochureUrl = data["doctorBrochure"] ? External.EXTERNAL_FILES_URL + data["doctorBrochure"] : null;
       let formattedDate = format(new Date(expirationDate.getFullYear(), expirationDate.getMonth(), expirationDate.getDate()), 'dd/MM/yyyy HH:mm:ss');
       try {
           await getRequest(currentUser.stsTokenManager.accessToken,
@@ -238,6 +239,7 @@ function Home() {
                   treatment: dialogItem.secondarySymptom ? dialogItem.secondarySymptom : "N/A",
                   imageUrl: dialogItem.images,
                   brochureUrl: brochureUrl,
+                  docBrochureUrl: docBrochureUrl,
                   expiration: formattedDate,
                   units: dialogItem.dosageForm,
                   count: unitsAmount,

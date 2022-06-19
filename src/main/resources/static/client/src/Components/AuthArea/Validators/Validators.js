@@ -95,7 +95,6 @@ export const phoneNumFullValidate = (phoneNum, sendError, short = false) => {
 	return true;
 }
 export const cityFullValidate = (city, sendError, short = false) => {
-	console.log(isFieldContainsOnlyLetters(city));
 	if (isFieldEmpty(city)){//city is optional, allow to not exist
 		return true;
 	}
