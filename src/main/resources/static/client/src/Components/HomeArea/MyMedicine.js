@@ -11,6 +11,8 @@ import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
 import AlertDialog from "../UI/Dialog";
 import {Alert, Snackbar} from "@mui/material";
+import RemindersCreateForm from "../RemindersArea/RemindersCreateForm";
+import TransitionsModal from "../UI/Modal/Modal";
 
 function MyMedicine() {
     const navigate = useNavigate();
@@ -22,6 +24,7 @@ function MyMedicine() {
     const [ resultsFound, setResultsFound ] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openShareDialog, setOpenShareDialog] = React.useState(false);
+    const [openReminderDialog, setOpenReminderDialog] = React.useState(false);
     const [dialogItem, setDialogItem] = React.useState({});
     const [showShareMessage, setShowShareMessage] = useState(false);
     const [showDeleteMessage, setShowDeleteMessage] = useState(false);
@@ -70,20 +73,21 @@ function MyMedicine() {
         setShowDeleteMessage(true);
     };
 
-    const handleAlertClick = async (id) => {
-        //TODO: implement
-
-        // await getRequest(currentUser.stsTokenManager.accessToken,
-        //     ServerConsts.UPDATE_MEDICINE_SHARING, {
-        //         id: id,
-        //         shared: true
-        //     });
-        // setShowShareMessage(true);
-
-        console.log("Alert!");
+    const handleAlertClick = () => {
+        setOpenReminderDialog(true);
     };
 
-    //TODO: when clicking share check that the user has a city and phone number, if not present an error meggase dialog and suggest to go to settings to update the details.
+    const toggleReminderDialog = () => {
+        setOpenReminderDialog(!openReminderDialog);
+
+    }
+
+    const handleAlertSubmit = () => {
+        console.log("Submitting alert!");
+        toggleReminderDialog();
+    }
+
+    //TODO: when clicking share check that the user has a city and phone number, if not present an error message dialog and suggest to go to settings to update the details.
     return (
         <>
             <CircularProgressBackdrop open={loading} toggle={setLoading}/>
@@ -140,34 +144,39 @@ function MyMedicine() {
                                  }}
                     />
                     {items.map((item,index) => (
-                        <Box
-                            key={index}
-                            marginTop='65px'
-                            marginBottom='45px'
-                            display='flex'
-                            flexDirection='column'
-                            justifyContent="center"
-                            alignItems='center'
-                        >
-                            <DetailedCard data={item}
-                                          type='myDrug'
-                                          title={item.hebName}
-                                          subheader={item.engName}
-                                          image={item.imageUrl}
-                                          body={item.treatment}
-                                          expandData={item}
-                                          prescription={item.prescription}
-                                          handleDeleteClick={() => {
-                                              setDialogItem(item);
-                                              setOpenDeleteDialog(true);
-                                          }}
-                                          handleShareClick={() => {
-                                              setDialogItem(item);
-                                              setOpenShareDialog(true);
-                                          }}
-                                          handleAlertClick={handleAlertClick}
-                            />
-                        </Box>
+                        <>
+                            <TransitionsModal open={openReminderDialog} toggleModal={toggleReminderDialog}>
+                                <RemindersCreateForm handleSubmit={handleAlertSubmit} medicineList={[item]} medicine={0}/>
+                            </TransitionsModal>
+                            <Box
+                                key={index}
+                                marginTop='65px'
+                                marginBottom='45px'
+                                display='flex'
+                                flexDirection='column'
+                                justifyContent="center"
+                                alignItems='center'
+                            >
+                                <DetailedCard data={item}
+                                              type='myDrug'
+                                              title={item.hebName}
+                                              subheader={item.engName}
+                                              image={item.imageUrl}
+                                              body={item.treatment}
+                                              expandData={item}
+                                              prescription={item.prescription}
+                                              handleDeleteClick={() => {
+                                                  setDialogItem(item);
+                                                  setOpenDeleteDialog(true);
+                                              }}
+                                              handleShareClick={() => {
+                                                  setDialogItem(item);
+                                                  setOpenShareDialog(true);
+                                              }}
+                                              handleAlertClick={handleAlertClick}
+                                />
+                            </Box>
+                        </>
                     ))}
                 </>
             )}
