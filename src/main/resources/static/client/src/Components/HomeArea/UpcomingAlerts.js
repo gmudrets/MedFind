@@ -2,17 +2,17 @@ import React, {useEffect, useState} from "react";
 import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import {getRequest} from "../../Utils/AxiosRequests";
+import {getAuth} from "firebase/auth";
+import {ServerConsts} from "../../Consts/apiPaths";
 
 function UpcomingAlerts() {
 
     const [ alerts, setAlerts ] = useState([]);
 
-    let cards = []
-    cards.push({"title":"אקמול", "subheader":"פעמיים ביום למשך 5 ימים", "body":"נטילה קרובה: היום בשעה 16:00"});
-    cards.push({"title":"מוקסיפן", "subheader":"שלוש פעמים ביום למשך 7 ימים", "body":"נטילה קרובה: היום בשעה 19:00"});
-
-    useEffect(() => {
-        setAlerts(cards)
+    useEffect(async () => {
+        let alertsList = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
+        setAlerts(alertsList);
     }, []);
 
     return (
@@ -34,7 +34,7 @@ function UpcomingAlerts() {
                 </Box>
             ))) : (
                 <Typography variant="subtitle1" component="h2" align='center'>
-                    אין התראות
+                     אין התראות להצגה
                 </Typography>
             )}
         </>
