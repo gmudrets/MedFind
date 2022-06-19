@@ -33,6 +33,7 @@ public class MedicineStock {
                                      @RequestParam String hebName,
                                      @RequestParam String engName,
                                      @RequestParam String activeComponents,
+                                     @RequestParam String docBrochureUrl,
                                      @RequestParam boolean healthBasket,
                                      @RequestParam boolean prescription,
                                      @RequestParam String treatment,
@@ -57,6 +58,7 @@ public class MedicineStock {
                 .engName(engName)
                 .hebName(hebName)
                 .activeComponents(activeComponents)
+                .docBrochureUrl(docBrochureUrl)
                 .healthBasket(healthBasket)
                 .prescription(prescription)
                 .treatment(treatment)
