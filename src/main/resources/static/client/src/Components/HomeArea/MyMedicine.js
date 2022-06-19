@@ -17,6 +17,7 @@ import TransitionsModal from "../UI/Modal/Modal";
 function MyMedicine() {
     const navigate = useNavigate();
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
+    const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
 
     const [ loading, setLoading ] = useState(false);
     const [ items, setItems ] = useState([]);
@@ -24,6 +25,7 @@ function MyMedicine() {
     const [ resultsFound, setResultsFound ] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openShareDialog, setOpenShareDialog] = React.useState(false);
+    const [openContactDetailsMissingDialog, setOpenContactDetailsMissingDialog] = React.useState(false);
     const [openReminderDialog, setOpenReminderDialog] = React.useState(false);
     const [dialogItem, setDialogItem] = React.useState({});
     const [showShareMessage, setShowShareMessage] = useState(false);
@@ -56,13 +58,17 @@ function MyMedicine() {
     }
 
     const handleShareClick = async (item) => {
-        await getRequest(currentUser.stsTokenManager.accessToken,
-            ServerConsts.UPDATE_MEDICINE_SHARING, {
-                id: item.id,
-                shared: !item.shared
-            });
-        setShowShareMessage(true);
-
+        if (profile.city && (profile.telephone || profile.email)){
+            await getRequest(currentUser.stsTokenManager.accessToken,
+                ServerConsts.UPDATE_MEDICINE_SHARING, {
+                    id: item.id,
+                    shared: !item.shared
+                });
+            setShowShareMessage(true);
+        }
+        else {
+            setOpenContactDetailsMissingDialog(true);
+        }
     };
 
     const handleDeleteClick = async (id) => {
@@ -87,7 +93,6 @@ function MyMedicine() {
         toggleReminderDialog();
     }
 
-    //TODO: when clicking share check that the user has a city and phone number, if not present an error message dialog and suggest to go to settings to update the details.
     return (
         <>
             <CircularProgressBackdrop open={loading} toggle={setLoading}/>
@@ -141,6 +146,16 @@ function MyMedicine() {
                                  declineButtonText="חזור"
                                  onAccept={() => {
                                      handleShareClick(dialogItem)
+                                 }}
+                    />
+                    <AlertDialog open={openContactDetailsMissingDialog}
+                                 setOpen={setOpenContactDetailsMissingDialog}
+                                 title={"חסרים פרטי יצירת קשר"}
+                                 textContent={"אחד או יותר מפרטי יצירת קשר חסרים. על מנת שתוכל\\י לשתף את התרופה עליך להגדיר פרטי יצירת קשר במסך הגדרות החשבון"}
+                                 acceptButtonText="למעבר להגדרות החשבון"
+                                 declineButtonText="ביטול"
+                                 onAccept={() => {
+                                     navigate("/settings");
                                  }}
                     />
                     {items.map((item,index) => (
