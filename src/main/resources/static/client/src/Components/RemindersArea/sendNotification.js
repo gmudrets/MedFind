@@ -15,11 +15,11 @@ export function sendNotification(header, content, uid) {
     };
 
     var data = `{"app_id": "577a3ade-c29c-434b-8c12-ee8749ed6dfb",
-    "contents": {"en":` + content + `},
-    "headings": {"en": ` + header + ` },
+    "contents": {"en":"` + content + `"},
+    "headings": {"en": "` + header + `" },
     "channel_for_external_user_ids": "push",
      "include_external_user_ids": ["` + uid + `"]}`;
-
+    console.log(data);
     xhr.send(data);
 
 }
