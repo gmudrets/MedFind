@@ -36,6 +36,8 @@ import createCache from "@emotion/cache";
 import {CacheProvider} from "@emotion/react";
 import {now} from "moment";
 import { format } from 'date-fns';
+import UpcomingAlerts from "./UpcomingAlerts";
+import SystemMessages from "./SystemMessages";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
@@ -217,7 +219,7 @@ function Home() {
   const handleDosageAmount = (newAmount) => {
       setDosageAmount(newAmount.target.value);
   }
-  
+
   const handleAdd = async () => {
       setLoading(true);
       let data = await getRequest(
@@ -225,6 +227,7 @@ function Home() {
           ServerConsts.GET_BROCHURE,
           { "drugRegNum" : dialogItem.dragRegNum});
       let brochureUrl = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+      let docBrochureUrl = data["doctorBrochure"] ? External.EXTERNAL_FILES_URL + data["doctorBrochure"] : null;
       let formattedDate = format(new Date(expirationDate.getFullYear(), expirationDate.getMonth(), expirationDate.getDate()), 'dd/MM/yyyy HH:mm:ss');
       try {
           await getRequest(currentUser.stsTokenManager.accessToken,
@@ -238,6 +241,7 @@ function Home() {
                   treatment: dialogItem.secondarySymptom ? dialogItem.secondarySymptom : "N/A",
                   imageUrl: dialogItem.images,
                   brochureUrl: brochureUrl,
+                  docBrochureUrl: docBrochureUrl,
                   expiration: formattedDate,
                   units: dialogItem.dosageForm,
                   count: unitsAmount,
@@ -453,7 +457,12 @@ function Home() {
                     </Box>
                 )}
                 </>
-            ) : (<p align="center"> אין מידע להצגה </p>) }
+            ) : (
+                <>
+                    <UpcomingAlerts/>
+                    <SystemMessages/>
+                </>
+            )}
         </ThemeProvider>
   );
 }

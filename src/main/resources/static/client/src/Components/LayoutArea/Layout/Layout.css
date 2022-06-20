@@ -17,6 +17,7 @@
 }
 
 .Layout > main {
+	margin-top: 55px;
 	padding: 10px;
 	background: #E7EBF0;
 	color: rgba(0, 0, 0, 0.87);

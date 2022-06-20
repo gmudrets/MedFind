@@ -31,6 +31,9 @@ import * as Utils from "../../../Utils/Utils";
 import Paper from "@mui/material/Paper";
 import CssBaseline from "@mui/material/CssBaseline";
 import {red} from "@mui/material/colors";
+import {useSelector} from "react-redux";
+import {getSafe} from "../../../Utils/Utils";
+import * as STATE_PATHS from "../../../Consts/StatePaths";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -74,9 +77,15 @@ export default function DetailedCard(props) {
             secondary: red,
         },});
 
+    const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
     const [ expanded, setExpanded ] = useState(false);
     const [ brochureLoading, setBrochureLoading ] = useState(false);
+    const [ docBrochureLoading, setDocBrochureLoading ] = useState(false);
     const [ showBrochureError, setShowBrochureError ] = useState(false);
+    const [ showDocBrochureError, setShowDocBrochureError ] = useState(false);
+    const DOCTOR = 'רופא';
+    const MEDICAL_STAFF = 'צוות רפואי';
+    const isMedStaff = profile.userType===DOCTOR || profile.userType===MEDICAL_STAFF;
 
     const nameMapping = {
         "activeComponents" : "חומרים פעילים",
@@ -110,8 +119,8 @@ export default function DetailedCard(props) {
         return data;
     }
 
-    const getBrochure = async (payload) => {
-        setBrochureLoading(true);
+    const getBrochure = async (payload, doctor) => {
+        doctor ? setDocBrochureLoading(true) : setBrochureLoading(true);
         let url;
         let data = null;
         let download;
@@ -120,8 +129,14 @@ export default function DetailedCard(props) {
                 await auth.currentUser.getIdToken(true),
                 ServerConsts.GET_BROCHURE,
                 { "drugRegNum" : payload});
-            url = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
-            download = data["consumerBrochure"] ? data["consumerBrochure"] : null;
+            if (!doctor) {
+                url = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+                download = data["consumerBrochure"] ? data["consumerBrochure"] : null;
+            }
+            else {
+                url = data["doctorBrochure"] ? External.EXTERNAL_FILES_URL + data["doctorBrochure"] : null;
+                download = data["doctorBrochure"] ? data["doctorBrochure"] : null;
+            }
         }
         else {
             url = payload;
@@ -131,12 +146,13 @@ export default function DetailedCard(props) {
             const link = document.createElement("a");
             link.download = download;
             link.href = url;
+            link.target="_blank";
             link.click();
         }
         else{
-            setShowBrochureError(true);
+            doctor ? setShowDocBrochureError(true) : setShowBrochureError(true);
         }
-        setBrochureLoading(false);
+        doctor ? setDocBrochureLoading(false) : setBrochureLoading(false);
     }
 
     return (
@@ -152,7 +168,7 @@ export default function DetailedCard(props) {
                     image={image}
                     alt="N/A"
                 />
-                <CardContent sx={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between" }}>
+                <CardContent>
                     <Typography variant="body2" color="text.secondary">
                         {getValue(body)}
                     </Typography>
@@ -274,9 +290,8 @@ export default function DetailedCard(props) {
                                         endIcon={<ArticleIcon style={{marginRight: 12}}/>}
                                         onClick={() => {
                                             type === 'drug' ?
-                                                getBrochure(expandData.brochure):
-                                                getBrochure(expandData.brochureUrl)
-
+                                                getBrochure(expandData.brochure, false):
+                                                getBrochure(expandData.brochureUrl, false)
                                             ;}}
                                         loading={brochureLoading}
                                         loadingPosition="end"
@@ -284,6 +299,23 @@ export default function DetailedCard(props) {
                                         עלון לצרכן
                                     </LoadingButton>
                                 }
+                                {isMedStaff && (showDocBrochureError ? (<p style={{color: 'red'}}>לא קיים עלון לרופא במאגר משרד הבריאות</p>) :
+                                    <LoadingButton
+                                        style={{marginRight: 12}}
+                                        variant="contained"
+                                        size="small"
+                                        endIcon={<ArticleIcon style={{marginRight: 12}}/>}
+                                        onClick={() => {
+                                            type === 'drug' ?
+                                                getBrochure(expandData.brochure, true):
+                                                getBrochure(expandData.docBrochureUrl, true)
+                                            ;}}
+                                        loading={docBrochureLoading}
+                                        loadingPosition="end"
+                                    >
+                                        עלון לרופא
+                                    </LoadingButton>
+                                )}
                             </Typography>
                         </CardContent>
                     </Collapse>
