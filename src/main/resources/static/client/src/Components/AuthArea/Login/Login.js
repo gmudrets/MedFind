@@ -91,7 +91,7 @@ function Login() {
                     }).then(() => {
                         setInitialized(true);
                         console.log('worked');
-                        OneSignal.showSlidedownPrompt().then(() => {
+                        const slidown =  OneSignal.showSlidedownPrompt().then(() => {
                             console.log('worked2')
                         });
                         OneSignal.setExternalUserId(userCredential.user.uid);
