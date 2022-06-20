@@ -10,6 +10,7 @@ import logo from '../../../Assets/Images/logo.png'
 import { getSafe } from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
 import {Actions} from "../../../Redux/UI";
+import ReadSocket from "./ReadSocket";
 import {USER_PROFILE} from "../../../Consts/StatePaths";
 import * as ProfileFields from "../../../Consts/ProfileFields";
 
@@ -48,10 +49,20 @@ function Header() {
       dispatch(Actions.closeMenu())
     }
   };
+  const readSocket = (data) => {
+    console.log(data.body);
+    if (data !== []) {
+      console.log(data.body);
 
+    }
+  }
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" color="grey">
+      {auth &&
+          <ReadSocket  readSocket={readSocket}/>
+      }
+      <AppBar position="static" color="grey">
         <Toolbar>
           {auth && <IconButton
             size="large"
