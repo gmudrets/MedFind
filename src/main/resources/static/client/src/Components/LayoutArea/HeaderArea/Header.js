@@ -6,13 +6,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
 import logo from '../../../Assets/Images/logo.png'
 import { getSafe } from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
 import {Actions} from "../../../Redux/UI";
+import {USER_PROFILE} from "../../../Consts/StatePaths";
+import * as ProfileFields from "../../../Consts/ProfileFields";
 
 
 function Header() {
@@ -22,7 +21,10 @@ function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
   const isMenuOpen = useSelector((state) => getSafe(STATE_PATHS.SIDE_MENU_OPEN, state));
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
+  const profile = useSelector((state) => getSafe(USER_PROFILE, state));
+  const fullName = profile[ProfileFields.FIRST_NAME] + " " + profile[ProfileFields.LAST_NAME];
+  const profilePicture = profile[ProfileFields.PROFILE_PICTURE];
 
   useEffect(() => {
     if (currentUser === ''){
@@ -33,15 +35,6 @@ function Header() {
     }
   
   }, [currentUser])
-
-  const handleUserMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorEl(null);
-    // navigate("/logout");
-  };
 
   const toggleMenu = () => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -70,43 +63,27 @@ function Header() {
           >
             <MenuIcon />
           </IconButton>}
+
           <Typography component="div" sx={{ flexGrow: 1 }}>
             <a href="/"><img src={logo} className="Logo" alt="logo" style={{ maxWidth: '115px' }} /></a>
           </Typography>
+
           {auth && (
-            <div>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleUserMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-              </Menu>
-            </div>
+          <Typography align={"center"} variant="subtitle2">
+            שלום, {fullName}
+            &nbsp;
+          </Typography>)}
+
+          {auth && (
+              <a href="/#/settings"><img alt="profilePicture" src={profilePicture}
+                                         style={{
+                                           borderRadius: "50%",
+                                           maxWidth : "50px",
+                                           maxHeight : "75px",
+                                           minWidth : "30px",
+                                           minHeight : "45px",
+                                           objectFit : "cover"
+                                         }}/></a>
           )}
         </Toolbar>
       </AppBar>
