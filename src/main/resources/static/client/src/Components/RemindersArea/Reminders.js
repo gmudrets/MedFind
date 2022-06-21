@@ -52,6 +52,7 @@ export default function Reminders() {
     const theme = createTheme({direction: 'rtl'});
     const navigate = useNavigate();
     const [RemindersList, setRemindersList] = React.useState(null);
+    const [RemindersFilterdList, setRemindersFilterdList] = React.useState(null);
     const [medicineList, setMedicineList] = React.useState(null);
     const [deletedID, setDeletedID] = React.useState(null);
     const [loadingNew, setLoadingNew] = React.useState(false);
@@ -65,8 +66,16 @@ export default function Reminders() {
 
     }, [currentUser]);
     useEffect(() => {
-        console.log(RemindersList);
+        if (RemindersList !== null) {
+            console.log(RemindersList);
+            setRemindersFilterdList(filterList(RemindersList));
+        }
     }, [RemindersList]);
+    useEffect(() => {
+        if (RemindersFilterdList !== null) {
+            console.log(RemindersFilterdList);
+        }
+    }, [RemindersFilterdList]);
     // useEffect(() => {
     //     console.log(medicineList);
     // }, [medicineList]);
@@ -171,7 +180,7 @@ export default function Reminders() {
     }
     const dateToString = (date, d = date.getDate(), m = date.getMonth(), y = date.getFullYear(), h = date.getHours(), min = date.getMinutes()) => {
         const days = Math.floor(d / 10) === 0 ? '0' + d : d;
-        const months = Math.floor((m+1) / 10) === 0 ? '0' + (m+1) : (m+1);
+        const months = Math.floor((m + 1) / 10) === 0 ? '0' + (m + 1) : (m + 1);
         const years = y;//assuming all after 10000
         const hours = Math.floor(h / 10) === 0 ? '0' + h : h;
         const minutes = Math.floor(min / 10) === 0 ? '0' + min : min;
@@ -216,7 +225,7 @@ export default function Reminders() {
             const date = new Date(data[IN_WHICH_DATE]);
             console.log(date);
             console.log(data[IN_WHICH_DATE]);
-            dates.push(dateToString(new Date(data[TIMES_ARRAY][0]),date.getDate(),date.getMonth(), date.getFullYear()));
+            dates.push(dateToString(new Date(data[TIMES_ARRAY][0]), date.getDate(), date.getMonth(), date.getFullYear()));
         } else {
             for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
                 let curDate = new Date(data[TIMES_ARRAY][i]);
@@ -259,7 +268,16 @@ export default function Reminders() {
         console.log(requastParams);
         const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
     }
-
+    const filterList = (remindersList) => {
+        const filtList = [];
+        for (let i = 0; i < remindersList.length - 1; i++) {
+            if (remindersList[i]['alertUuid'] !== remindersList[i + 1]['alertUuid']) {
+                filtList.push(remindersList[i]);
+            }
+        }
+        filtList.push(remindersList[remindersList.length - 1]);
+        return filtList;
+    }
     const createPropsFromItem = (data) => {
         let result = {};
 
