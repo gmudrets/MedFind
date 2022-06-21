@@ -1,7 +1,6 @@
 package openu.MedFind.restservice;
 
 import com.google.firebase.auth.FirebaseAuthException;
-import openu.MedFind.dto.ActiveAlertsResponse;
 import openu.MedFind.dto.AlertEntry;
 import openu.MedFind.dto.AlertType;
 import openu.MedFind.exceptions.TokenException;
@@ -11,13 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 // To allow access to nodejs local instance for development purposes
 @CrossOrigin(origins = "https://localhost:3000")
@@ -45,6 +40,7 @@ public class MedicineAlerts {
     @GetMapping("/api/AddFixedAlert")
     public void AddFixedAlert(@RequestHeader(name = "idToken") String idToken,
                               @RequestParam String alertName,
+                              @RequestParam String alertDescription,
                               @RequestParam String regNum,
                               @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy-HH:mm") LocalDateTime alertExpiration,
                               @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy-HH:mm") List<LocalDateTime> fixedDateList) throws TokenException {
@@ -63,6 +59,7 @@ public class MedicineAlerts {
             alertEntryRepository.save(AlertEntry.builder()
                     .userUuid(uuid)
                     .alertName(alertName)
+                    .alertDescription(alertDescription)
                     .regNum(regNum)
                     .alertUuid(alertUuid)
                     .alertExpiration(alertExpiration)
@@ -77,6 +74,7 @@ public class MedicineAlerts {
     @GetMapping("/api/AddScheduleAlert")
     public void AddScheduleAlert(@RequestHeader(name = "idToken") String idToken,
                                  @RequestParam String alertName,
+                                 @RequestParam String alertDescription,
                                  @RequestParam String regNum,
                                  @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy-HH:mm") LocalDateTime alertExpiration,
                                  @RequestParam List<Integer> days,
@@ -112,6 +110,7 @@ public class MedicineAlerts {
             alertEntryRepository.save(AlertEntry.builder()
                     .userUuid(uuid)
                     .alertName(alertName)
+                    .alertDescription(alertDescription)
                     .regNum(regNum)
                     .alertUuid(alertUuid)
                     .alertExpiration(alertExpiration)
@@ -135,6 +134,17 @@ public class MedicineAlerts {
         }
 
         alertEntryRepository.deleteById(id);
+    }
+
+    @GetMapping("/api/DeleteAlertByUuid")
+    public void DeleteAlertByUuid(@RequestHeader(name = "idToken") String idToken,
+                                @RequestParam UUID uuid) throws TokenException {
+
+        if(!FirebaseValidator.isIdTokenValid(idToken)) {
+            throw new TokenException("User not found.");
+        }
+
+        alertEntryRepository.deleteByAlertUuid(uuid);
     }
 
 
