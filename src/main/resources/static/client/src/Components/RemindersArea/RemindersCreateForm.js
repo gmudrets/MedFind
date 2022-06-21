@@ -43,6 +43,7 @@ export const UNTIL_DATE = 'untilDate';
 export const UNTIL_TYPE = 'untilType';
 export const REMINDERS_NUM = 'reminderNum';
 export const EACH_MANY_DAYS = 'eachManyDAys';
+export const IN_WHICH_DATE = "inDate";
 
 
 export const returnsTypeOptions = {
@@ -90,6 +91,7 @@ function RemindersCreateForm(props) {
     const maxTimes = 15;
     const ltrTheme = createTheme({direction: 'ltr'});
     const defualtMedicne = "בחר תרופה";
+    const defualtErrorMessege = "חלק מהפרטים שגויים, נסה שוב";
     const [hasErrorOnSomeField, set] = React.useState(false);
     const [stopStream, setStopStream] = useState(false);
     const [timesArray, setTimesArray] = useState(props.timesArray);
@@ -103,13 +105,16 @@ function RemindersCreateForm(props) {
     const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
     const [untilType, setUntilType] = React.useState(props.untilType);
     const [remindersRemain, setRemindersRemain] = React.useState(2);//later if possible
-    const [errorMessege, setErrorMessege] = React.useState(false);
+    const [errorMessegeOpen, setErrorMessegeOpen] = React.useState(false);
     const [newFrom, setNewFrom] = React.useState(1);
     const [untilDate, setUntilDate] = React.useState(props.untilDate);
     const [medicineFullList, setMedicineFullList] = React.useState(props.medicineList);
     const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
     const [medicine, setMedicine] = React.useState("טוען תרופות...");
     const [weekDaysError, setWeekDaysError] = React.useState(false);
+    const [inDate, setInDate] = React.useState(props.inDate);
+    const [errorMessege, setErrorMessege] = React.useState(defualtErrorMessege);
+
 
     useEffect(async () => {
         if (medicineFullList != []) {
@@ -120,7 +125,7 @@ function RemindersCreateForm(props) {
             setMedicine(medicenes[props.medicine + 1]);
             setMedicineList(medicenes);
             if (props.medicine + 1 !== 0) {
-                handleMedicineChange2(medicenes[props.medicine + 1],medicenes);
+                handleMedicineChange2(medicenes[props.medicine + 1], medicenes);
             }
             setMedicineList([...new Set(medicenes)]);
 
@@ -137,7 +142,8 @@ function RemindersCreateForm(props) {
     const handleMedicineChange = (event) => {
         handleMedicineChange2(event.target.value);
     }
-    const handleMedicineChange2 = (value,medLis = medicineList) => {
+
+    const handleMedicineChange2 = (value, medLis = medicineList) => {
         console.log(medLis);
         console.log(medLis[0]);
         if (medLis[0] === defualtMedicne) {
@@ -158,6 +164,9 @@ function RemindersCreateForm(props) {
             },
         },
     };
+    const handleInDateChange = (date) => {
+        setInDate(date);
+    }
     const handleUntilDateChange = (date) => {
         setUntilDate(date);
     }
@@ -205,11 +214,20 @@ function RemindersCreateForm(props) {
         if ((new Date(time) == "Invalid Date") || isNaN(new Date(time)) || Date.parse(new Date(time)) === 0) {
             return false;
         }
+        console.log(new Date(inDate).getDate);
+        console.log(new Date().getDay);
+        if (returnsType === returnsTypeOptions.NOT_RETURN && (new Date(inDate)).getDate() === new Date().getDate() && new Date(inDate).getMonth() === new Date().getMonth()) {
 
+            if (new Date(time).getTime() < new Date().getTime()) {
+                setErrorMessege("תזמנת התראה לעבר, שנה נסה שוב")
+                return false;
+            }
+        }
         for (let i = 0; i < timesArray.length; i++) {
             if (index != i) {
                 if (new Date(time).getHours() == new Date(timesArray[i]).getHours() && new Date(time).getMinutes() == new Date(timesArray[i]).getMinutes()) {
                     if (index > i) {
+                        setErrorMessege("יצרת שתי התראות באותו זמן, שנה ונסה שוב")
                         return false;
                     }
                 }
@@ -256,7 +274,8 @@ function RemindersCreateForm(props) {
         }
     }
     const closeError = () => {
-        setErrorMessege(false);
+        setErrorMessegeOpen(false);
+        setErrorMessege(defualtErrorMessege);
     }
     const myHandleSubmit = (event) => {
         event.preventDefault();
@@ -264,17 +283,17 @@ function RemindersCreateForm(props) {
         setNewFrom(timesArray.length);
         for (let i = 0; i < timesArray.length; i++) {
             if (timesArray[i] == null || showError(timesArray[i], i, true, timesArray.length)) {
-                setErrorMessege(true);
+                setErrorMessegeOpen(true);
                 return false;
             }
         }
         if (showMedicineError(true)) {
-            setErrorMessege(true);
+            setErrorMessegeOpen(true);
             return false;
         }
         if (returnsType === returnsTypeOptions.EACH_WEEK || returnsType === returnsTypeOptions.EACH_FEW_WEEKS) {
             if (weekDaysSelected == "") {
-                setErrorMessege(true);
+                setErrorMessegeOpen(true);
                 setWeekDaysError(true);
                 return false;
             }
@@ -297,13 +316,13 @@ function RemindersCreateForm(props) {
 
     return (
         <>
-            <Snackbar open={errorMessege}
+            <Snackbar open={errorMessegeOpen}
                       autoHideDuration={1500}
                       onClose={closeError}
                       anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             >
                 <Alert severity="error">
-                    חלק מהפרטים שגויים, נסה שוב
+                    {errorMessege}
                 </Alert>
             </Snackbar>
             <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
@@ -390,11 +409,32 @@ function RemindersCreateForm(props) {
                                         </LocalizationProvider>
                                     </Grid>)
                                 }
+                                {returnsType == returnsTypeOptions.NOT_RETURN &&
+                                    <Grid item xs={12}>
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                            <ThemeProvider theme={ltrTheme}>
+                                                <DatePicker
+                                                    label="בחר תאריך"
+                                                    id={IN_WHICH_DATE}
+                                                    name={IN_WHICH_DATE}
+                                                    value={inDate}
+                                                    onChange={handleInDateChange}
+                                                    views={["year", "month", "day"]}
+                                                    filel
+                                                    inputFormat="dd/MM/yyyy"
+                                                    minDate={new Date()}
+                                                    renderInput={(params) => <TextField {...params}
+                                                    />}
 
+                                                />
+                                            </ThemeProvider>
+                                        </LocalizationProvider>
+                                    </Grid>}
                                 <Grid item xs={12}>
                                     <IconButton onClick={handleAddTimeClick}
                                                 disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
                                 </Grid>
+
                                 <Grid item xs={12}><Divider/></Grid>
                                 <Grid item xs={8}>
                                     <TextField
@@ -571,7 +611,8 @@ RemindersCreateForm.defaultProps = {
         return true;
     },
     medicineList: [],
-    medicine: -1
+    medicine: -1,
+    inDate: new Date()
 
 
 }
