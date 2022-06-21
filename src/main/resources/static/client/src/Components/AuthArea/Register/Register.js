@@ -26,7 +26,7 @@ import {CacheProvider} from "@emotion/react";
 import {getRequest} from "../../../Utils/AxiosRequests";
 import {ServerConsts} from "../../../Consts/apiPaths";
 import {auth, db} from "../../../Configs/FirebaseConfig";
-import {createUserWithEmailAndPassword, signOut} from "firebase/auth";
+import {createUserWithEmailAndPassword, signOut, sendEmailVerification} from "firebase/auth";
 import {collection, doc, setDoc} from "firebase/firestore";
 import * as ProfileFields from '../../../Consts/ProfileFields.js'
 import PicturePicker from "../../UI/PicturePicker";
@@ -123,9 +123,11 @@ function Register() {
                 "certificateImage" : certificateImage});
           }
 
+          await sendEmailVerification(userCredential.user);
+
           setRegisterSuccessMessage(true);
 
-          signOut(auth).then();
+          await signOut(auth).then();
 
         }).catch(error =>{
           if(error.code === 'auth/email-already-in-use'){
@@ -252,6 +254,8 @@ function Register() {
                                         autoFocus
                                         value={userType}
                                         onChange={handleSelectUserType}
+                                        helperText={userType !== types.REGULAR_USER ?
+                                            "חשוב לדעת - סוג משתמש שאינו רגיל יכנס לתוקף רק לאחר אישור מנהל":null}
                                     >
                                 {Object.values(types).map((type) => (
                                             <MenuItem key={type} value={type}>
@@ -304,7 +308,7 @@ function Register() {
                                         name={ProfileFields.CITY}
                                         autoComplete="city"
                                         error={cityError.length !== 0}
-                                        helperText={cityError.length === 0 ? "אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות" : cityError}
+                                        helperText={cityError.length === 0 ? "אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות בלבד" : cityError}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -315,7 +319,7 @@ function Register() {
                                         name={ProfileFields.PHONE_NUM}
                                         autoComplete="telephone"
                                         error={telephoneError.length !== 0}
-                                        helperText={telephoneError.length === 0 ? "אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות" : telephoneError}
+                                        helperText={telephoneError.length === 0 ? "אין חובה למלא פרט זה, שימושו לצורך שיתוף תרופות בלבד" : telephoneError}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>

@@ -31,6 +31,9 @@ import * as Utils from "../../../Utils/Utils";
 import Paper from "@mui/material/Paper";
 import CssBaseline from "@mui/material/CssBaseline";
 import {red} from "@mui/material/colors";
+import {useSelector} from "react-redux";
+import {getSafe} from "../../../Utils/Utils";
+import * as STATE_PATHS from "../../../Consts/StatePaths";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -74,8 +77,15 @@ export default function DetailedCard(props) {
             secondary: red,
         },});
 
+    const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
     const [ expanded, setExpanded ] = useState(false);
     const [ brochureLoading, setBrochureLoading ] = useState(false);
+    const [ docBrochureLoading, setDocBrochureLoading ] = useState(false);
+    const [ showBrochureError, setShowBrochureError ] = useState(false);
+    const [ showDocBrochureError, setShowDocBrochureError ] = useState(false);
+    const DOCTOR = 'רופא';
+    const MEDICAL_STAFF = 'צוות רפואי';
+    const isMedStaff = profile.userType===DOCTOR || profile.userType===MEDICAL_STAFF;
 
     const nameMapping = {
         "activeComponents" : "חומרים פעילים",
@@ -109,19 +119,40 @@ export default function DetailedCard(props) {
         return data;
     }
 
-    const getBrochure = async (drugRegNum) => {
-        setBrochureLoading(true);
-        let data = await getRequest(
-            await auth.currentUser.getIdToken(true),
-            ServerConsts.GET_BROCHURE,
-            { "drugRegNum" : drugRegNum});
-        let url = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
-
-        const link = document.createElement("a");
-        link.download = data["consumerBrochure"];
-        link.href = url;
-        link.click();
-        setBrochureLoading(false);
+    const getBrochure = async (payload, doctor) => {
+        doctor ? setDocBrochureLoading(true) : setBrochureLoading(true);
+        let url;
+        let data = null;
+        let download;
+        if (type === 'drug'){
+            data = await getRequest(
+                await auth.currentUser.getIdToken(true),
+                ServerConsts.GET_BROCHURE,
+                { "drugRegNum" : payload});
+            if (!doctor) {
+                url = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+                download = data["consumerBrochure"] ? data["consumerBrochure"] : null;
+            }
+            else {
+                url = data["doctorBrochure"] ? External.EXTERNAL_FILES_URL + data["doctorBrochure"] : null;
+                download = data["doctorBrochure"] ? data["doctorBrochure"] : null;
+            }
+        }
+        else {
+            url = payload;
+            download = payload !== 'null' ? payload : null;
+        }
+        if (url && url !== 'null'){
+            const link = document.createElement("a");
+            link.download = download;
+            link.href = url;
+            link.target="_blank";
+            link.click();
+        }
+        else{
+            doctor ? setShowDocBrochureError(true) : setShowBrochureError(true);
+        }
+        doctor ? setDocBrochureLoading(false) : setBrochureLoading(false);
     }
 
     return (
@@ -137,7 +168,7 @@ export default function DetailedCard(props) {
                     image={image}
                     alt="N/A"
                 />
-                <CardContent sx={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between" }}>
+                <CardContent>
                     <Typography variant="body2" color="text.secondary">
                         {getValue(body)}
                     </Typography>
@@ -212,66 +243,82 @@ export default function DetailedCard(props) {
 
                 )}
                 {(type === 'drug' || type ==='myDrug') && (
-                    <>
-                        <Collapse in={expanded} timeout="auto" unmountOnExit>
-                            <CardContent>
-                                <Typography paragraph>פרטים נוספים:</Typography>
-                                <Typography paragraph>
-                                    <Table size="small" style={{marginBottom:15}}>
+                    <Collapse in={expanded} timeout="auto" unmountOnExit>
+                        <CardContent>
+                            <Typography paragraph>פרטים נוספים:</Typography>
+                            <Typography paragraph>
+                                <Table size="small" style={{marginBottom:15}}>
+                                    <TableRow>
+                                        <TableCell variant="head" align="right">{nameMapping["activeComponents"]}</TableCell>
+                                        <TableCell align="right">{expandData.activeComponents}</TableCell>
+                                    </TableRow>
+                                    {type === 'drug' && (
                                         <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["activeComponents"]}</TableCell>
-                                            <TableCell align="right">{expandData.activeComponents}</TableCell>
+                                            <TableCell variant="head" align="right">{nameMapping["customerPrice"]}</TableCell>
+                                            <TableCell align="right">{expandData.customerPrice} &#8362;</TableCell>
                                         </TableRow>
-                                        {type === 'drug' && (
-                                            <TableRow>
-                                                <TableCell variant="head" align="right">{nameMapping["customerPrice"]}</TableCell>
-                                                <TableCell align="right">{expandData.customerPrice} &#8362;</TableCell>
-                                            </TableRow>
-                                        )}
-                                        <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["dosageForm"]}</TableCell>
-                                            <TableCell align="right">
-                                                {
-                                                    type === 'drug' ?
-                                                    getValue(expandData.dosageForm) :
-                                                        (expandData.unitType==='CAPLET'?<>טבליה</>:<>נוזל</>)
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["health"]}</TableCell>
-                                            <TableCell align="right">
-                                                {
-                                                    type === 'drug' ?
-                                                    getValue(expandData.health) :
-                                                        getValue(expandData.healthBasket)
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell variant="head" align="right">{nameMapping["prescription"]}</TableCell>
-                                            <TableCell align="right">{getValue(expandData.prescription)}</TableCell>
-                                        </TableRow>
-                                    </Table>
+                                    )}
+                                    <TableRow>
+                                        <TableCell variant="head" align="right">{nameMapping["dosageForm"]}</TableCell>
+                                        <TableCell align="right">
+                                            {
+                                                type === 'drug' ?
+                                                getValue(expandData.dosageForm) :
+                                                    (expandData.unitType === 'null' ? '' : expandData.unitType)
+                                            }
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell variant="head" align="right">{nameMapping["health"]}</TableCell>
+                                        <TableCell align="right">
+                                            {
+                                                type === 'drug' ?
+                                                getValue(expandData.health) :
+                                                    getValue(expandData.healthBasket)
+                                            }
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell variant="head" align="right">{nameMapping["prescription"]}</TableCell>
+                                        <TableCell align="right">{getValue(expandData.prescription)}</TableCell>
+                                    </TableRow>
+                                </Table>
+                                {showBrochureError ? (<p style={{color: 'red'}}>לא קיים עלון לצרכן במאגר משרד הבריאות</p>) :
                                     <LoadingButton
                                         variant="contained"
                                         size="small"
                                         endIcon={<ArticleIcon style={{marginRight: 12}}/>}
                                         onClick={() => {
                                             type === 'drug' ?
-                                                getBrochure(expandData.brochure):
-                                                getBrochure(expandData.brochureUrl)
-
+                                                getBrochure(expandData.brochure, false):
+                                                getBrochure(expandData.brochureUrl, false)
                                             ;}}
                                         loading={brochureLoading}
                                         loadingPosition="end"
                                     >
                                         עלון לצרכן
                                     </LoadingButton>
-                                </Typography>
-                            </CardContent>
-                        </Collapse>
-                    </>
+                                }
+                                {isMedStaff && (showDocBrochureError ? (<p style={{color: 'red'}}>לא קיים עלון לרופא במאגר משרד הבריאות</p>) :
+                                    <LoadingButton
+                                        style={{marginRight: 12}}
+                                        variant="contained"
+                                        size="small"
+                                        endIcon={<ArticleIcon style={{marginRight: 12}}/>}
+                                        onClick={() => {
+                                            type === 'drug' ?
+                                                getBrochure(expandData.brochure, true):
+                                                getBrochure(expandData.docBrochureUrl, true)
+                                            ;}}
+                                        loading={docBrochureLoading}
+                                        loadingPosition="end"
+                                    >
+                                        עלון לרופא
+                                    </LoadingButton>
+                                )}
+                            </Typography>
+                        </CardContent>
+                    </Collapse>
                 )}
             </Card>
         </ThemeProvider>

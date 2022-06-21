@@ -41,6 +41,11 @@ public class BrochureResultDeserializer extends StdDeserializer<BrochureResults>
                         doctorUrl = objNode.get("url").asText();
                     }
                 }
+                if (lng.equals("null") && doctorUrl == null){
+                    if (type.equals("עלון לרופא")) {
+                        doctorUrl = objNode.get("url").asText();
+                    }
+                }
             }
             brochureResults = new BrochureResults(consumerUrl, doctorUrl);
         }

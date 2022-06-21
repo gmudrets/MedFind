@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {createTheme} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
@@ -12,10 +11,13 @@ import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
 import AlertDialog from "../UI/Dialog";
 import {Alert, Snackbar} from "@mui/material";
+import RemindersCreateForm from "../RemindersArea/RemindersCreateForm";
+import TransitionsModal from "../UI/Modal/Modal";
 
 function MyMedicine() {
     const navigate = useNavigate();
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
+    const profile = useSelector((state) => getSafe(STATE_PATHS.USER_PROFILE, state));
 
     const [ loading, setLoading ] = useState(false);
     const [ items, setItems ] = useState([]);
@@ -23,6 +25,8 @@ function MyMedicine() {
     const [ resultsFound, setResultsFound ] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
     const [openShareDialog, setOpenShareDialog] = React.useState(false);
+    const [openContactDetailsMissingDialog, setOpenContactDetailsMissingDialog] = React.useState(false);
+    const [openReminderDialog, setOpenReminderDialog] = React.useState(false);
     const [dialogItem, setDialogItem] = React.useState({});
     const [showShareMessage, setShowShareMessage] = useState(false);
     const [showDeleteMessage, setShowDeleteMessage] = useState(false);
@@ -45,7 +49,6 @@ function MyMedicine() {
         let data = await getRequest(currentUser.stsTokenManager.accessToken,
             ServerConsts.GET_USER_MEDICINE);
 
-        console.log(data);
         if(data.length>0){
             setItems(data);
             setResultsFound(true);
@@ -55,13 +58,17 @@ function MyMedicine() {
     }
 
     const handleShareClick = async (item) => {
-        await getRequest(currentUser.stsTokenManager.accessToken,
-            ServerConsts.UPDATE_MEDICINE_SHARING, {
-                id: item.id,
-                shared: !item.shared
-            });
-        setShowShareMessage(true);
-
+        if (profile.city && (profile.telephone || profile.email)){
+            await getRequest(currentUser.stsTokenManager.accessToken,
+                ServerConsts.UPDATE_MEDICINE_SHARING, {
+                    id: item.id,
+                    shared: !item.shared
+                });
+            setShowShareMessage(true);
+        }
+        else {
+            setOpenContactDetailsMissingDialog(true);
+        }
     };
 
     const handleDeleteClick = async (id) => {
@@ -72,20 +79,20 @@ function MyMedicine() {
         setShowDeleteMessage(true);
     };
 
-    const handleAlertClick = async (id) => {
-        //TODO: implement
-
-        // await getRequest(currentUser.stsTokenManager.accessToken,
-        //     ServerConsts.UPDATE_MEDICINE_SHARING, {
-        //         id: id,
-        //         shared: true
-        //     });
-        // setShowShareMessage(true);
-
-        console.log("Alert!");
+    const handleAlertClick = () => {
+        setOpenReminderDialog(true);
     };
 
-    //TODO: when clocking share check that the user has a city and phone number, if not present an error meggase dialog and suggest to go to settings to update the details.
+    const toggleReminderDialog = () => {
+        setOpenReminderDialog(!openReminderDialog);
+
+    }
+
+    const handleAlertSubmit = () => {
+        console.log("Submitting alert!");
+        toggleReminderDialog();
+    }
+
     return (
         <>
             <CircularProgressBackdrop open={loading} toggle={setLoading}/>
@@ -141,8 +148,21 @@ function MyMedicine() {
                                      handleShareClick(dialogItem)
                                  }}
                     />
+                    <AlertDialog open={openContactDetailsMissingDialog}
+                                 setOpen={setOpenContactDetailsMissingDialog}
+                                 title={"חסרים פרטי יצירת קשר"}
+                                 textContent={"אחד או יותר מפרטי יצירת קשר חסרים. על מנת שתוכל\\י לשתף את התרופה עליך להגדיר פרטי יצירת קשר במסך הגדרות החשבון"}
+                                 acceptButtonText="למעבר להגדרות החשבון"
+                                 declineButtonText="ביטול"
+                                 onAccept={() => {
+                                     navigate("/settings");
+                                 }}
+                    />
                     {items.map((item,index) => (
                         <>
+                            <TransitionsModal open={openReminderDialog} toggleModal={toggleReminderDialog}>
+                                <RemindersCreateForm handleSubmit={handleAlertSubmit} medicineList={[item]} medicine={0}/>
+                            </TransitionsModal>
                             <Box
                                 key={index}
                                 marginTop='65px'

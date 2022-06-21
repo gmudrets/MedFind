@@ -23,22 +23,27 @@ import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LoadingButton from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
-import {Autocomplete, Stack} from '@mui/material'
+import {Alert, Autocomplete, Snackbar, Stack} from '@mui/material'
 import {auth} from '../../Configs/FirebaseConfig'
 import * as Utils from "../../Utils/Utils";
 import TextField from "@mui/material/TextField";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/lab";
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Button from "@mui/material/Button";
 import {prefixer} from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import createCache from "@emotion/cache";
 import {CacheProvider} from "@emotion/react";
+import {now} from "moment";
+import { format } from 'date-fns';
+import UpcomingAlerts from "./UpcomingAlerts";
+import SystemMessages from "./SystemMessages";
 
 function Home() {
   const theme = createTheme({direction: 'rtl'});
   const navigate = useNavigate();
   const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
+  const specialChars = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
   const [ items, setItems ] = useState([]);
   const [ searchValue, setSearchValue ] = useState("");
@@ -56,9 +61,10 @@ function Home() {
   const [dialogItem, setDialogItem] = React.useState({});
   const [openAddDialog, setOpenAddDialog] = React.useState(false);
   const [showAddMessage, setShowAddMessage] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [unitsAmount, setUnitsAmount] = useState(1);
   const [dosageAmount, setDosageAmount] = useState(1);
-  const [expirationDate, setExpirationDate] = useState();
+  const [expirationDate, setExpirationDate] = useState(new Date(now()));
 
   useEffect(() => {
     if (currentUser === ''){
@@ -138,17 +144,19 @@ function Home() {
   }
 
   const autocomplete = async (newValue) => {
-      let data;
-      if (newValue===""){
-          setAutocompleteLines([]);
-      }
-      else{
-          data = await getRequest("", ServerConsts.AUTOCOMPLETE, { "val" : newValue });
-          if ("results" in data){
-            setAutocompleteLines(data.results);
+      if (!specialChars.test(newValue)){
+          let data;
+          if (newValue===""){
+              setAutocompleteLines([]);
           }
           else{
-            setAutocompleteLines([]);
+              data = await getRequest("", ServerConsts.AUTOCOMPLETE, { "val" : newValue });
+              if ("results" in data){
+                setAutocompleteLines(data.results);
+              }
+              else{
+                setAutocompleteLines([]);
+              }
           }
       }
   }
@@ -201,7 +209,7 @@ function Home() {
   }
 
   const handleExpirationDate = (newDate) => {
-      setExpirationDate(newDate.format("DD/MM/yyyy HH:mm:ss"));
+      setExpirationDate(newDate);
   }
 
   const handleUnitsAmount = (newAmount) => {
@@ -211,32 +219,41 @@ function Home() {
   const handleDosageAmount = (newAmount) => {
       setDosageAmount(newAmount.target.value);
   }
-  
+
   const handleAdd = async () => {
+      setLoading(true);
       let data = await getRequest(
           await auth.currentUser.getIdToken(true),
           ServerConsts.GET_BROCHURE,
           { "drugRegNum" : dialogItem.dragRegNum});
-      let brochureUrl = External.EXTERNAL_FILES_URL + data["consumerBrochure"];
-      await getRequest(currentUser.stsTokenManager.accessToken,
-          ServerConsts.ADD_MEDICINE, {
-              drugRegNum: dialogItem.dragRegNum,
-              hebName: dialogItem.dragHebName,
-              engName: dialogItem.dragEnName,
-              activeComponents: dialogItem.activeComponents,
-              healthBasket: dialogItem.health,
-              prescription: dialogItem.prescription,
-              treatment: dialogItem.secondarySymptom ? dialogItem.secondarySymptom : "N/A",
-              imageUrl: dialogItem.images,
-              brochureUrl: brochureUrl,
-              expiration: expirationDate,
-              units: dialogItem.dosageForm,
-              count: unitsAmount,
-              dosage: dosageAmount,
-              shared: false
-          });
-      // setShowDeleteMessage(true);
-      console.log("Adding item:", dialogItem);
+      let brochureUrl = data["consumerBrochure"] ? External.EXTERNAL_FILES_URL + data["consumerBrochure"] : null;
+      let docBrochureUrl = data["doctorBrochure"] ? External.EXTERNAL_FILES_URL + data["doctorBrochure"] : null;
+      let formattedDate = format(new Date(expirationDate.getFullYear(), expirationDate.getMonth(), expirationDate.getDate()), 'dd/MM/yyyy HH:mm:ss');
+      try {
+          await getRequest(currentUser.stsTokenManager.accessToken,
+              ServerConsts.ADD_MEDICINE, {
+                  drugRegNum: dialogItem.dragRegNum,
+                  hebName: encodeURIComponent(dialogItem.dragHebName),
+                  engName:encodeURIComponent(dialogItem.dragEnName),
+                  activeComponents: encodeURIComponent(dialogItem.activeComponents),
+                  healthBasket: dialogItem.health,
+                  prescription: dialogItem.prescription,
+                  treatment: dialogItem.secondarySymptom ? dialogItem.secondarySymptom : "N/A",
+                  imageUrl: dialogItem.images,
+                  brochureUrl: brochureUrl,
+                  docBrochureUrl: docBrochureUrl,
+                  expiration: formattedDate,
+                  units: dialogItem.dosageForm,
+                  count: unitsAmount,
+                  dosage: dosageAmount,
+                  shared: false
+              });
+          setShowAddMessage(true);
+      }
+      catch (error){
+          setShowErrorMessage(true);
+      }
+      setLoading(false);
   }
 
   return (
@@ -265,6 +282,7 @@ function Home() {
                             setSearchValue(newInputValue);
                             autocomplete(newInputValue);
                         }}
+                        value={searchValue}
                         options={autoCompleteLines}
                         renderInput={(params) => {
                             const {InputLabelProps,InputProps,...rest} = params;
@@ -311,7 +329,7 @@ function Home() {
                     </Typography><Typography variant="h5" sx={{ mt: 2 }} align={"center"} marginBottom={'20px'}>
                         {dialogItem.dragHebName}
                     </Typography>
-                    <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <Stack spacing={3}>
                             <TextField
                                 required
@@ -338,7 +356,7 @@ function Home() {
                             <DesktopDatePicker
                                 required
                                 label="תאריך תפוגה"
-                                inputFormat="DD/MM/yyyy"
+                                inputFormat="dd/MM/yyyy"
                                 value={expirationDate}
                                 onChange={handleExpirationDate}
                                 renderInput={(params) => <TextField {...params} />}
@@ -353,7 +371,7 @@ function Home() {
                         >
                             <Button onClick={() => {
                                 setUnitsAmount(1);
-                                setExpirationDate(null);
+                                setExpirationDate(new Date(now()));
                                 toggleAddDialog();
                             }}>ביטול</Button>
                             <Button onClick={() => {
@@ -366,6 +384,28 @@ function Home() {
                     </LocalizationProvider>
                 </CacheProvider>
             </TransitionsModal>
+            <Snackbar open={showAddMessage}
+                      autoHideDuration={1500}
+                      onClose={() => {
+                          setShowAddMessage(false);
+                      }}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+                <Alert severity="success">
+                    התרופה הוספה למאגר
+                </Alert>
+            </Snackbar>
+             <Snackbar open={showErrorMessage}
+                      autoHideDuration={1500}
+                      onClose={() => {
+                          setShowErrorMessage(false);
+                      }}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+                <Alert severity="error">
+                    אירעה שגיאה בהוספת התרופה למאגר
+                </Alert>
+            </Snackbar>
             { items.length > 0 ? (
                 <>
                 {items.map((item,index) => (
@@ -417,7 +457,12 @@ function Home() {
                     </Box>
                 )}
                 </>
-            ) : (<p align="center"> אין מידע להצגה </p>) }
+            ) : (
+                <>
+                    <UpcomingAlerts/>
+                    <SystemMessages/>
+                </>
+            )}
         </ThemeProvider>
   );
 }
