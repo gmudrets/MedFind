@@ -219,7 +219,7 @@ function RemindersCreateForm(props) {
         if (returnsType === returnsTypeOptions.NOT_RETURN && (new Date(inDate)).getDate() === new Date().getDate() && new Date(inDate).getMonth() === new Date().getMonth()) {
 
             if (new Date(time).getTime() < new Date().getTime()) {
-                setErrorMessege("תזמנת התראה לעבר, שנה נסה שוב")
+                setErrorMessege("תזמנת התראה לעבר, שנה ונסה שוב")
                 return false;
             }
         }
@@ -409,7 +409,14 @@ function RemindersCreateForm(props) {
                                         </LocalizationProvider>
                                     </Grid>)
                                 }
+
+                                <Grid item xs={12}>
+                                    <IconButton onClick={handleAddTimeClick}
+                                                disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
+                                </Grid>
                                 {returnsType == returnsTypeOptions.NOT_RETURN &&
+                                    <>
+                                    <Grid item xs={12}><Divider/></Grid>
                                     <Grid item xs={12}>
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <ThemeProvider theme={ltrTheme}>
@@ -429,12 +436,8 @@ function RemindersCreateForm(props) {
                                                 />
                                             </ThemeProvider>
                                         </LocalizationProvider>
-                                    </Grid>}
-                                <Grid item xs={12}>
-                                    <IconButton onClick={handleAddTimeClick}
-                                                disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
-                                </Grid>
-
+                                    </Grid>
+                                    </>}
                                 <Grid item xs={12}><Divider/></Grid>
                                 <Grid item xs={8}>
                                     <TextField
@@ -453,6 +456,7 @@ function RemindersCreateForm(props) {
                                         ))}
                                     </TextField>
                                 </Grid>
+
                                 {/*in case of repeat each few days*/}
                                 {returnsType == returnsTypeOptions.EACH_FEW_DAYS &&
                                     <Grid item xs={4}>
