@@ -106,7 +106,7 @@ function RemindersCreateForm(props) {
     const [untilType, setUntilType] = React.useState(props.untilType);
     const [remindersRemain, setRemindersRemain] = React.useState(2);//later if possible
     const [errorMessegeOpen, setErrorMessegeOpen] = React.useState(false);
-    const [newFrom, setNewFrom] = React.useState(1);
+    const [newFrom, setNewFrom] = React.useState(0);
     const [untilDate, setUntilDate] = React.useState(props.untilDate);
     const [medicineFullList, setMedicineFullList] = React.useState(props.medicineList);
     const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
