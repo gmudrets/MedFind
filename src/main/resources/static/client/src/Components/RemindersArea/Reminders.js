@@ -24,7 +24,7 @@ import RemindersCreateForm, {
     EACH_MANY_DAYS, EACH_MANY_WEEKS, fakeExpiration,
     getTomorow, IN_WHICH_DATE, MEDICINE, REMINDERS_NUM,
     RETURNS_TYPE,
-    returnsTypeOptions,
+    returnsTypeOptions, shortDaysWeekOptions,
     TIMES_ARRAY, TITLE,
     UNTIL_DATE, UNTIL_TYPE, untilTypeOptions, WEEK_DAYS_SELECTED
 } from "./RemindersCreateForm";
@@ -206,6 +206,7 @@ export default function Reminders() {
 
         }
         const requastParams = {
+            'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
             'alertName': data[TITLE],
             "regNum": data[MEDICINE]['regNum'],
             'alertExpiration': dateToString(new Date(data[UNTIL_DATE])),
@@ -260,8 +261,8 @@ export default function Reminders() {
             }
         }
         const requastParams = {
-            // 'alertName': JSON.stringify(originalData).toString(),//TODO:
             'alertName': data[TITLE],
+            'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
             "regNum": data[MEDICINE]['regNum'],
             'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&fixedDateList=")
         }
@@ -278,58 +279,69 @@ export default function Reminders() {
         filtList.push(remindersList[remindersList.length - 1]);
         return filtList;
     }
-    const createPropsFromItem = (data) => {
+    const createPropsFromItem = (data2) => {
         let result = {};
-
-        result['title'] = data[RemindersFields.REM_TITLE];
+        let data = decodeURIComponent(data2['alertDescription']);
+        result['title'] = data[TITLE];
         let medicineName = null;
         let medicineImage = null;
         let regNum = data['regNum'];
-        for (let i = 0; i < medicineList.length; i++) {
-            if (medicineList[i]['regNum'] == regNum) {
-                medicineName = medicineList[i]['hebName'];
-                medicineImage = medicineList[i]['image'];
-                break;
-            }
+        result["medicineName"] = data[MEDICINE];
+        let info = "";
+        const alertExperation = new Date(data[RemindersFields.REM_EXPERATION]);
+        const alretExperationString = dateToString(alertExperation);
+        if (data[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
+            const fixedDate = new Date(data[IN_WHICH_DATE]);
+            const newDateString = dateToString(fixedDate);
+
+            info += "בתאריך: ";
+            info += toOnlyDateString(newDateString)
+        }
+        if (data[RETURNS_TYPE] === returnsTypeOptions.EACH_DAY) {
+            info += "חוזר כל יום";
+        }
+        if (data[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
+            info += "חוזר כל ";
+            info += data[EACH_MANY_DAYS];
+            info += " ימים"
 
         }
-        result['image'] = medicineImage;
-        result["medicineName"] = medicineName;
-        let info = "";
-        if (data[RemindersFields.REM_TYPE] == RemindersFields.FIXED) {
-            const fixedDate = new Date(data[RemindersFields.FIXED_DATE]);
-            const newDateString = dateToString(fixedDate);
-            const alertExperation = new Date(data[RemindersFields.REM_EXPERATION]);
-            const alretExperationString = dateToString(alertExperation);
-            info += "תאריך: ";
-            info += toOnlyDateString(newDateString)
+        if (data[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
+            info += "חוזר כל שבוע"
             info += "\n"
-            info += "שעה: "
-            info += toOnlyTimeString(newDateString);
-        } else {
-            let timeString = dateToString(new Date(), 18, 6, 2022, data[RemindersFields.HOUR], data[RemindersFields.MINUTE]);
-            console.log(data[RemindersFields.WEEK]);
-            let expeartionDateString = dateToString(new Date(data[RemindersFields.REM_EXPERATION]));
-            expeartionDateString = toOnlyDateString(expeartionDateString);
-            timeString = toOnlyTimeString(timeString);
-            info += "שעה: "
-            info += timeString;
-            info += "\n";
-            info += "ביום: ";
-            info += daysWeekOptions[data[RemindersFields.DAY_IN_WEEK] - 1];
-            info += "\n";
-            if (data[RemindersFields.WEEK] === 1) {
-                info += "כל שבוע"
-            } else {
-                info += "כל "
-                info += data[RemindersFields.WEEK];
-                info += " שבועות"
+            info += 'בימים: '
+        }
+        if (data[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_WEEKS) {
+            info += "חוזר כל "
+            info += data[EACH_MANY_WEEKS];
+            info += " שבועות"
+            info += "\n"
+            info += "בימים "
+        }
+        if (data[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_WEEKS || data[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK){
+            for (let i = 0; i < data[WEEK_DAYS_SELECTED]; i++) {
+                info += shortDaysWeekOptions[daysWeekOptions.indexOf(data[WEEK_DAYS_SELECTED][i])] + ", "
             }
-            info += "\n";
-            if (data[RemindersFields.REM_EXPERATION] != fakeExpiration) {
-                info += "תאריך סיום: "
-                info += expeartionDateString;
-                info += "\n";
+            info = info.slice(0, info.length - 2);
+        }
+        info += "\n"
+        info += "בשעות: "
+        for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
+                const time = new Date(data[TIMES_ARRAY][i])
+                const timeStr = dateToString(time)
+                info += toOnlyTimeString(timeStr) + " ,";
+            }
+        info = info.slice(0, info.length - 2);
+        if(data[RETURNS_TYPE]!== returnsTypeOptions.NOT_RETURN){
+            info+= "\n"
+            info+= "חזור עד "
+            if(data[UNTIL_TYPE] === untilTypeOptions.DATE){
+                info += "התאריך"
+                const exdate= toOnlyDateString(dateToString(new Date(data[UNTIL_DATE])))
+                info+= exdate
+            }else if(data[UNTIL_TYPE] === untilTypeOptions.NUM) {
+                info += data[REMINDERS_NUM];
+                info += "תזכורת "
             }
         }
         result['info'] = info;

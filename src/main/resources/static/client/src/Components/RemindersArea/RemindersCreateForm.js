@@ -76,6 +76,15 @@ export const daysWeekOptions = [
     'שישי',
     'שבת'
 ];
+export const shortDaysWeekOptions = [
+    'א',
+    'ב',
+    'ג',
+    'ד',
+    'ה',
+    'ו',
+    'ש'
+];
 export const untilTypeOptions = {
     DATE: 'תאריך',
     NUM: 'כמות תזכורת'
