@@ -28,6 +28,7 @@ public class AlertEntry {
     private String userUuid;
 
     private String alertName;
+    private String alertDescription;
 
     private String regNum;
 

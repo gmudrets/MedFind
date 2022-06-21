@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AlertEntryRepository extends CrudRepository<AlertEntry, Integer> {
     List<AlertEntry> findAllByUserUuid(String userUuid);
@@ -13,5 +14,8 @@ public interface AlertEntryRepository extends CrudRepository<AlertEntry, Integer
 
     @Transactional
     Long deleteById(Long Id);
+
+    @Transactional
+    Long deleteByAlertUuid(UUID uuid);
 
 }

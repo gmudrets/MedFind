@@ -1,9 +1,11 @@
 package openu.MedFind.scheduled;
 
 
-import openu.MedFind.dto.ActiveAlertsResponse;
+import openu.MedFind.dto.ActiveAlertType;
 import openu.MedFind.dto.AlertType;
+import openu.MedFind.dto.AlertsResponse;
 import openu.MedFind.repositories.AlertEntryRepository;
+import openu.MedFind.repositories.MedicineEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -13,7 +15,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -29,12 +34,13 @@ public class AlertsNotificationScheduler {
     @Autowired
     private AlertEntryRepository alertEntryRepository;
 
-    private List<ActiveAlertsResponse> getAllAlerts() {
-        List<ActiveAlertsResponse> activeAlerts = new ArrayList<>();
+    @Autowired
+    private MedicineEntryRepository medicineEntryRepository;
 
-        var usersAlerts = alertEntryRepository.findAll();
+    private List<AlertsResponse> getAllScheduleAlerts() {
+        List<AlertsResponse> activeAlerts = new ArrayList<>();
 
-        for (var alert : usersAlerts) {
+        for (var alert : alertEntryRepository.findAll()) {
             // Delete expired alerts
             if (LocalDateTime.now().isAfter(alert.getAlertExpiration())) {
                 alertEntryRepository.delete(alert);
@@ -43,7 +49,7 @@ public class AlertsNotificationScheduler {
 
             if (alert.getAlertType() == AlertType.FIXED) {
                 if (LocalDateTime.now().isAfter(alert.getFixedDate())) {
-                    activeAlerts.add(new ActiveAlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum()));
+                    activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(), ActiveAlertType.SCHEDULE));
                     alertEntryRepository.delete(alert);
                 }
             } else {
@@ -54,7 +60,7 @@ public class AlertsNotificationScheduler {
                     var alertDate = LocalDate.now().atTime(alert.getHour(), alert.getMinute());
 
                     if (alertDate.isAfter(dateNow)) {
-                        activeAlerts.add(new ActiveAlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum()));
+                        activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(), ActiveAlertType.SCHEDULE));
                         alert.triggered();
                         alert.setLastTriggered(LocalDateTime.now());
                         alertEntryRepository.save(alert);
@@ -66,9 +72,24 @@ public class AlertsNotificationScheduler {
         return activeAlerts;
     }
 
+    private List<AlertsResponse> getAllExpirationAlerts() {
+        List<AlertsResponse> expirationAlerts = new ArrayList<>();
+
+        var dateNow = new Date();
+
+        for(var medicine : medicineEntryRepository.findAll()) {
+            if(medicine.getExpiration().after(dateNow)) {
+                expirationAlerts.add(new AlertsResponse(0L, medicine.getHebName(), medicine.getRegNum(), ActiveAlertType.EXPIRATION));
+            }
+        }
+
+        return expirationAlerts;
+    }
+
     @Scheduled(fixedRate = 600000)
     public void scheduleFixedRateTask() {
-        var alerts = getAllAlerts();
+        var alerts = Stream.concat(getAllScheduleAlerts().stream(), getAllExpirationAlerts().stream())
+                .collect(Collectors.toList());
 
         if(!alerts.isEmpty()) {
             template.convertAndSend("/wss-alerts/message", alerts);
