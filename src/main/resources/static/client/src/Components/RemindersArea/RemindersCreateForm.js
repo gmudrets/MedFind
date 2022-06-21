@@ -117,11 +117,13 @@ function RemindersCreateForm(props) {
             for (let i = 0; i < medicineFullList.length; i++) {
                 medicenes[i + 1] = medicineFullList[i]['hebName'];
             }
-            setMedicineList(medicenes);
             setMedicine(medicenes[props.medicine + 1]);
+            setMedicineList(medicenes);
             if (props.medicine + 1 !== 0) {
                 handleMedicineChange2(medicenes[props.medicine + 1],medicenes);
             }
+            setMedicineList([...new Set(medicenes)]);
+
         }
 
     }, [medicineFullList]);
