@@ -20,7 +20,7 @@ import {isMobile} from "react-device-detect";
 import TransitionsModal from "../UI/Modal/Modal";
 import {useEffect, useState} from "react";
 import RemindersCreateForm, {
-    daysWeekOptions,
+    daysWeekOptions, defualtFormData,
     EACH_MANY_DAYS, EACH_MANY_WEEKS, fakeExpiration,
     getTomorow, IN_WHICH_DATE, MEDICINE, REMINDERS_NUM,
     RETURNS_TYPE,
@@ -56,6 +56,9 @@ export default function Reminders() {
     const [medicineList, setMedicineList] = React.useState(null);
     const [deletedID, setDeletedID] = React.useState(null);
     const [loadingNew, setLoadingNew] = React.useState(false);
+    const [editedID, setEditedID] = React.useState(null);
+    const [editedFormData, setEditedFormData] = React.useState(null);
+
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
     useEffect(() => {
@@ -76,6 +79,12 @@ export default function Reminders() {
             console.log(RemindersFilterdList);
         }
     }, [RemindersFilterdList]);
+    useEffect(()=>{
+        if(!onReminderCreation){
+            setEditedID(null);
+            setEditedID(null);
+        }
+    },[onReminderCreation])
     // useEffect(() => {
     //     console.log(medicineList);
     // }, [medicineList]);
@@ -135,6 +144,10 @@ export default function Reminders() {
     }
     const handleSubmit = async (originalData) => {
         setLoadingNew(true);
+        const id = editedID;
+        if(editedID!==null){
+            handleFinalDelete(id);
+        }
         toggleOnReminderCreation();
         const newData = JSON.parse(JSON.stringify(originalData));
         changeEndDate(newData);
@@ -318,7 +331,7 @@ export default function Reminders() {
             info += "\n"
             info += "בימים "
         }
-        if (data[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_WEEKS || data[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK){
+        if (data[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_WEEKS || data[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
             for (let i = 0; i < data[WEEK_DAYS_SELECTED]; i++) {
                 info += shortDaysWeekOptions[daysWeekOptions.indexOf(data[WEEK_DAYS_SELECTED][i])] + ", "
             }
@@ -327,25 +340,26 @@ export default function Reminders() {
         info += "\n"
         info += "בשעות: "
         for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
-                const time = new Date(data[TIMES_ARRAY][i])
-                const timeStr = dateToString(time)
-                info += toOnlyTimeString(timeStr) + " ,";
-            }
+            const time = new Date(data[TIMES_ARRAY][i])
+            const timeStr = dateToString(time)
+            info += toOnlyTimeString(timeStr) + " ,";
+        }
         info = info.slice(0, info.length - 2);
-        if(data[RETURNS_TYPE]!== returnsTypeOptions.NOT_RETURN){
-            info+= "\n"
-            info+= "חזור עד "
-            if(data[UNTIL_TYPE] === untilTypeOptions.DATE){
+        if (data[RETURNS_TYPE] !== returnsTypeOptions.NOT_RETURN) {
+            info += "\n"
+            info += "חזור עד "
+            if (data[UNTIL_TYPE] === untilTypeOptions.DATE) {
                 info += "התאריך"
-                const exdate= toOnlyDateString(dateToString(new Date(data[UNTIL_DATE])))
-                info+= exdate
-            }else if(data[UNTIL_TYPE] === untilTypeOptions.NUM) {
+                const exdate = toOnlyDateString(dateToString(new Date(data[UNTIL_DATE])))
+                info += exdate
+            } else if (data[UNTIL_TYPE] === untilTypeOptions.NUM) {
                 info += data[REMINDERS_NUM];
                 info += "תזכורת "
             }
         }
-        result['info'] = info;
+        result['infoStr'] = info;
         result['id'] = data[RemindersFields.REM_ID];
+        result['formData'] = data;
         result['handleDelete'] = handleDelete;
         return result;
 
@@ -362,9 +376,9 @@ export default function Reminders() {
     const handleDeleteDialogFinished = (event) => {
         setDeletedID(null);
     }
-    const handleFinalDelete = async () => {
+    const handleFinalDelete = async (id = deletedID) => {//TODO: change to new functipn
         for (let i = 0; i < RemindersList.length; i++) {
-            if (RemindersList[i][RemindersFields.REM_ID] === deletedID) {
+            if (RemindersList[i][RemindersFields.REM_ID] === id) {
                 const newRem = [...RemindersList];
                 newRem.splice(i, 1);
                 setRemindersList(newRem);
@@ -376,6 +390,11 @@ export default function Reminders() {
         await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_ID, {"id": deletedID});
 
         ;
+    }
+    const handleEdit = (id, formData) => {
+        setEditedID(id);
+        setEditedFormData(formData);
+        setOnReminderCreation(true);
     }
     return (
         <CacheProvider value={cacheRtl}>
@@ -400,7 +419,7 @@ export default function Reminders() {
                                         תזכורות חדשות....
                                     </Typography>
                                 </Grid>}
-                            {RemindersList != null ? (RemindersList).map((item) => (
+                            {RemindersFilterdList != null ? (RemindersFilterdList).map((item) => (
                                 <Grid item md={3} key={item[RemindersFields.REM_ID]}>
                                     <ReminderCard  {...createPropsFromItem(item)}/>
                                 </Grid>
@@ -416,7 +435,8 @@ export default function Reminders() {
                     </Box>
 
                     <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
-                        <RemindersCreateForm handleSubmit={handleSubmit} medicineList={medicineList}/>
+                        <RemindersCreateForm handleSubmit={handleSubmit} medicineList={medicineList}
+                                             formData={editedID !== null ? editedFormData : defualtFormData()}/>
                     </TransitionsModal>
                     <Dialog
                         open={deletedID != null}

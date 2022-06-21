@@ -5,7 +5,7 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import IconButton from '@mui/material/IconButton';
-
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import {ThemeProvider} from "@emotion/react";
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -20,9 +20,11 @@ export default function ReminderCard(props) {
         image,
         medicineName,
         title,
-        info,
+        infoStr,
         id,
-        handleDelete
+        formData,
+        handleDelete,
+        handleEdit
     } = props;
     const theme = createTheme({direction: 'rtl'});
     useEffect(() => {
@@ -57,12 +59,15 @@ export default function ReminderCard(props) {
 
                 <CardContent sx={{display: 'flex', flexDirection: 'row', justifyContent: "space-between"}}>
                     <Typography variant="body2" color="text.secondary" style={{whiteSpace: 'pre-line'}}>
-                        {info}
+                        {infoStr}
                     </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
                     <IconButton aria-label="deleteReminder" onClick={() => handleDelete(id)}>
                         <DeleteIcon/>
+                    </IconButton>
+                    <IconButton aria-label="editReminder" onClick={() => handleEdit(id,formData)}>
+                        <ModeEditIcon/>
                     </IconButton>
 
                 </CardActions>

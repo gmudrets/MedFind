@@ -598,7 +598,7 @@ function RemindersCreateForm(props) {
                                     <Grid item xs={7}>
                                         <TextField
                                             id={REMINDERS_NUM}
-                                            label="כמות תזכורת"
+                                            label=" כמות תזכורת (מעתה והלאה)"
                                             name={REMINDERS_NUM}
                                             type="number"
                                             InputLabelProps={{
