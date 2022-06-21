@@ -22,7 +22,7 @@ import {useEffect, useState} from "react";
 import RemindersCreateForm, {
     daysWeekOptions,
     EACH_MANY_DAYS, EACH_MANY_WEEKS, fakeExpiration,
-    getTomorow, MEDICINE, REMINDERS_NUM,
+    getTomorow, IN_WHICH_DATE, MEDICINE, REMINDERS_NUM,
     RETURNS_TYPE,
     returnsTypeOptions,
     TIMES_ARRAY, TITLE,
@@ -73,9 +73,9 @@ export default function Reminders() {
 
     useEffect(async () => {
 
-            setMedicineList(await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE));
-            const list = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
-            setRemindersList(list.reverse());
+        setMedicineList(await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE));
+        const list = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
+        setRemindersList(list.reverse());
 
     }, []);
     const [onReminderCreation, setOnReminderCreation] = useState(false);
@@ -131,6 +131,8 @@ export default function Reminders() {
         changeEndDate(newData);
         if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
             convertNotReturn(newData);
+        } else {
+            newData[IN_WHICH_DATE] = fakeExpiration;
         }
         if (originalData[RETURNS_TYPE] === returnsTypeOptions.EACH_DAY) {
             console.log(newData);
@@ -167,9 +169,9 @@ export default function Reminders() {
     const rtl = (str) => {
         return '\u202B' + str + '\u202C';
     }
-    const dateToString = (date, d = date.getDate(), m = (date.getMonth() + 1), y = date.getFullYear(), h = date.getHours(), min = date.getMinutes()) => {
+    const dateToString = (date, d = date.getDate(), m = date.getMonth(), y = date.getFullYear(), h = date.getHours(), min = date.getMinutes()) => {
         const days = Math.floor(d / 10) === 0 ? '0' + d : d;
-        const months = Math.floor((m) / 10) === 0 ? '0' + (m) : m;
+        const months = Math.floor((m+1) / 10) === 0 ? '0' + (m+1) : (m+1);
         const years = y;//assuming all after 10000
         const hours = Math.floor(h / 10) === 0 ? '0' + h : h;
         const minutes = Math.floor(min / 10) === 0 ? '0' + min : min;
@@ -210,37 +212,43 @@ export default function Reminders() {
         const dates = [];
         console.log(data);
         const now = new Date();
-
-        for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
-            let curDate = new Date(data[TIMES_ARRAY][i]);
-            if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM || originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
-                for (let j = 0; j < data[REMINDERS_NUM]; j++) {
-                    // console.log(curDate.getTime() > now.getTime());
-                    // console.log(dateToString(curDate));
-                    if (curDate.getTime() > now.getTime()) {
-                        console.log(curDate);
-                        console.log(data[EACH_MANY_DAYS]);
-                        dates.push(dateToString(curDate));
-                    } else {
-                        j--;
+        if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
+            const date = new Date(data[IN_WHICH_DATE]);
+            console.log(date);
+            console.log(data[IN_WHICH_DATE]);
+            dates.push(dateToString(new Date(data[TIMES_ARRAY][0]),date.getDate(),date.getMonth(), date.getFullYear()));
+        } else {
+            for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
+                let curDate = new Date(data[TIMES_ARRAY][i]);
+                if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM) {
+                    for (let j = 0; j < data[REMINDERS_NUM]; j++) {
+                        // console.log(curDate.getTime() > now.getTime());
+                        // console.log(dateToString(curDate));
+                        if (curDate.getTime() > now.getTime()) {
+                            console.log(curDate);
+                            console.log(data[EACH_MANY_DAYS]);
+                            dates.push(dateToString(curDate));
+                        } else {
+                            j--;
+                        }
+                        curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
                     }
-                    curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
+                } else {
+                    while (curDate.getTime() < data[UNTIL_DATE].getTime()) {
+                        // console.log(curDate.getTime() > now.getTime());
+                        // console.log(dateToString(curDate));
+                        if (curDate.getTime() > now.getTime()) {
+                            console.log(curDate);
+                            console.log(data[EACH_MANY_DAYS]);
+                            dates.push(dateToString(curDate));
 
-                }
-            } else {
-                while (curDate.getTime() < data[UNTIL_DATE].getTime()) {
-                    // console.log(curDate.getTime() > now.getTime());
-                    // console.log(dateToString(curDate));
-                    if (curDate.getTime() > now.getTime()) {
-                        console.log(curDate);
-                        console.log(data[EACH_MANY_DAYS]);
-                        dates.push(dateToString(curDate));
+                        }
+                        curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
                     }
-                    curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
+
                 }
 
             }
-
         }
         const requastParams = {
             // 'alertName': JSON.stringify(originalData).toString(),//TODO:
@@ -358,15 +366,17 @@ export default function Reminders() {
                         <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'auto'}}>
                             {loadingNew &&
                                 <Grid item xs={12} sx={{textAlign: "left"}}>
-                                    <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען תזכורות חדשות....
+                                    <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען
+                                        תזכורות חדשות....
                                     </Typography>
                                 </Grid>}
                             {RemindersList != null ? (RemindersList).map((item) => (
-                                <Grid item md={3} key = {item[RemindersFields.REM_ID]}>
+                                <Grid item md={3} key={item[RemindersFields.REM_ID]}>
                                     <ReminderCard  {...createPropsFromItem(item)}/>
                                 </Grid>
                             )) : <Grid item xs={12} sx={{textAlign: "left"}}>
-                                <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען תזכורת....
+                                <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען
+                                    תזכורת....
                                 </Typography>
                             </Grid>
                             }

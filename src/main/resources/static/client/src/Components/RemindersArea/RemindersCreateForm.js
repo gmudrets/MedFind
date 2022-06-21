@@ -214,8 +214,6 @@ function RemindersCreateForm(props) {
         if ((new Date(time) == "Invalid Date") || isNaN(new Date(time)) || Date.parse(new Date(time)) === 0) {
             return false;
         }
-        console.log(new Date(inDate).getDate);
-        console.log(new Date().getDay);
         if (returnsType === returnsTypeOptions.NOT_RETURN && (new Date(inDate)).getDate() === new Date().getDate() && new Date(inDate).getMonth() === new Date().getMonth()) {
 
             if (new Date(time).getTime() < new Date().getTime()) {
@@ -305,6 +303,7 @@ function RemindersCreateForm(props) {
         value[WEEK_DAYS_SELECTED] = weekDaysSelected;
         value[UNTIL_TYPE] = untilType;
         value[UNTIL_DATE] = untilDate;
+        value[IN_WHICH_DATE] = inDate;
         value[MEDICINE] = medicineFullList[medicineList.indexOf(medicine)];
         console.log(value);
         props.handleSubmit(value);
@@ -359,6 +358,7 @@ function RemindersCreateForm(props) {
                                         label="כותרת (אופציונלי)"
                                         value={name}
                                         onChange={handleNameChange}
+                                        autoComplete={"off"}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
