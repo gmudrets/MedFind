@@ -44,7 +44,21 @@ export const UNTIL_TYPE = 'untilType';
 export const REMINDERS_NUM = 'reminderNum';
 export const EACH_MANY_DAYS = 'eachManyDAys';
 export const IN_WHICH_DATE = "inDate";
-
+export const defualtFormData = () => {
+    const data = {};
+    data[TIMES_ARRAY] = [null];
+    data[TITLE] = "";
+    data[RETURNS_TYPE] = returnsTypeOptions.NOT_RETURN;
+    data[EACH_MANY_DAYS] = 2;
+    data[EACH_MANY_WEEKS] = 2;
+    data[WEEK_DAYS_SELECTED] = initilizeWeekDaysSelected();
+    data[UNTIL_DATE] = getAfterWeek();
+    data[UNTIL_TYPE] = untilTypeOptions.DATE;
+    data[MEDICINE] = defualtMed;
+    data[IN_WHICH_DATE] = new Date();
+    data[REMINDERS_NUM] = 2;
+    return data;
+}
 
 export const returnsTypeOptions = {
     NOT_RETURN: 'לא חוזר',
@@ -67,7 +81,7 @@ export const untilTypeOptions = {
     NUM: 'כמות תזכורת'
 };
 export const fakeExpiration = new Date('2500-01-01')
-
+export const defualtMed = "טוען תרופות...";
 export const getTomorow = () => {
     let date = new Date();
     date.setDate(date.getDate() + 1);
@@ -90,48 +104,49 @@ function RemindersCreateForm(props) {
 
     const maxTimes = 15;
     const ltrTheme = createTheme({direction: 'ltr'});
-    const defualtMedicne = "בחר תרופה";
     const defualtErrorMessege = "חלק מהפרטים שגויים, נסה שוב";
     const [hasErrorOnSomeField, set] = React.useState(false);
     const [stopStream, setStopStream] = useState(false);
-    const [timesArray, setTimesArray] = useState(props.timesArray);
-    const [name, setName] = React.useState(props.name);
+    const [timesArray, setTimesArray] = useState(props.formData[TIMES_ARRAY]);
+    const [name, setName] = React.useState(props.formData[TITLE]);
     const [value, setValue] = React.useState(null);
     const [triedSubmit, setTriedSubmitted] = React.useState(false);
     const [reachedMaxTimes, setReachedMaxTimes] = React.useState(false);
-    const [eachManyDays, setEachManyDays] = React.useState(props.eachManyDays);
-    const [eachManyWeeks, setEachManyWeeks] = React.useState(props.eachManyWeeks);
-    const [returnsType, setReturnsType] = useState(props.returnsType);
-    const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
-    const [untilType, setUntilType] = React.useState(props.untilType);
-    const [remindersRemain, setRemindersRemain] = React.useState(2);//later if possible
+    const [eachManyDays, setEachManyDays] = React.useState(props.formData[EACH_MANY_DAYS]);
+    const [eachManyWeeks, setEachManyWeeks] = React.useState(props.formData[EACH_MANY_WEEKS]);
+    const [returnsType, setReturnsType] = useState(props.formData[RETURNS_TYPE]);
+    const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.formData[WEEK_DAYS_SELECTED]);
+    const [untilType, setUntilType] = React.useState(props.formData[UNTIL_TYPE]);
+    const [remindersRemain, setRemindersRemain] = React.useState(props.formData[REMINDERS_NUM]);
     const [errorMessegeOpen, setErrorMessegeOpen] = React.useState(false);
     const [newFrom, setNewFrom] = React.useState(0);
-    const [untilDate, setUntilDate] = React.useState(props.untilDate);
+    const [untilDate, setUntilDate] = React.useState(props.formData[UNTIL_DATE]);
     const [medicineFullList, setMedicineFullList] = React.useState(props.medicineList);
-    const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
-    const [medicine, setMedicine] = React.useState("טוען תרופות...");
+    const [medicineList, setMedicineList] = React.useState([defualtMed]);
+    const [medicine, setMedicine] = React.useState(defualtMed);
     const [weekDaysError, setWeekDaysError] = React.useState(false);
-    const [inDate, setInDate] = React.useState(props.inDate);
+    const [inDate, setInDate] = React.useState(props.formData[IN_WHICH_DATE]);
     const [errorMessege, setErrorMessege] = React.useState(defualtErrorMessege);
 
 
     useEffect(async () => {
         if (medicineFullList != []) {
-            let medicenes = [defualtMedicne];
+            let medicenes = [defualtMed];
             for (let i = 0; i < medicineFullList.length; i++) {
                 medicenes[i + 1] = medicineFullList[i]['hebName'];
             }
-            setMedicine(medicenes[props.medicine + 1]);
+            console.log(props.formData[MEDICINE]);
+            const med = props.medicineInd === -1 ? props.formData[MEDICINE] : medicenes[props.medicine + 1]
+            setMedicine(med);
             setMedicineList(medicenes);
-            if (props.medicine + 1 !== 0) {
-                handleMedicineChange2(medicenes[props.medicine + 1], medicenes);
+            if (med !== defualtMed) {
+                handleMedicineChange2(med, medicenes);
             }
             setMedicineList([...new Set(medicenes)]);
 
         }
 
-    }, [medicineFullList]);
+    }, [medicineFullList,props.formData[MEDICINE]]);
     useEffect(() => {
         if (timesArray.length == maxTimes) {
             setReachedMaxTimes(true);
@@ -146,7 +161,7 @@ function RemindersCreateForm(props) {
     const handleMedicineChange2 = (value, medLis = medicineList) => {
         console.log(medLis);
         console.log(medLis[0]);
-        if (medLis[0] === defualtMedicne) {
+        if (medLis[0] === defualtMed) {
             const next = [...medLis];
             next.splice(0, 1);
             setMedicineList(next);
@@ -265,7 +280,7 @@ function RemindersCreateForm(props) {
 
     };
     const showMedicineError = (triedSubmitted2 = false) => {
-        if (medicine === defualtMedicne && (triedSubmit || triedSubmitted2)) {
+        if (medicine === defualtMed && (triedSubmit || triedSubmitted2)) {
             return true;
         } else {
             return false;
@@ -416,27 +431,27 @@ function RemindersCreateForm(props) {
                                 </Grid>
                                 {returnsType == returnsTypeOptions.NOT_RETURN &&
                                     <>
-                                    <Grid item xs={12}><Divider/></Grid>
-                                    <Grid item xs={12}>
-                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                            <ThemeProvider theme={ltrTheme}>
-                                                <DatePicker
-                                                    label="בחר תאריך"
-                                                    id={IN_WHICH_DATE}
-                                                    name={IN_WHICH_DATE}
-                                                    value={inDate}
-                                                    onChange={handleInDateChange}
-                                                    views={["year", "month", "day"]}
-                                                    filel
-                                                    inputFormat="dd/MM/yyyy"
-                                                    minDate={new Date()}
-                                                    renderInput={(params) => <TextField {...params}
-                                                    />}
+                                        <Grid item xs={12}><Divider/></Grid>
+                                        <Grid item xs={12}>
+                                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                <ThemeProvider theme={ltrTheme}>
+                                                    <DatePicker
+                                                        label="בחר תאריך"
+                                                        id={IN_WHICH_DATE}
+                                                        name={IN_WHICH_DATE}
+                                                        value={inDate}
+                                                        onChange={handleInDateChange}
+                                                        views={["year", "month", "day"]}
+                                                        filel
+                                                        inputFormat="dd/MM/yyyy"
+                                                        minDate={new Date()}
+                                                        renderInput={(params) => <TextField {...params}
+                                                        />}
 
-                                                />
-                                            </ThemeProvider>
-                                        </LocalizationProvider>
-                                    </Grid>
+                                                    />
+                                                </ThemeProvider>
+                                            </LocalizationProvider>
+                                        </Grid>
                                     </>}
                                 <Grid item xs={12}><Divider/></Grid>
                                 <Grid item xs={8}>
@@ -603,20 +618,12 @@ function RemindersCreateForm(props) {
 }
 
 RemindersCreateForm.defaultProps = {
-    timesArray: [null],
-    name: "",
-    returnsType: returnsTypeOptions.NOT_RETURN,
-    eachManyDays: 2,
-    eachManyWeeks: 2,
-    weekDays: initilizeWeekDaysSelected(),
-    untilDate: getAfterWeek(),
-    untilType: untilTypeOptions.DATE,
+    formData: defualtFormData(),
     handleSubmit: (res) => {
         return true;
     },
     medicineList: [],
-    medicine: -1,
-    inDate: new Date()
+    medicineInd: -1,
 
 
 }
