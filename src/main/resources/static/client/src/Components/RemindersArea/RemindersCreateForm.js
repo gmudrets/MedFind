@@ -54,7 +54,7 @@ export const defualtFormData = () => {
     data[WEEK_DAYS_SELECTED] = initilizeWeekDaysSelected();
     data[UNTIL_DATE] = getAfterWeek();
     data[UNTIL_TYPE] = untilTypeOptions.DATE;
-    data[MEDICINE] = defualtMed;
+    data[MEDICINE] = loadingMed;
     data[IN_WHICH_DATE] = new Date();
     data[REMINDERS_NUM] = 2;
     return data;
@@ -81,7 +81,8 @@ export const untilTypeOptions = {
     NUM: 'כמות תזכורת'
 };
 export const fakeExpiration = new Date('2500-01-01')
-export const defualtMed = "טוען תרופות...";
+export const defualtMed = "בחר תרופה";
+export const loadingMed = "טוען תרופות..."
 export const getTomorow = () => {
     let date = new Date();
     date.setDate(date.getDate() + 1);
@@ -122,8 +123,8 @@ function RemindersCreateForm(props) {
     const [newFrom, setNewFrom] = React.useState(0);
     const [untilDate, setUntilDate] = React.useState(props.formData[UNTIL_DATE]);
     const [medicineFullList, setMedicineFullList] = React.useState(props.medicineList);
-    const [medicineList, setMedicineList] = React.useState([defualtMed]);
-    const [medicine, setMedicine] = React.useState(defualtMed);
+    const [medicineList, setMedicineList] = React.useState([props.formData[MEDICINE]]);
+    const [medicine, setMedicine] = React.useState(props.formData[MEDICINE]);
     const [weekDaysError, setWeekDaysError] = React.useState(false);
     const [inDate, setInDate] = React.useState(props.formData[IN_WHICH_DATE]);
     const [errorMessege, setErrorMessege] = React.useState(defualtErrorMessege);
@@ -136,10 +137,13 @@ function RemindersCreateForm(props) {
                 medicenes[i + 1] = medicineFullList[i]['hebName'];
             }
             console.log(props.formData[MEDICINE]);
-            const med = props.medicineInd === -1 ? props.formData[MEDICINE] : medicenes[props.medicine + 1]
+            var med = props.medicineInd === -1 ? props.formData[MEDICINE] : medicenes[props.medicine + 1]
+            if(med === loadingMed){
+                med = defualtMed;
+            }
             setMedicine(med);
             setMedicineList(medicenes);
-            if (med !== defualtMed) {
+            if (med !== defualtMed && med!== loadingMed) {
                 handleMedicineChange2(med, medicenes);
             }
             setMedicineList([...new Set(medicenes)]);
@@ -301,6 +305,7 @@ function RemindersCreateForm(props) {
             }
         }
         if (showMedicineError(true)) {
+            setErrorMessege("בעיה בבחירת התרופה, שנה ונסה שוב")
             setErrorMessegeOpen(true);
             return false;
         }
