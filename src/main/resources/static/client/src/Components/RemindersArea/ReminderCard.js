@@ -45,7 +45,7 @@ export default function ReminderCard(props) {
 
     return (
         <ThemeProvider theme={theme}>
-            <Card sx={{maxWidth: 300, width: '90%', marginBottom: 2, minWidth: 200}}>
+            <Card sx={{maxWidth: 400, width: '90%', marginBottom: 2, minWidth: 200}}>
                 <CardHeader
                     title={title === "" ? medicineName : title}
                     subheader={title === "" ? "" : medicineName}

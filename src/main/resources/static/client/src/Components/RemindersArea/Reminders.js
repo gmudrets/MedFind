@@ -91,10 +91,19 @@ export default function Reminders() {
     // }, [medicineList]);
 
     useEffect(async () => {
-
-        setMedicineList(await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_ALL_MEDICINE));
-        const list = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
-        setRemindersList(list.reverse());
+        setTimeout(async () => {
+            if (getAuth().currentUser !== null) {
+                const token = await getAuth().currentUser.getIdToken(true);
+                setMedicineList(await getRequest(token, ServerConsts.GET_ALL_MEDICINE));
+                const list = await getRequest(token, ServerConsts.GET_USER_ALERT_LIST);
+                setRemindersList(list.reverse());
+            }
+            if (RemindersList !== null) {
+                console.log(RemindersList);
+                setRemindersFilterdList(filterList(RemindersList));
+            }
+            console.log(RemindersList);
+        }, 500);
 
     }, []);
     const toggleOnReminderCreation = () => {
@@ -339,11 +348,17 @@ export default function Reminders() {
             info += data[EACH_MANY_WEEKS];
             info += " שבועות"
             info += "\n"
-            info += "בימים "
+            info += "בימים: "
         }
         if (data[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_WEEKS || data[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
-            for (let i = 0; i < data[WEEK_DAYS_SELECTED]; i++) {
-                info += shortDaysWeekOptions[daysWeekOptions.indexOf(data[WEEK_DAYS_SELECTED][i])] + ", "
+
+            let shorWeek = [];
+            for (let i = 0; i < data[WEEK_DAYS_SELECTED].length; i++) {
+                shorWeek.push(shortDaysWeekOptions[daysWeekOptions.indexOf(data[WEEK_DAYS_SELECTED][i])]);
+            }
+            shorWeek.sort();
+            for (let i = 0; i < shorWeek.length; i++) {
+                info += shorWeek[i] + ", "
             }
             info = info.slice(0, info.length - 2);
         }
@@ -360,7 +375,7 @@ export default function Reminders() {
             info += "\n"
             info += "חזור עד "
             if (data[UNTIL_TYPE] === untilTypeOptions.DATE) {
-                info += "התאריך"
+                info += "התאריך "
                 const exdate = toOnlyDateString(dateToString(new Date(data[UNTIL_DATE])))
                 info += exdate
             } else if (data[UNTIL_TYPE] === untilTypeOptions.NUM) {
