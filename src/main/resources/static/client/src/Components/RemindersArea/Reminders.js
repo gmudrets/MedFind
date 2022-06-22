@@ -384,9 +384,10 @@ export default function Reminders() {
             }
         }
         result['infoStr'] = info;
-        result['id'] = data[RemindersFields.REM_ID];
+        result['uid'] = data[RemindersFields.REM_ID];
         result['formData'] = data;
         result['handleDelete'] = handleDelete;
+        result['handleEdit'] = handleEdit;
         return result;
 
     }
@@ -402,17 +403,23 @@ export default function Reminders() {
     const handleDeleteDialogFinished = (event) => {
         setDeletedID(null);
     }
-    const handleFinalDelete = async (id = deletedID) => {//TODO: change to new functipn
+    const handleFinalDelete = async (uid = deletedID) => {
+        const newRem = [...RemindersList];
         for (let i = 0; i < RemindersList.length; i++) {
-            if (RemindersList[i][RemindersFields.REM_ID] === id) {
-                const newRem = [...RemindersList];
+            if (RemindersList[i][RemindersFields.REM_UID] === uid) {
                 newRem.splice(i, 1);
                 setRemindersList(newRem);
-                break;
             }
         }
-        setDeletedID(null);
+        const newFilRem = [...RemindersFilterdList];
 
+        for (let i = 0; i < RemindersFilterdList.length; i++) {
+            if (RemindersFilterdList[i][RemindersFields.REM_UID] === uid) {
+                RemindersFilterdList.splice(i, 1);
+            }
+        }
+        setRemindersFilterdList(newFilRem);
+        setDeletedID(null);
         await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_ID, {"id": deletedID});
 
         ;

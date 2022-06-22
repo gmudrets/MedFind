@@ -21,7 +21,7 @@ export default function ReminderCard(props) {
         medicineName,
         title,
         infoStr,
-        id,
+        uid,
         formData,
         handleDelete,
         handleEdit
@@ -63,10 +63,10 @@ export default function ReminderCard(props) {
                     </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
-                    <IconButton aria-label="deleteReminder" onClick={() => handleDelete(id)}>
+                    <IconButton aria-label="deleteReminder" onClick={() => handleDelete(uid)}>
                         <DeleteIcon/>
                     </IconButton>
-                    <IconButton aria-label="editReminder" onClick={() => handleEdit(id,formData)}>
+                    <IconButton aria-label="editReminder" onClick={() => handleEdit(uid,formData)}>
                         <ModeEditIcon/>
                     </IconButton>
 
