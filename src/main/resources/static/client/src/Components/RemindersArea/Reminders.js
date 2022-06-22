@@ -407,7 +407,9 @@ export default function Reminders() {
     const handleFinalDelete = async (uuid) => {
         console.log('finalDelete')
         console.log(uuid);
+        setLoadingNew(true);
         const newRem = [];
+        setDeletedID(null);
         for (let i = 0; i < RemindersList.length; i++) {
 
             if (RemindersList[i][RemindersFields.REM_UUID] !== uuid) {
@@ -417,8 +419,7 @@ export default function Reminders() {
         console.log(newRem);
         await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_UID, {"uuid": deletedID});
         setRemindersList(newRem);
-        setDeletedID(null);
-        ;
+        setLoadingNew((false));
     }
     const handleEdit = (id, formData) => {
         setEditedID(id);
@@ -444,8 +445,8 @@ export default function Reminders() {
                         <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'auto'}}>
                             {loadingNew &&
                                 <Grid item xs={12} sx={{textAlign: "left"}}>
-                                    <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען
-                                        תזכורות חדשות....
+                                    <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>
+                                        טוען....
                                     </Typography>
                                 </Grid>}
                             {RemindersFilterdList !== null && RemindersFilterdList.length !== 0 && RemindersFilterdList.map((item) => (
