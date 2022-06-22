@@ -455,30 +455,7 @@ function RemindersCreateForm(props) {
                                     <IconButton onClick={handleAddTimeClick}
                                                 disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
                                 </Grid>
-                                {returnsType == returnsTypeOptions.NOT_RETURN &&
-                                    <>
-                                        <Grid item xs={12}><Divider/></Grid>
-                                        <Grid item xs={12}>
-                                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                                <ThemeProvider theme={ltrTheme}>
-                                                    <DatePicker
-                                                        label="בחר תאריך"
-                                                        id={IN_WHICH_DATE}
-                                                        name={IN_WHICH_DATE}
-                                                        value={inDate}
-                                                        onChange={handleInDateChange}
-                                                        views={["year", "month", "day"]}
-                                                        filel
-                                                        inputFormat="dd/MM/yyyy"
-                                                        minDate={new Date()}
-                                                        renderInput={(params) => <TextField {...params}
-                                                        />}
 
-                                                    />
-                                                </ThemeProvider>
-                                            </LocalizationProvider>
-                                        </Grid>
-                                    </>}
                                 <Grid item xs={12}><Divider/></Grid>
                                 <Grid item xs={8}>
                                     <TextField
@@ -560,8 +537,31 @@ function RemindersCreateForm(props) {
                                         </FormControl>
                                     </Grid>
                                 }
-                                {returnsType != returnsTypeOptions.NOT_RETURN &&
-                                    <Grid item xs={12}><Divider/></Grid>}
+                                <Grid item xs={12}><Divider/></Grid>
+                                {returnsType == returnsTypeOptions.NOT_RETURN &&
+                                    <>
+                                        <Grid item xs={12}><Divider/></Grid>
+                                        <Grid item xs={12}>
+                                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                <ThemeProvider theme={ltrTheme}>
+                                                    <DatePicker
+                                                        label="בחר תאריך"
+                                                        id={IN_WHICH_DATE}
+                                                        name={IN_WHICH_DATE}
+                                                        value={inDate}
+                                                        onChange={handleInDateChange}
+                                                        views={["year", "month", "day"]}
+                                                        filel
+                                                        inputFormat="dd/MM/yyyy"
+                                                        minDate={new Date()}
+                                                        renderInput={(params) => <TextField {...params}
+                                                        />}
+
+                                                    />
+                                                </ThemeProvider>
+                                            </LocalizationProvider>
+                                        </Grid>
+                                    </>}
                                 {(returnsType == returnsTypeOptions.EACH_FEW_DAYS || returnsType == returnsTypeOptions.EACH_DAY) &&
 
                                     <Grid item xs={5}>
