@@ -16,6 +16,6 @@ public interface AlertEntryRepository extends CrudRepository<AlertEntry, Integer
     Long deleteById(Long Id);
 
     @Transactional
-    Long deleteByAlertUuid(UUID uuid);
+    Long deleteAllByAlertUuid(UUID uuid);
 
 }
