@@ -99,11 +99,9 @@ export default function Reminders() {
                 setRemindersList(list.reverse());
             }
             if (RemindersList !== null) {
-                console.log(RemindersList);
                 setRemindersFilterdList(filterList(RemindersList));
             }
-            console.log(RemindersList);
-        }, 500);
+        }, 1000);
 
     }, []);
     const toggleOnReminderCreation = () => {
@@ -112,7 +110,6 @@ export default function Reminders() {
 
     const handleAddClick = () => {
         setOnReminderCreation(true);
-        console.log(dateToString(new Date()));
     }
     const convertNotReturn = (newData) => {
         newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
@@ -120,7 +117,6 @@ export default function Reminders() {
         newData[UNTIL_TYPE] = untilTypeOptions.NUM;
         newData[REMINDERS_NUM] = 1;
         newData[UNTIL_DATE] = fakeExpiration;
-        console.log(fakeExpiration);
         return newData;
     }
     const convertEachDay = (newData) => {
@@ -166,11 +162,9 @@ export default function Reminders() {
             newData[IN_WHICH_DATE] = fakeExpiration;
         }
         if (originalData[RETURNS_TYPE] === returnsTypeOptions.EACH_DAY) {
-            console.log(newData);
             convertEachDay(newData);
 
         }
-        console.log(newData);
         if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
             if (newData[UNTIL_TYPE] !== untilTypeOptions.DATE) {
                 newData[UNTIL_DATE] = fakeExpiration;
@@ -212,7 +206,6 @@ export default function Reminders() {
 
 
     const sendEachFewWeeks = async (data, originalData) => {
-        console.log("hello")
         let hours = [];
         let minutes = [];
         let days = [];
@@ -243,12 +236,9 @@ export default function Reminders() {
     }
     const sendEachFewDays = async (data, originalData, skipBefore) => {
         const dates = [];
-        console.log(data);
         const now = new Date();
         if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
             const date = new Date(data[IN_WHICH_DATE]);
-            console.log(date);
-            console.log(data[IN_WHICH_DATE]);
             dates.push(dateToString(new Date(data[TIMES_ARRAY][0]), date.getDate(), date.getMonth(), date.getFullYear()));
         } else {
             for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
@@ -258,8 +248,6 @@ export default function Reminders() {
                         // console.log(curDate.getTime() > now.getTime());
                         // console.log(dateToString(curDate));
                         if (curDate.getTime() > now.getTime()) {
-                            console.log(curDate);
-                            console.log(data[EACH_MANY_DAYS]);
                             dates.push(dateToString(curDate));
                         } else {
                             j--;
@@ -271,8 +259,6 @@ export default function Reminders() {
                         // console.log(curDate.getTime() > now.getTime());
                         // console.log(dateToString(curDate));
                         if (curDate.getTime() > now.getTime()) {
-                            console.log(curDate);
-                            console.log(data[EACH_MANY_DAYS]);
                             dates.push(dateToString(curDate));
 
                         }
@@ -308,11 +294,8 @@ export default function Reminders() {
     }
     const createPropsFromItem = (data2) => {
         let result = {};
-        console.log(RemindersFilterdList)
-        console.log(data2);
 
         let data = JSON.parse(decodeURIComponent(data2['alertDescription']));
-        console.log(data);
 
         result['title'] = data[TITLE];
         let medicineName = null;
@@ -364,7 +347,6 @@ export default function Reminders() {
         }
         info += "\n"
         info += "בשעות: "
-        console.log(data[TIMES_ARRAY]);
         for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
             const time = new Date(data[TIMES_ARRAY][i])
             const timeStr = dateToString(time)
@@ -398,15 +380,12 @@ export default function Reminders() {
         return s.slice(11, 16);
     }
     const handleDelete = (id) => {
-        console.log(id);
         setDeletedID(id);
     }
     const handleDeleteDialogFinished = (event) => {
         setDeletedID(null);
     }
     const handleFinalDelete = async (uuid) => {
-        console.log('finalDelete')
-        console.log(uuid);
         setLoadingNew(true);
         const newRem = [];
         setDeletedID(null);
@@ -416,7 +395,6 @@ export default function Reminders() {
                 newRem.push(RemindersList[i]);
             }
         }
-        console.log(newRem);
         await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_UID, {"uuid": deletedID});
         setRemindersList(newRem);
         setLoadingNew((false));
