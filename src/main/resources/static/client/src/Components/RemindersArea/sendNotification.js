@@ -1,7 +1,9 @@
-export function sendNotification(header, content, uid) {
-    var url = "https://onesignal.com/api/v1/notifications";
+import {APP_ID} from "../../Consts/OneSignalInfo";
 
-    var xhr = new XMLHttpRequest();
+export function sendNotification(header, content, uid) {
+    let url = "https://onesignal.com/api/v1/notifications";
+
+    let xhr = new XMLHttpRequest();
     xhr.open("POST", url);
 
     xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
@@ -9,17 +11,15 @@ export function sendNotification(header, content, uid) {
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            console.log(xhr.status);
-            console.log(xhr.responseText);
+
         }
     };
 
-    var data = `{"app_id": "577a3ade-c29c-434b-8c12-ee8749ed6dfb",
+    let data = `{"app_id": "`+ APP_ID + `",
     "contents": {"en":"` + content + `"},
     "headings": {"en": "` + header + `" },
     "channel_for_external_user_ids": "push",
      "include_external_user_ids": ["` + uid + `"]}`;
-    console.log(data);
     xhr.send(data);
 
 }

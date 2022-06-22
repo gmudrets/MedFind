@@ -90,16 +90,10 @@ function Login() {
                         allowLocalhostAsSecureOrigin: true
                     }).then(() => {
                         setInitialized(true);
-                        console.log('worked');
-                        const slidown = OneSignal.showSlidedownPrompt().then(() => {
-                            console.log('worked2')
+                        const slidown =  OneSignal.showSlidedownPrompt().then(() => {
                         });
                         OneSignal.setExternalUserId(userCredential.user.uid);
-                        // OneSignal.removeExternalUserId(userCredential.user.uid);
-                        // OneSignal.deleteTags();
-                        //TODO: maybe phone notfications later
-                        // OneSignal.setEmail(userCredential.user.email);
-                        // OneSignal.s
+
                     });
                 } else {
                     setEmailNotVerifiedError(true);
