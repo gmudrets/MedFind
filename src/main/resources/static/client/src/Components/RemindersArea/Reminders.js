@@ -384,7 +384,7 @@ export default function Reminders() {
             }
         }
         result['infoStr'] = info;
-        result['uid'] = data[RemindersFields.REM_ID];
+        result['uuid'] = data2[RemindersFields.REM_UUID];
         result['formData'] = data;
         result['handleDelete'] = handleDelete;
         result['handleEdit'] = handleEdit;
@@ -398,30 +398,26 @@ export default function Reminders() {
         return s.slice(11, 16);
     }
     const handleDelete = (id) => {
+        console.log(id);
         setDeletedID(id);
     }
     const handleDeleteDialogFinished = (event) => {
         setDeletedID(null);
     }
-    const handleFinalDelete = async (uid = deletedID) => {
-        const newRem = [...RemindersList];
+    const handleFinalDelete = async (uuid) => {
+        console.log('finalDelete')
+        console.log(uuid);
+        const newRem = [];
         for (let i = 0; i < RemindersList.length; i++) {
-            if (RemindersList[i][RemindersFields.REM_UID] === uid) {
-                newRem.splice(i, 1);
-                setRemindersList(newRem);
-            }
-        }
-        const newFilRem = [...RemindersFilterdList];
 
-        for (let i = 0; i < RemindersFilterdList.length; i++) {
-            if (RemindersFilterdList[i][RemindersFields.REM_UID] === uid) {
-                RemindersFilterdList.splice(i, 1);
+            if (RemindersList[i][RemindersFields.REM_UUID] !== uuid) {
+                newRem.push(RemindersList[i]);
             }
         }
-        setRemindersFilterdList(newFilRem);
+        console.log(newRem);
+        await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_UID, {"uuid": deletedID});
+        setRemindersList(newRem);
         setDeletedID(null);
-        await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_ID, {"id": deletedID});
-
         ;
     }
     const handleEdit = (id, formData) => {
@@ -484,7 +480,7 @@ export default function Reminders() {
 
                         <DialogActions>
                             <Button onClick={handleDeleteDialogFinished}>בטל מחיקה</Button>
-                            <Button onClick={handleFinalDelete} autoFocus>
+                            <Button onClick={() =>handleFinalDelete(deletedID)} autoFocus>
                                 מחק
                             </Button>
                         </DialogActions>
