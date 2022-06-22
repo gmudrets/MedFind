@@ -144,7 +144,7 @@ public class MedicineAlerts {
             throw new TokenException("User not found.");
         }
 
-        alertEntryRepository.deleteByAlertUuid(uuid);
+        alertEntryRepository.deleteAllByAlertUuid(uuid);
     }
 
 
