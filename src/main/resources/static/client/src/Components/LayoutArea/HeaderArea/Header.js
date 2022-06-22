@@ -13,7 +13,6 @@ import {Actions} from "../../../Redux/UI";
 import ReadSocket from "./ReadSocket";
 import {USER_PROFILE} from "../../../Consts/StatePaths";
 import * as ProfileFields from "../../../Consts/ProfileFields";
-import ReadSocket from "./ReadSocket";
 
 
 function Header() {
