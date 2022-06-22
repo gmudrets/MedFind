@@ -49,7 +49,7 @@ public class AlertsNotificationScheduler {
 
             if (alert.getAlertType() == AlertType.FIXED) {
                 if (LocalDateTime.now().isAfter(alert.getFixedDate())) {
-                    activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(), ActiveAlertType.SCHEDULE));
+                    activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(), alert.getUserUuid(), ActiveAlertType.SCHEDULE));
                     alertEntryRepository.delete(alert);
                 }
             } else {
@@ -60,7 +60,7 @@ public class AlertsNotificationScheduler {
                     var alertDate = LocalDate.now().atTime(alert.getHour(), alert.getMinute());
 
                     if (alertDate.isAfter(dateNow)) {
-                        activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(), ActiveAlertType.SCHEDULE));
+                        activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(), alert.getUserUuid(), ActiveAlertType.SCHEDULE));
                         alert.triggered();
                         alert.setLastTriggered(LocalDateTime.now());
                         alertEntryRepository.save(alert);
@@ -79,14 +79,14 @@ public class AlertsNotificationScheduler {
 
         for(var medicine : medicineEntryRepository.findAll()) {
             if(medicine.getExpiration().after(dateNow)) {
-                expirationAlerts.add(new AlertsResponse(0L, medicine.getHebName(), medicine.getRegNum(), ActiveAlertType.EXPIRATION));
+                expirationAlerts.add(new AlertsResponse(0L, medicine.getHebName(), medicine.getRegNum(), medicine.getUuid(), ActiveAlertType.EXPIRATION));
             }
         }
 
         return expirationAlerts;
     }
 
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedDelay = 120000)
     public void scheduleFixedRateTask() {
         var alerts = Stream.concat(getAllScheduleAlerts().stream(), getAllExpirationAlerts().stream())
                 .collect(Collectors.toList());
