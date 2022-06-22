@@ -380,7 +380,7 @@ export default function Reminders() {
                 info += exdate
             } else if (data[UNTIL_TYPE] === untilTypeOptions.NUM) {
                 info += data[REMINDERS_NUM];
-                info += "תזכורת "
+                info += " תזכורת "
             }
         }
         result['infoStr'] = info;

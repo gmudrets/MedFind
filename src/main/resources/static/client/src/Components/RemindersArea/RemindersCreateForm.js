@@ -271,6 +271,11 @@ function RemindersCreateForm(props) {
 
     const handleTimeChange = (time, index) => {
         const next = [...timesArray];
+        //for some reasons somtimes created previous year
+        if(new Date(time).getFullYear()!= new Date().getFullYear()){
+            time = new Date(new Date(time).setFullYear(new Date().getFullYear()))
+        }
+        console.log(time);
         next[index] = time;
         setTimesArray(next);
     }
