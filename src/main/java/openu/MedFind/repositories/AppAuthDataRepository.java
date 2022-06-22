@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface AppAuthDataRepository extends CrudRepository<AppAuthData, Integer> {
 
-    List<AppAuthData> findAllByAppID(String appId);
+    List<AppAuthData> findAll();
 }

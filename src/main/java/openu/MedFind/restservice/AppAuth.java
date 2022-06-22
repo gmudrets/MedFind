@@ -6,7 +6,10 @@ import openu.MedFind.exceptions.TokenException;
 import openu.MedFind.repositories.AppAuthDataRepository;
 import openu.MedFind.services.FirebaseValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,41 +21,16 @@ public class AppAuth {
     @Autowired
     private AppAuthDataRepository appAuthDataRepository;
 
-
-    @GetMapping("/api/AddAppData")
-    public void AddAppData(@RequestHeader(name = "idToken") String idToken,
-                              @RequestParam String appID,
-                              @RequestParam String authToken
-    ) throws TokenException {
-
-        String uuid;
-
-        try {
-            uuid = FirebaseValidator.getUidFromIdToken(idToken);
-        } catch (FirebaseAuthException e) {
-            throw new TokenException("User not found.", e);
-        }
-
-        appAuthDataRepository.save(AppAuthData.builder()
-                .userUuid(uuid)
-                .authToken(authToken)
-                .appID(appID)
-                .build()
-        );
-    }
-
     @GetMapping("/api/GetAppData")
-    public List<AppAuthData> GetAppData(@RequestHeader(name = "idToken") String idToken,
-                                        @RequestParam String appID
-    ) throws TokenException {
-
+    public List<AppAuthData> GetAppData(@RequestHeader(name = "idToken") String idToken) throws TokenException
+    {
         try {
             FirebaseValidator.getUidFromIdToken(idToken);
         } catch (FirebaseAuthException e) {
             throw new TokenException("User not found.", e);
         }
 
-        return appAuthDataRepository.findAllByAppID(appID);
+        return appAuthDataRepository.findAll();
 
     }
 
