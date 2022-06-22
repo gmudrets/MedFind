@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Tolerate;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ public class AlertEntry {
 
     private String regNum;
 
+    @Type(type="uuid-char")
     private UUID alertUuid;
 
     private LocalDateTime alertExpiration;
