@@ -78,8 +78,9 @@ public class AlertsNotificationScheduler {
         var dateNow = new Date();
 
         for(var medicine : medicineEntryRepository.findAll()) {
-            if(medicine.getExpiration().after(dateNow)) {
+            if(!medicine.isExpirationAlertSent() && medicine.getExpiration().after(dateNow)) {
                 expirationAlerts.add(new AlertsResponse(0L, medicine.getHebName(), medicine.getRegNum(), medicine.getUuid(), ActiveAlertType.EXPIRATION));
+                medicine.setExpirationAlertSent(true);
             }
         }
 

@@ -2,7 +2,6 @@ package openu.MedFind.restservice;
 
 import com.google.firebase.auth.FirebaseAuthException;
 import openu.MedFind.dto.MedicineEntry;
-import openu.MedFind.dto.MedicineUnits;
 import openu.MedFind.exceptions.TokenException;
 import openu.MedFind.repositories.MedicineEntryRepository;
 import openu.MedFind.services.FirebaseValidator;
@@ -70,6 +69,7 @@ public class MedicineStock {
                 .dosage(dosage)
                 .shared(shared)
                 .uuid(uuid)
+                .expirationAlertSent(false)
                 .build());
     }
 
@@ -111,6 +111,7 @@ public class MedicineStock {
 
         if(entry != null) {
             entry.setExpiration(expiration);
+            entry.setExpirationAlertSent(false);
             entry.setCount(count);
             entry.setShared(shared);
             medicineEntryRepository.save(entry);

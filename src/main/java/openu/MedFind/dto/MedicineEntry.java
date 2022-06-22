@@ -46,6 +46,7 @@ public class MedicineEntry {
     private String hebName;
 
     private String activeComponents;
+
     private String docBrochureUrl;
 
     private boolean healthBasket;
@@ -57,6 +58,8 @@ public class MedicineEntry {
     private String imageUrl;
 
     private String brochureUrl;
+
+    private boolean expirationAlertSent;
     public void addCount(int count) {
         this.count += count;
     }
