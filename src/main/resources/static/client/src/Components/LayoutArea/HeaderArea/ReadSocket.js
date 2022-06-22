@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import {Client} from '@stomp/stompjs';
 
 
-const SOCKET_URL = 'wss://localhost:8080/wss-messages';
 
 export default function ReadSocket(props) {
     const [messege, setMessege] = React.useState("Your server message here");
@@ -10,18 +9,15 @@ export default function ReadSocket(props) {
 
     useEffect(() => {
         let onConnected = () => {
-            console.log("Connected!!")
             client.subscribe('/wss-alerts/message', function (msg) {
                 if (msg.body) {
                     props.readSocket(msg.body);
-                    console.log(msg.body);
 
                 }
             });
         }
 
         let onDisconnected = () => {
-            console.log("Disconnected!!")
         }
 
         const client = new Client({
