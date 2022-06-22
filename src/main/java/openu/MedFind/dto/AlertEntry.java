@@ -28,6 +28,8 @@ public class AlertEntry {
     private String userUuid;
 
     private String alertName;
+
+    @Column(length = 1000)
     private String alertDescription;
 
     private String regNum;
