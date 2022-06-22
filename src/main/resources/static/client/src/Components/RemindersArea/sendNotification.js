@@ -1,20 +1,17 @@
 import {APP_ID} from "../../Consts/OneSignalInfo";
 import {getAuth} from "firebase/auth";
+import {ServerConsts} from "../../Consts/apiPaths";
 
 
 export async function sendNotification(header, content, uid) {
     let url = "https://onesignal.com/api/v1/notifications";
-    const a =
-    const requastParams = {
-        'authToken': "OTgxNzVjNTUtNTU3Yi00OTUyLThhYzMtMGY3ZjBhNjRlYjM3",
-        "appID": "577a3ade-c29c-434b-8c12-ee8749ed6dfb"
-    }
-    console.log(requastParams);
-    await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GetA, requastParams);
+    var xhr = new XMLHttpRequest();
+
+    const appData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_APP_DATA);
     xhr.open("POST", url);
 
     xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Authorization", "Basic " + profile[ProfileFields.API_KEY]);
+    xhr.setRequestHeader("Authorization", "Basic " + appData['auth_token']);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
