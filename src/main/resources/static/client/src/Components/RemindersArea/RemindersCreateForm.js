@@ -44,6 +44,7 @@ export const UNTIL_TYPE = 'untilType';
 export const REMINDERS_NUM = 'reminderNum';
 export const EACH_MANY_DAYS = 'eachManyDAys';
 export const IN_WHICH_DATE = "inDate";
+export const REG_NUM = 'regNumber'
 export const defualtFormData = () => {
     const data = {};
     data[TIMES_ARRAY] = [null];
@@ -146,7 +147,7 @@ function RemindersCreateForm(props) {
                 medicenes[i + 1] = medicineFullList[i]['hebName'];
             }
             console.log(props.formData[MEDICINE]);
-            var med = props.medicineInd === -1 ? props.formData[MEDICINE] : medicenes[props.medicine + 1]
+            let med = props.medicineInd === -1 ? props.formData[MEDICINE] : medicenes[props.medicine + 1]
             if(med === loadingMed){
                 med = defualtMed;
             }
@@ -333,7 +334,13 @@ function RemindersCreateForm(props) {
         value[UNTIL_TYPE] = untilType;
         value[UNTIL_DATE] = untilDate;
         value[IN_WHICH_DATE] = inDate;
-        value[MEDICINE] = medicineFullList[medicineList.indexOf(medicine)];
+        value[MEDICINE] = medicine;
+        for (let i = 0; i < medicineFullList.length; i++) {
+            if(medicineFullList[i]['hebName'] === medicine){
+                value[REG_NUM] = medicineFullList[i]['regNum'];
+                break;
+            }
+        }
         console.log(value);
         props.handleSubmit(value);
         return true;

@@ -22,7 +22,7 @@ import {useEffect, useState} from "react";
 import RemindersCreateForm, {
     daysWeekOptions, defualtFormData,
     EACH_MANY_DAYS, EACH_MANY_WEEKS, fakeExpiration,
-    getTomorow, IN_WHICH_DATE, MEDICINE, REMINDERS_NUM,
+    getTomorow, IN_WHICH_DATE, MEDICINE, REG_NUM, REMINDERS_NUM,
     RETURNS_TYPE,
     returnsTypeOptions, shortDaysWeekOptions,
     TIMES_ARRAY, TITLE,
@@ -58,6 +58,7 @@ export default function Reminders() {
     const [loadingNew, setLoadingNew] = React.useState(false);
     const [editedID, setEditedID] = React.useState(null);
     const [editedFormData, setEditedFormData] = React.useState(null);
+    const [onReminderCreation, setOnReminderCreation] = useState(false);
 
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
@@ -79,12 +80,12 @@ export default function Reminders() {
             console.log(RemindersFilterdList);
         }
     }, [RemindersFilterdList]);
-    useEffect(()=>{
-        if(!onReminderCreation){
+    useEffect(() => {
+        if (!onReminderCreation) {
             setEditedID(null);
             setEditedID(null);
         }
-    },[onReminderCreation])
+    }, [onReminderCreation])
     // useEffect(() => {
     //     console.log(medicineList);
     // }, [medicineList]);
@@ -96,7 +97,6 @@ export default function Reminders() {
         setRemindersList(list.reverse());
 
     }, []);
-    const [onReminderCreation, setOnReminderCreation] = useState(false);
     const toggleOnReminderCreation = () => {
         setOnReminderCreation((prevState => !prevState));
     }
@@ -145,7 +145,7 @@ export default function Reminders() {
     const handleSubmit = async (originalData) => {
         setLoadingNew(true);
         const id = editedID;
-        if(editedID!==null){
+        if (editedID !== null) {
             handleFinalDelete(id);
         }
         toggleOnReminderCreation();
@@ -218,10 +218,11 @@ export default function Reminders() {
             }
 
         }
+        console.log(encodeURIComponent(JSON.stringify(originalData)));
         const requastParams = {
             'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
             'alertName': data[TITLE],
-            "regNum": data[MEDICINE]['regNum'],
+            "regNum": data[REG_NUM],
             'alertExpiration': dateToString(new Date(data[UNTIL_DATE])),
             'days': days.join("&days="),
             'hours': hours.join("&hours="),
@@ -273,10 +274,12 @@ export default function Reminders() {
 
             }
         }
+
+        console.log(encodeURIComponent(JSON.stringify(originalData)));
         const requastParams = {
             'alertName': data[TITLE],
             'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
-            "regNum": data[MEDICINE]['regNum'],
+            "regNum": data[REG_NUM],
             'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&fixedDateList=")
         }
         console.log(requastParams);
@@ -289,12 +292,19 @@ export default function Reminders() {
                 filtList.push(remindersList[i]);
             }
         }
-        filtList.push(remindersList[remindersList.length - 1]);
+        if (remindersList.length !== 0) {
+            filtList.push(remindersList[remindersList.length - 1]);
+        }
         return filtList;
     }
     const createPropsFromItem = (data2) => {
         let result = {};
-        let data = decodeURIComponent(data2['alertDescription']);
+        console.log(RemindersFilterdList)
+        console.log(data2);
+
+        let data = JSON.parse(decodeURIComponent(data2['alertDescription']));
+        console.log(data);
+
         result['title'] = data[TITLE];
         let medicineName = null;
         let medicineImage = null;
@@ -339,6 +349,7 @@ export default function Reminders() {
         }
         info += "\n"
         info += "בשעות: "
+        console.log(data[TIMES_ARRAY]);
         for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
             const time = new Date(data[TIMES_ARRAY][i])
             const timeStr = dateToString(time)
@@ -419,11 +430,12 @@ export default function Reminders() {
                                         תזכורות חדשות....
                                     </Typography>
                                 </Grid>}
-                            {RemindersFilterdList != null ? (RemindersFilterdList).map((item) => (
+                            {RemindersFilterdList !== null && RemindersFilterdList.length !== 0 && RemindersFilterdList.map((item) => (
                                 <Grid item md={3} key={item[RemindersFields.REM_ID]}>
                                     <ReminderCard  {...createPropsFromItem(item)}/>
                                 </Grid>
-                            )) : <Grid item xs={12} sx={{textAlign: "left"}}>
+                            ))}
+                            {RemindersFilterdList === null && <Grid item xs={12} sx={{textAlign: "left"}}>
                                 <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>טוען
                                     תזכורת....
                                 </Typography>
