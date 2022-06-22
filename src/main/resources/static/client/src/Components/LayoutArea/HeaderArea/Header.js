@@ -49,7 +49,7 @@ function Header() {
     };
     const readSocket = (data) => {
         if (data !== []) {
-
+            console.log(data);
         }
     }
 

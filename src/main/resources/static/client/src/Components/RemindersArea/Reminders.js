@@ -18,7 +18,7 @@ import * as STATE_PATHS from "../../Consts/StatePaths";
 import Typography from "@mui/material/Typography";
 import {isMobile} from "react-device-detect";
 import TransitionsModal from "../UI/Modal/Modal";
-import {useEffect, useState} from "react";
+import {useEffect, useReducer, useState} from "react";
 import RemindersCreateForm, {
     daysWeekOptions, defualtFormData,
     EACH_MANY_DAYS, EACH_MANY_WEEKS, fakeExpiration,
@@ -59,6 +59,7 @@ export default function Reminders() {
     const [editedID, setEditedID] = React.useState(null);
     const [editedFormData, setEditedFormData] = React.useState(null);
     const [onReminderCreation, setOnReminderCreation] = useState(false);
+    const [keyToRerender, reRenderForm] = useReducer(x => x + 1, 0);
 
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
@@ -91,19 +92,36 @@ export default function Reminders() {
     // }, [medicineList]);
 
     useEffect(async () => {
-        setTimeout(async () => {
-            if (getAuth().currentUser !== null) {
-                const token = await getAuth().currentUser.getIdToken(true);
-                setMedicineList(await getRequest(token, ServerConsts.GET_ALL_MEDICINE));
-                const list = await getRequest(token, ServerConsts.GET_USER_ALERT_LIST);
-                setRemindersList(list.reverse());
-            }
+        if (getAuth().currentUser !== null) {
+            const token = await getAuth().currentUser.getIdToken(true);
+            setMedicineList(await getRequest(token, ServerConsts.GET_ALL_MEDICINE));
+            reRenderForm()
+            const list = await getRequest(token, ServerConsts.GET_USER_ALERT_LIST);
+            setRemindersList(list.reverse());
+
             if (RemindersList !== null) {
                 setRemindersFilterdList(filterList(RemindersList));
             }
-        }, 1000);
+        } else {
+            setTimeout(async () => {
+                if (getAuth().currentUser !== null) {
+                    const token = await getAuth().currentUser.getIdToken(true);
+                    setMedicineList(await getRequest(token, ServerConsts.GET_ALL_MEDICINE));
+                    reRenderForm();
+                    const list = await getRequest(token, ServerConsts.GET_USER_ALERT_LIST);
+                    setRemindersList(list.reverse());
+                }
+                if (RemindersList !== null) {
+                    setRemindersFilterdList(filterList(RemindersList));
+                }
+
+            }, 1000)
+        }
+        ;
 
     }, []);
+
+
     const toggleOnReminderCreation = () => {
         setOnReminderCreation((prevState => !prevState));
     }
@@ -445,7 +463,8 @@ export default function Reminders() {
 
                     <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
                         <RemindersCreateForm handleSubmit={handleSubmit} medicineList={medicineList}
-                                             formData={editedID !== null ? editedFormData : defualtFormData()}/>
+                                             formData={editedID !== null ? editedFormData : defualtFormData()}
+                                             key={"abd" + keyToRerender}/>
                     </TransitionsModal>
                     <Dialog
                         open={deletedID != null}
@@ -459,7 +478,7 @@ export default function Reminders() {
 
                         <DialogActions>
                             <Button onClick={handleDeleteDialogFinished}>בטל מחיקה</Button>
-                            <Button onClick={() =>handleFinalDelete(deletedID)} autoFocus>
+                            <Button onClick={() => handleFinalDelete(deletedID)} autoFocus>
                                 מחק
                             </Button>
                         </DialogActions>
