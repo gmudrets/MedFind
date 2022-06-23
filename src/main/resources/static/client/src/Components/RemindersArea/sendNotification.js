@@ -9,11 +9,10 @@ export async function sendNotification(header, content, uid) {
     let xhr = new XMLHttpRequest();
 
     const appData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_APP_DATA);
-    console.log(appData);
     xhr.open("POST", url);
 
     xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Authorization", "Basic " + appData['authToken']);
+    xhr.setRequestHeader("Authorization", "Basic " + appData[0]['authToken']);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -25,7 +24,7 @@ export async function sendNotification(header, content, uid) {
     "contents": {"en":"` + content + `"},
     "headings": {"en": "` + header + `" },
     "channel_for_external_user_ids": "push",
+    "allowLocalhostAsSecureOrigin": "true",
      "include_external_user_ids": ["` + uid + `"]}`;
     xhr.send(data);
-
 }

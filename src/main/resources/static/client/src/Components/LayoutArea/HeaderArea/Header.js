@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,9 +9,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import logo from '../../../Assets/Images/logo.png'
 import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
+import {USER_PROFILE} from '../../../Consts/StatePaths'
 import {Actions} from "../../../Redux/UI";
 import ReadSocket from "./ReadSocket";
-import {USER_PROFILE} from "../../../Consts/StatePaths";
 import * as ProfileFields from "../../../Consts/ProfileFields";
 import {sendNotification} from "../../RemindersArea/sendNotification";
 
@@ -51,23 +51,20 @@ function Header() {
     const readSocket = async (data) => {
         if (data !== []) {
             console.log(data);
-            //TODO:
-            // for (let i = 0; i < data.length; i++) {
-            //     const user = data[i]['user'];
-            //     const title = data[i]['alertName'];
-            //
-            //     if (data[i]['alertType'] === "EXPIRATION") {
-            //         const _title = "התראה על סיום תוקף";
-            //         const content = title;
-            //         await sendNotification(_title, content, user);
-            //     }
-            //     const medicineName = data[i]['medName'];//Change if require
-            //     const userid = data[i]['medName'];
-            //     const _title = title === "" ? medicineName : title;
-            //     const content = title === "" ? "" : medicineName;
-            //     await sendNotification(_title, content, user);
-            //
-            // }
+            for (let i = 0; i < data.length; i++) {
+                const user = data[i]['user'];
+                const title = data[i]['alertName'];
+
+                if (data[i]['alertType'] === "EXPIRATION") {
+                    const _title = "התראה על סיום תוקף";
+                    const content = title;
+                    await sendNotification(_title, content, user);
+                }
+                const medicineName = data[i]['medicineHebName'];
+                const _title = title === "" ? medicineName : title;
+                const content = title === "" ? "" : medicineName;
+                await sendNotification(_title, content, user);
+            }
         }
     }
 

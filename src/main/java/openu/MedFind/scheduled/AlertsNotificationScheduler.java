@@ -8,6 +8,8 @@ import openu.MedFind.repositories.AlertEntryRepository;
 import openu.MedFind.repositories.MedicineEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,12 +29,17 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class AlertsNotificationScheduler {
 
     private static final long WEEK_DAYS = 7L;
+    private static final String FROM_EMAIL = "medfind.alerts@gmail.com";
+    private static final String EMAIL_SUBJECT = "MEDFIND ALERT";
 
     @Autowired
     SimpMessagingTemplate template;
 
     @Autowired
     private AlertEntryRepository alertEntryRepository;
+
+    @Autowired
+    private JavaMailSender emailSender;
 
     @Autowired
     private MedicineEntryRepository medicineEntryRepository;
@@ -49,7 +56,8 @@ public class AlertsNotificationScheduler {
 
             if (alert.getAlertType() == AlertType.FIXED) {
                 if (LocalDateTime.now().isAfter(alert.getFixedDate())) {
-                    activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(), alert.getUserUuid(), ActiveAlertType.SCHEDULE));
+                    activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(),
+                            alert.getMedicineHebName(), alert.getUserUuid(), alert.getUserEmail(), ActiveAlertType.SCHEDULE));
                     alertEntryRepository.delete(alert);
                 }
             } else {
@@ -60,7 +68,8 @@ public class AlertsNotificationScheduler {
                     var alertDate = LocalDate.now().atTime(alert.getHour(), alert.getMinute());
 
                     if (alertDate.isAfter(dateNow)) {
-                        activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(), alert.getUserUuid(), ActiveAlertType.SCHEDULE));
+                        activeAlerts.add(new AlertsResponse(alert.getId(), alert.getAlertName(), alert.getRegNum(),
+                                alert.getMedicineHebName(), alert.getUserUuid(), alert.getUserEmail(), ActiveAlertType.SCHEDULE));
                         alert.triggered();
                         alert.setLastTriggered(LocalDateTime.now());
                         alertEntryRepository.save(alert);
@@ -79,7 +88,8 @@ public class AlertsNotificationScheduler {
 
         for(var medicine : medicineEntryRepository.findAll()) {
             if(!medicine.isExpirationAlertSent() && medicine.getExpiration().after(dateNow)) {
-                expirationAlerts.add(new AlertsResponse(0L, medicine.getHebName(), medicine.getRegNum(), medicine.getUuid(), ActiveAlertType.EXPIRATION));
+                expirationAlerts.add(new AlertsResponse(0L, medicine.getHebName(), medicine.getRegNum(), medicine.getHebName(),
+                        medicine.getUuid(), null, ActiveAlertType.EXPIRATION));
                 medicine.setExpirationAlertSent(true);
                 medicineEntryRepository.save(medicine);
             }
@@ -96,6 +106,16 @@ public class AlertsNotificationScheduler {
         if(!alerts.isEmpty()) {
             template.convertAndSend("/wss-alerts/message", alerts);
         }
-    }
 
+        for(final var alert : alerts) {
+            if(alert.userEmail() != null) {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setFrom(FROM_EMAIL);
+                message.setTo(alert.userEmail());
+                message.setSubject(EMAIL_SUBJECT);
+                message.setText("Alert for " + alert.alertName() + " for medicine " + alert.medicineHebName());
+                emailSender.send(message);
+            }
+        }
+    }
 }

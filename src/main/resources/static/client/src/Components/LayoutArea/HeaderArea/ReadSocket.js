@@ -3,7 +3,6 @@ import {Client} from '@stomp/stompjs';
 import {SOCKET_URL} from "../../../Consts/WebSocketConst";
 
 
-
 export default function ReadSocket(props) {
     const [messege, setMessege] = React.useState("Your server message here");
 
@@ -13,7 +12,6 @@ export default function ReadSocket(props) {
             client.subscribe('/wss-alerts/message', function (msg) {
                 if (msg.body) {
                     props.readSocket(msg.body);
-
                 }
             });
         }

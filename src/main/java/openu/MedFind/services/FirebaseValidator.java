@@ -8,7 +8,6 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.cloud.FirestoreClient;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.print.Doc;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -29,6 +28,10 @@ public class FirebaseValidator {
 
     public static String getUidFromIdToken(String idToken) throws FirebaseAuthException {
         return FirebaseAuth.getInstance().verifyIdToken(idToken).getUid();
+    }
+
+    public static String getEmailFromIdToken(String idToken) throws FirebaseAuthException {
+        return FirebaseAuth.getInstance().verifyIdToken(idToken).getEmail();
     }
 
     public static boolean isDoctor(String idToken) throws FirebaseAuthException {

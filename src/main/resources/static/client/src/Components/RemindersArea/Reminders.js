@@ -1,32 +1,40 @@
 import * as React from 'react';
+import {useEffect, useReducer, useState} from 'react';
 import Box from '@mui/material/Box';
-
 import {createTheme} from "@mui/material/styles";
-import {ThemeProvider} from "@emotion/react";
+import {CacheProvider, ThemeProvider} from "@emotion/react";
 import AddIcon from '@mui/icons-material/Add';
-
 import Grid from "@mui/material/Grid";
-//rtl stuff https://mui.com/material-ui/guides/right-to-left/
 import rtlPlugin from 'stylis-plugin-rtl';
-import {CacheProvider} from '@emotion/react';
 import createCache from '@emotion/cache';
 import {prefixer} from 'stylis';
-import {Button, Checkbox, Dialog, Fab, FormControlLabel, FormGroup, Paper, Stack} from "@mui/material";
+import {Button, Dialog, Fab} from "@mui/material";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../Utils/Utils";
 import * as STATE_PATHS from "../../Consts/StatePaths";
 import Typography from "@mui/material/Typography";
 import {isMobile} from "react-device-detect";
 import TransitionsModal from "../UI/Modal/Modal";
-import {useEffect, useReducer, useState} from "react";
 import RemindersCreateForm, {
-    daysWeekOptions, defualtFormData,
-    EACH_MANY_DAYS, EACH_MANY_WEEKS, fakeExpiration,
-    getTomorow, IN_WHICH_DATE, MEDICINE, REG_NUM, REMINDERS_NUM,
+    daysWeekOptions,
+    defaultFormData,
+    EACH_MANY_DAYS,
+    EACH_MANY_WEEKS,
+    fakeExpiration,
+    HEB_NAME,
+    IN_WHICH_DATE,
+    MEDICINE,
+    REG_NUM,
+    REMINDERS_NUM,
     RETURNS_TYPE,
-    returnsTypeOptions, shortDaysWeekOptions,
-    TIMES_ARRAY, TITLE,
-    UNTIL_DATE, UNTIL_TYPE, untilTypeOptions, WEEK_DAYS_SELECTED
+    returnsTypeOptions,
+    shortDaysWeekOptions,
+    TIMES_ARRAY,
+    TITLE,
+    UNTIL_DATE,
+    UNTIL_TYPE,
+    untilTypeOptions,
+    WEEK_DAYS_SELECTED
 } from "./RemindersCreateForm";
 import {useNavigate} from "react-router-dom";
 import {getRequest} from "../../Utils/AxiosRequests";
@@ -79,6 +87,7 @@ const sendEachFewWeeks = async (data, originalData,token) => {
         'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
         'alertName': data[TITLE],
         "regNum": data[REG_NUM],
+        "medicineHebName": data[HEB_NAME],
         'alertExpiration': dateToString(new Date(data[UNTIL_DATE])),
         'days': days.join("&days="),
         'hours': hours.join("&hours="),
@@ -124,20 +133,21 @@ const sendEachFewDays = async (data, originalData, token) => {
         }
     }
 
-    console.log(encodeURIComponent(JSON.stringify(originalData)));
-    const requastParams = {
+    const requestParams = {
         'alertName': data[TITLE],
         'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
         "regNum": data[REG_NUM],
-        'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&fixedDateList=")
+        "medicineHebName": data[HEB_NAME],
+        'alertExpiration': dateToString(new Date(data[UNTIL_DATE])),
+        'fixedDateList': dates.join("&fixedDateList=")
     }
-    console.log(requastParams);
-    const curData = await getRequest(token, ServerConsts.ADD_FIXED_ALERT, requastParams);
+    await getRequest(token, ServerConsts.ADD_FIXED_ALERT, requestParams);
 }
-export const handleRemSubmit = async (originalData,token) => {
+export const handleReminderSubmit = async (originalData, token) => {
 
     const newData = JSON.parse(JSON.stringify(originalData));
     changeEndDate(newData);
+
     if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
         convertNotReturn(newData);
     } else {
@@ -145,19 +155,14 @@ export const handleRemSubmit = async (originalData,token) => {
     }
     if (originalData[RETURNS_TYPE] === returnsTypeOptions.EACH_DAY) {
         convertEachDay(newData);
-
     }
     if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
         if (newData[UNTIL_TYPE] !== untilTypeOptions.DATE) {
             newData[UNTIL_DATE] = fakeExpiration;
-
         }
-        // convertToUntilNum(newData);
-        // } else {
-        // }
+
         await sendEachFewDays(newData, originalData,token);
         return true;
-
     }
     if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
         convertEachWeek(newData);
@@ -206,6 +211,7 @@ export default function Reminders() {
 
 
     const currentUser = useSelector((state) => getSafe(STATE_PATHS.USER_DETAILS, state));
+
     useEffect(() => {
         if (currentUser === '') {
             navigate("/login");
@@ -213,27 +219,19 @@ export default function Reminders() {
         }
 
     }, [currentUser]);
+
     useEffect(() => {
         if (RemindersList !== null) {
-            console.log(RemindersList);
             setRemindersFilterdList(filterList(RemindersList));
         }
     }, [RemindersList]);
+
     useEffect(() => {
-        if (RemindersFilterdList !== null) {
-            console.log(RemindersFilterdList);
-        }
-    }, [RemindersFilterdList]);
-    useEffect(() => {
-        console.log(onReminderCreation)
         if (!onReminderCreation) {
             setEditedID(null);
             setEditedID(null);
         }
     }, [onReminderCreation])
-    // useEffect(() => {
-    //     console.log(medicineList);
-    // }, [medicineList]);
 
     useEffect(async () => {
         if (getAuth().currentUser !== null) {
@@ -258,13 +256,9 @@ export default function Reminders() {
                 if (RemindersList !== null) {
                     setRemindersFilterdList(filterList(RemindersList));
                 }
-
             }, 1000)
         }
-        ;
-
     }, []);
-
 
     const toggleOnReminderCreation = () => {
         setOnReminderCreation((prevState => !prevState));
@@ -287,15 +281,14 @@ export default function Reminders() {
 
     const handleSubmit = async (originalData) => {
         setLoadingNew(true);
-        const id = editedID;
-        console.log(id);
+
         toggleOnReminderCreation();
-        const newList = null;
+
         if (editedID !== null) {
-            const newList = await handleFinalDelete(id, false);
+            await handleFinalDelete(editedID, false);
         }
         const token = await getAuth().currentUser.getIdToken(true);
-        await handleRemSubmit(originalData, token);
+        await handleReminderSubmit(originalData, token);
         const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
         setRemindersList(data.reverse());
         setLoadingNew(false);
@@ -308,16 +301,16 @@ export default function Reminders() {
 
 
     const filterList = (remindersList) => {
-        const filtList = [];
+        const filterList = [];
         for (let i = 0; i < remindersList.length - 1; i++) {
             if (remindersList[i]['alertUuid'] !== remindersList[i + 1]['alertUuid']) {
-                filtList.push(remindersList[i]);
+                filterList.push(remindersList[i]);
             }
         }
         if (remindersList.length !== 0) {
-            filtList.push(remindersList[remindersList.length - 1]);
+            filterList.push(remindersList[remindersList.length - 1]);
         }
-        return filtList;
+        return filterList;
     }
     const createPropsFromItem = (data2) => {
         let result = {};
@@ -330,8 +323,8 @@ export default function Reminders() {
         let regNum = data['regNum'];
         result["medicineName"] = data[MEDICINE];
         let info = "";
-        const alertExperation = new Date(data[RemindersFields.REM_EXPERATION]);
-        const alretExperationString = dateToString(alertExperation);
+        const alertExpiration = new Date(data[RemindersFields.REM_EXPERATION]);
+        const alertExpirationString = dateToString(alertExpiration);
         if (data[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
             const fixedDate = new Date(data[IN_WHICH_DATE]);
             const newDateString = dateToString(fixedDate);
@@ -479,7 +472,7 @@ export default function Reminders() {
 
                     <TransitionsModal open={onReminderCreation} toggleModal={toggleOnReminderCreation}>
                         <RemindersCreateForm handleSubmit={handleSubmit} medicineList={medicineList}
-                                             formData={editedID !== null ? editedFormData : defualtFormData()}
+                                             formData={editedID !== null ? editedFormData : defaultFormData()}
                                              key={"abd" + keyToRerender}/>
                     </TransitionsModal>
                     <Dialog

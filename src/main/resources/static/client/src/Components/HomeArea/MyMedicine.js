@@ -11,10 +11,10 @@ import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
 import AlertDialog from "../UI/Dialog";
 import {Alert, Snackbar} from "@mui/material";
-import RemindersCreateForm, {defualtFormData, MEDICINE} from "../RemindersArea/RemindersCreateForm";
+import RemindersCreateForm, {defaultFormData, MEDICINE} from "../RemindersArea/RemindersCreateForm";
 import TransitionsModal from "../UI/Modal/Modal";
 import {getAuth} from "firebase/auth";
-import {handleRemSubmit} from "../RemindersArea/Reminders";
+import {handleReminderSubmit} from "../RemindersArea/Reminders";
 
 
 function MyMedicine() {
@@ -46,8 +46,9 @@ function MyMedicine() {
             getMyMeds();
         }
     }, [loadData]);
-    const createformData= (item)=>{
-        const data = defualtFormData();
+
+    const createFormData= (item)=>{
+        const data = defaultFormData();
         data[MEDICINE] = item['hebName'];
         return data;
     }
@@ -98,8 +99,7 @@ function MyMedicine() {
     const handleAlertSubmit = async (data) => {
         toggleReminderDialog();
         const token = await getAuth().currentUser.getIdToken(true);
-        console.log("submitting")
-        await handleRemSubmit(data,token)
+        await handleReminderSubmit(data,token)
     }
 
     return (
@@ -169,8 +169,8 @@ function MyMedicine() {
                     />
                     {items.map((item,index) => (
                         <>
-                            <TransitionsModal open={openReminderDialog===item} toggleModal={toggleReminderDialog}>
-                                <RemindersCreateForm handleSubmit={handleAlertSubmit} medicineList={items} medicine={item} formData = {createformData(item)}/>
+                            <TransitionsModal open={openReminderDialog} toggleModal={toggleReminderDialog}>
+                                <RemindersCreateForm handleSubmit={handleAlertSubmit} medicineList={items} medicine={item} formData = {createFormData(item)}/>
                             </TransitionsModal>
                             <Box
                                 key={index}
