@@ -47,7 +47,21 @@ const cacheRtl = createCache({
 function RTL(props) {
     return <CacheProvider value={cacheRtl}>{props.children}</CacheProvider>;
 }
+export const dateToString = (date, d = date.getDate(), m = date.getMonth(), y = date.getFullYear(), h = date.getHours(), min = date.getMinutes()) => {
+    const days = Math.floor(d / 10) === 0 ? '0' + d : d;
+    const months = Math.floor((m + 1) / 10) === 0 ? '0' + (m + 1) : (m + 1);
+    const years = y;//assuming all after 10000
+    const hours = Math.floor(h / 10) === 0 ? '0' + h : h;
+    const minutes = Math.floor(min / 10) === 0 ? '0' + min : min;
+    return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
 
+}
+export const toOnlyDateString = (s) => {
+    return s.slice(0, 10);
+}
+export const toOnlyTimeString = (s) => {
+    return s.slice(11, 16);
+}
 export default function Reminders() {
     const theme = createTheme({direction: 'rtl'});
     const navigate = useNavigate();
@@ -215,15 +229,7 @@ export default function Reminders() {
     const rtl = (str) => {
         return '\u202B' + str + '\u202C';
     }
-    const dateToString = (date, d = date.getDate(), m = date.getMonth(), y = date.getFullYear(), h = date.getHours(), min = date.getMinutes()) => {
-        const days = Math.floor(d / 10) === 0 ? '0' + d : d;
-        const months = Math.floor((m + 1) / 10) === 0 ? '0' + (m + 1) : (m + 1);
-        const years = y;//assuming all after 10000
-        const hours = Math.floor(h / 10) === 0 ? '0' + h : h;
-        const minutes = Math.floor(min / 10) === 0 ? '0' + min : min;
-        return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
 
-    }
 
 
     const sendEachFewWeeks = async (data, originalData) => {
@@ -394,12 +400,7 @@ export default function Reminders() {
         return result;
 
     }
-    const toOnlyDateString = (s) => {
-        return s.slice(0, 10);
-    }
-    const toOnlyTimeString = (s) => {
-        return s.slice(11, 16);
-    }
+
     const handleDelete = (id) => {
         setDeletedID(id);
     }
