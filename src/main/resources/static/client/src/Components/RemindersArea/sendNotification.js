@@ -9,10 +9,11 @@ export async function sendNotification(header, content, uid) {
     let xhr = new XMLHttpRequest();
 
     const appData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_APP_DATA);
+    console.log(appData);
     xhr.open("POST", url);
 
     xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Authorization", "Basic " + appData['auth_token']);
+    xhr.setRequestHeader("Authorization", "Basic " + appData['authToken']);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
