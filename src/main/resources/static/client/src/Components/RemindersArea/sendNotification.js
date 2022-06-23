@@ -6,7 +6,7 @@ import {getRequest} from "../../Utils/AxiosRequests";
 
 export async function sendNotification(header, content, uid) {
     let url = "https://onesignal.com/api/v1/notifications";
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
 
     const appData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_APP_DATA);
     xhr.open("POST", url);

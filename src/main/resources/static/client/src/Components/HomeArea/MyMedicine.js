@@ -90,6 +90,7 @@ function MyMedicine() {
 
     const handleAlertSubmit = () => {
         console.log("Submitting alert!");
+
         toggleReminderDialog();
     }
 

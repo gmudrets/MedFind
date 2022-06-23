@@ -37,13 +37,155 @@ import ReminderCard from "./ReminderCard";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 
+const convertNotReturn = (newData) => {
+    newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
+    newData[EACH_MANY_DAYS] = 1;
+    newData[UNTIL_TYPE] = untilTypeOptions.NUM;
+    newData[REMINDERS_NUM] = 1;
+    newData[UNTIL_DATE] = fakeExpiration;
+    return newData;
+}
+const convertEachDay = (newData) => {
+    newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
+    newData[EACH_MANY_DAYS] = 1;
+    return newData;
+}
+const changeEndDate = (newData) => {
+    let newEndDate = new Date(newData[UNTIL_DATE]);
+    newEndDate.setDate(newEndDate.getDate());
+    newEndDate.setHours(23);
+    newEndDate.setMinutes(59);
+    newEndDate.setSeconds(59);
+    newData[UNTIL_DATE] = newEndDate;
+    return newData;
+}
+const sendEachFewWeeks = async (data, originalData) => {
+    let hours = [];
+    let minutes = [];
+    let days = [];
+    let weeks = [];
+    for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
+        for (let j = 0; j < data[WEEK_DAYS_SELECTED].length; j++) {
+            console.log(new Date(data[TIMES_ARRAY][i]).getHours());
+            hours.push(new Date(data[TIMES_ARRAY][i]).getHours());
+            minutes.push(new Date(data[TIMES_ARRAY][i]).getMinutes());
+            days.push(daysWeekOptions.indexOf(data[WEEK_DAYS_SELECTED][j]) + 1);
+            weeks.push(data[EACH_MANY_WEEKS]);
+        }
 
+    }
+    console.log(encodeURIComponent(JSON.stringify(originalData)));
+    const requastParams = {
+        'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
+        'alertName': data[TITLE],
+        "regNum": data[REG_NUM],
+        'alertExpiration': dateToString(new Date(data[UNTIL_DATE])),
+        'days': days.join("&days="),
+        'hours': hours.join("&hours="),
+        "minutes": minutes.join("&minutes="),
+        "weeks": weeks.join("&weeks=")
+    }
+    console.log(requastParams);
+    await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_SCHEDULE_ALERT, requastParams);
+}
+const sendEachFewDays = async (data, originalData, skipBefore) => {
+    const dates = [];
+    const now = new Date();
+    if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
+        const date = new Date(data[IN_WHICH_DATE]);
+        dates.push(dateToString(new Date(data[TIMES_ARRAY][0]), date.getDate(), date.getMonth(), date.getFullYear()));
+    } else {
+        for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
+            let curDate = new Date(data[TIMES_ARRAY][i]);
+            if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM) {
+                for (let j = 0; j < data[REMINDERS_NUM]; j++) {
+                    // console.log(curDate.getTime() > now.getTime());
+                    // console.log(dateToString(curDate));
+                    if (curDate.getTime() > now.getTime()) {
+                        dates.push(dateToString(curDate));
+                    } else {
+                        j--;
+                    }
+                    curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
+                }
+            } else {
+                while (curDate.getTime() < data[UNTIL_DATE].getTime()) {
+                    // console.log(curDate.getTime() > now.getTime());
+                    // console.log(dateToString(curDate));
+                    if (curDate.getTime() > now.getTime()) {
+                        dates.push(dateToString(curDate));
+
+                    }
+                    curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
+                }
+
+            }
+
+        }
+    }
+
+    console.log(encodeURIComponent(JSON.stringify(originalData)));
+    const requastParams = {
+        'alertName': data[TITLE],
+        'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
+        "regNum": data[REG_NUM],
+        'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&fixedDateList=")
+    }
+    console.log(requastParams);
+    const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
+}
+export const handleRemSubmit = async (originalData) => {
+
+    const newData = JSON.parse(JSON.stringify(originalData));
+    changeEndDate(newData);
+    if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
+        convertNotReturn(newData);
+    } else {
+        newData[IN_WHICH_DATE] = fakeExpiration;
+    }
+    if (originalData[RETURNS_TYPE] === returnsTypeOptions.EACH_DAY) {
+        convertEachDay(newData);
+
+    }
+    if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
+        if (newData[UNTIL_TYPE] !== untilTypeOptions.DATE) {
+            newData[UNTIL_DATE] = fakeExpiration;
+
+        }
+        // convertToUntilNum(newData);
+        // } else {
+        // }
+        await sendEachFewDays(newData, originalData);
+        return true;
+
+    }
+    if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
+        convertEachWeek(newData);
+    }
+    await sendEachFewWeeks(newData, originalData);
+
+    return true;
+
+
+}
 // Create rtl cache
 const cacheRtl = createCache({
     key: 'muirtl',
     stylisPlugins: [prefixer, rtlPlugin],
 });
+const dateToString = (date, d = date.getDate(), m = date.getMonth(), y = date.getFullYear(), h = date.getHours(), min = date.getMinutes()) => {
+    const days = Math.floor(d / 10) === 0 ? '0' + d : d;
+    const months = Math.floor((m + 1) / 10) === 0 ? '0' + (m + 1) : (m + 1);
+    const years = y;//assuming all after 10000
+    const hours = Math.floor(h / 10) === 0 ? '0' + h : h;
+    const minutes = Math.floor(min / 10) === 0 ? '0' + min : min;
+    return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
 
+}
+const convertEachWeek = (newData) => {
+    newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
+    newData[EACH_MANY_WEEKS] = 1;
+}
 function RTL(props) {
     return <CacheProvider value={cacheRtl}>{props.children}</CacheProvider>;
 }
@@ -130,28 +272,7 @@ export default function Reminders() {
     const handleAddClick = () => {
         setOnReminderCreation(true);
     }
-    const convertNotReturn = (newData) => {
-        newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
-        newData[EACH_MANY_DAYS] = 1;
-        newData[UNTIL_TYPE] = untilTypeOptions.NUM;
-        newData[REMINDERS_NUM] = 1;
-        newData[UNTIL_DATE] = fakeExpiration;
-        return newData;
-    }
-    const convertEachDay = (newData) => {
-        newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
-        newData[EACH_MANY_DAYS] = 1;
-        return newData;
-    }
-    const changeEndDate = (newData) => {
-        let newEndDate = new Date(newData[UNTIL_DATE]);
-        newEndDate.setDate(newEndDate.getDate());
-        newEndDate.setHours(23);
-        newEndDate.setMinutes(59);
-        newEndDate.setSeconds(59);
-        newData[UNTIL_DATE] = newEndDate;
-        return newData;
-    }
+
     const convertToUntilNum = (newData) => {
         newData[untilTypeOptions] = untilTypeOptions.NUM;
         let end = new Date(newData[UNTIL_DATE]);
@@ -162,10 +283,7 @@ export default function Reminders() {
         return newData;
 
     }
-    const convertEachWeek = (newData) => {
-        newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
-        newData[EACH_MANY_WEEKS] = 1;
-    }
+
     const handleSubmit = async (originalData) => {
         setLoadingNew(true);
         const id = editedID;
@@ -173,134 +291,20 @@ export default function Reminders() {
         toggleOnReminderCreation();
         const newList = null;
         if (editedID !== null) {
-            const newList = await handleFinalDelete(id,false);
+            const newList = await handleFinalDelete(id, false);
         }
-        const newData = JSON.parse(JSON.stringify(originalData));
-        changeEndDate(newData);
-        if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
-            convertNotReturn(newData);
-        } else {
-            newData[IN_WHICH_DATE] = fakeExpiration;
-        }
-        if (originalData[RETURNS_TYPE] === returnsTypeOptions.EACH_DAY) {
-            convertEachDay(newData);
-
-        }
-        if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_FEW_DAYS) {
-            if (newData[UNTIL_TYPE] !== untilTypeOptions.DATE) {
-                newData[UNTIL_DATE] = fakeExpiration;
-
-            }
-            // convertToUntilNum(newData);
-            // } else {
-            // }
-            await sendEachFewDays(newData, originalData);
-            const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
-            setRemindersList(data.reverse());
-            setLoadingNew(false);
-            return true;
-
-        }
-        if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
-            convertEachWeek(newData);
-        }
-        await sendEachFewWeeks(newData, originalData);
+        await handleRemSubmit(originalData);
         const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
         setRemindersList(data.reverse());
         setLoadingNew(false);
         return true;
-
-
     }
+
     const rtl = (str) => {
         return '\u202B' + str + '\u202C';
     }
-    const dateToString = (date, d = date.getDate(), m = date.getMonth(), y = date.getFullYear(), h = date.getHours(), min = date.getMinutes()) => {
-        const days = Math.floor(d / 10) === 0 ? '0' + d : d;
-        const months = Math.floor((m + 1) / 10) === 0 ? '0' + (m + 1) : (m + 1);
-        const years = y;//assuming all after 10000
-        const hours = Math.floor(h / 10) === 0 ? '0' + h : h;
-        const minutes = Math.floor(min / 10) === 0 ? '0' + min : min;
-        return days + '.' + months + '.' + years + "-" + hours + ':' + minutes;
-
-    }
 
 
-    const sendEachFewWeeks = async (data, originalData) => {
-        let hours = [];
-        let minutes = [];
-        let days = [];
-        let weeks = [];
-        for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
-            for (let j = 0; j < data[WEEK_DAYS_SELECTED].length; j++) {
-                console.log(new Date(data[TIMES_ARRAY][i]).getHours());
-                hours.push(new Date(data[TIMES_ARRAY][i]).getHours());
-                minutes.push(new Date(data[TIMES_ARRAY][i]).getMinutes());
-                days.push(daysWeekOptions.indexOf(data[WEEK_DAYS_SELECTED][j]) + 1);
-                weeks.push(data[EACH_MANY_WEEKS]);
-            }
-
-        }
-        console.log(encodeURIComponent(JSON.stringify(originalData)));
-        const requastParams = {
-            'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
-            'alertName': data[TITLE],
-            "regNum": data[REG_NUM],
-            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])),
-            'days': days.join("&days="),
-            'hours': hours.join("&hours="),
-            "minutes": minutes.join("&minutes="),
-            "weeks": weeks.join("&weeks=")
-        }
-        console.log(requastParams);
-        await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_SCHEDULE_ALERT, requastParams);
-    }
-    const sendEachFewDays = async (data, originalData, skipBefore) => {
-        const dates = [];
-        const now = new Date();
-        if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
-            const date = new Date(data[IN_WHICH_DATE]);
-            dates.push(dateToString(new Date(data[TIMES_ARRAY][0]), date.getDate(), date.getMonth(), date.getFullYear()));
-        } else {
-            for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
-                let curDate = new Date(data[TIMES_ARRAY][i]);
-                if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM) {
-                    for (let j = 0; j < data[REMINDERS_NUM]; j++) {
-                        // console.log(curDate.getTime() > now.getTime());
-                        // console.log(dateToString(curDate));
-                        if (curDate.getTime() > now.getTime()) {
-                            dates.push(dateToString(curDate));
-                        } else {
-                            j--;
-                        }
-                        curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
-                    }
-                } else {
-                    while (curDate.getTime() < data[UNTIL_DATE].getTime()) {
-                        // console.log(curDate.getTime() > now.getTime());
-                        // console.log(dateToString(curDate));
-                        if (curDate.getTime() > now.getTime()) {
-                            dates.push(dateToString(curDate));
-
-                        }
-                        curDate.setDate(curDate.getDate() + parseInt(data[EACH_MANY_DAYS]));
-                    }
-
-                }
-
-            }
-        }
-
-        console.log(encodeURIComponent(JSON.stringify(originalData)));
-        const requastParams = {
-            'alertName': data[TITLE],
-            'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
-            "regNum": data[REG_NUM],
-            'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&fixedDateList=")
-        }
-        console.log(requastParams);
-        const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
-    }
     const filterList = (remindersList) => {
         const filtList = [];
         for (let i = 0; i < remindersList.length - 1; i++) {
@@ -407,7 +411,7 @@ export default function Reminders() {
         setDeletedID(null);
     }
     const handleFinalDelete = async (uuid, deleteFromList = true) => {
-        if(!uuid){
+        if (!uuid) {
             uuid = deletedID;
         }
         setLoadingNew(true);
@@ -420,9 +424,9 @@ export default function Reminders() {
             }
         }
         await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_UID, {"uuid": uuid});
-        if(deleteFromList){
+        if (deleteFromList) {
             setRemindersList(newRem);
-        }else{
+        } else {
             return newRem;
         }
     }
