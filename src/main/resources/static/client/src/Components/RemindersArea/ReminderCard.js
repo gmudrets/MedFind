@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {createTheme, styled} from '@mui/material/styles';
+import {useEffect} from 'react';
+import {createTheme} from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
@@ -12,7 +13,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 
 import Typography from "@mui/material/Typography";
-import {useEffect} from "react";
 
 
 export default function ReminderCard(props) {
@@ -50,12 +50,6 @@ export default function ReminderCard(props) {
                     title={title === "" ? medicineName : title}
                     subheader={title === "" ? "" : medicineName}
                 />
-                {/*<CardMedia*/}
-                {/*    component="img"*/}
-                {/*    height="300"*/}
-                {/*    image={image}*/}
-                {/*    alt="N/A"*/}
-                {/*/>*/}
 
                 <CardContent sx={{display: 'flex', flexDirection: 'row', justifyContent: "space-between"}}>
                     <Typography variant="body2" color="text.secondary" style={{whiteSpace: 'pre-line'}}>

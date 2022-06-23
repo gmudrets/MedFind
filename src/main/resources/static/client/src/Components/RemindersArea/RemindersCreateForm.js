@@ -85,7 +85,7 @@ export const untilTypeOptions = {
     NUM: 'כמות תזכורת'
 };
 export const fakeExpiration = new Date('2500-01-01')
-export const defualtMed = "בחר תרופה";
+export const defaultMed = "בחר תרופה";
 export const loadingMed = "טוען תרופות..."
 export const getTomorow = () => {
     let date = new Date();
@@ -131,22 +131,21 @@ function RemindersCreateForm(props) {
 
 
     useEffect(async () => {
-        if (medicineFullList.length === 0) {
-            let medicenes = [defualtMed];
+        if (medicineFullList.length !== 0) {
+            let medicines = [defaultMed];
             for (let i = 0; i < medicineFullList.length; i++) {
-                medicenes[i + 1] = medicineFullList[i]['hebName'];
+                medicines[i + 1] = medicineFullList[i]['hebName'];
             }
-            let med = props.medicineInd === -1 ? props.formData[MEDICINE] : medicenes[props.medicine + 1]
+            let med = props.medicineInd === -1 ? props.formData[MEDICINE] : medicines[props.medicine + 1]
             if(med === loadingMed){
-                med = defualtMed;
+                med = defaultMed;
             }
             setMedicine(med);
-            setMedicineList(medicenes);
-            if (med !== defualtMed && med!== loadingMed) {
-                handleMedicineChange2(med, medicenes);
+            setMedicineList(medicines);
+            if (med !== defaultMed && med!== loadingMed) {
+                handleMedicineChange2(med, medicines);
             }
-            setMedicineList([...new Set(medicenes)]);
-
+            setMedicineList([...new Set(medicines)]);
         }
 
     }, []);
@@ -162,7 +161,7 @@ function RemindersCreateForm(props) {
     }
 
     const handleMedicineChange2 = (value, medLis = medicineList) => {
-        if (medLis[0] === defualtMed) {
+        if (medLis[0] === defaultMed) {
             const next = [...medLis];
             next.splice(0, 1);
             setMedicineList(next);
@@ -279,7 +278,7 @@ function RemindersCreateForm(props) {
 
     };
     const showMedicineError = (triedSubmitted2 = false) => {
-        return medicine === defualtMed && (triedSubmit || triedSubmitted2);
+        return medicine === defaultMed && (triedSubmit || triedSubmitted2);
     }
     const closeError = () => {
         setErrorMessegeOpen(false);

@@ -224,7 +224,6 @@ export default function Reminders() {
     useEffect(() => {
         if (!onReminderCreation) {
             setEditedID(null);
-            setEditedID(null);
         }
     }, [onReminderCreation])
 
