@@ -11,7 +11,7 @@ module.exports = {
         GET_USER_ALERT_LIST:"/api/GetUserAlertsList",
         DELETE_ALRET_BY_ID: "/api/DeleteAlertById",
         GET_ALL_MEDICINE: '/api/GetAllUserStockMedicine',
-
+        GET_APP_DATA:'/api/GetAppData',
 
         GET_USER_SHARED_MEDICINE : "/api/GetAllUserSharedStockMedicine",
         GET_USER_MEDICINE : "/api/GetAllUserStockMedicine",

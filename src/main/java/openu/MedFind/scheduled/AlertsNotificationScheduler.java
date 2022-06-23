@@ -88,7 +88,7 @@ public class AlertsNotificationScheduler {
         return expirationAlerts;
     }
 
-    @Scheduled(fixedDelay = 120000)
+    @Scheduled(fixedRate = 60000)
     public void scheduleFixedRateTask() {
         var alerts = Stream.concat(getAllScheduleAlerts().stream(), getAllExpirationAlerts().stream())
                 .collect(Collectors.toList());

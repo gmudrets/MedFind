@@ -11,3 +11,4 @@ export const TAKING_REMINDER = 'takingReminder';
 export const EXPIRATION_REMINDER = 'expirationReminder';
 export const USER_TYPE = 'userType'
 export const PROFILE_PICTURE = 'profilePic';
+export const API_KEY = 'APIkey'
