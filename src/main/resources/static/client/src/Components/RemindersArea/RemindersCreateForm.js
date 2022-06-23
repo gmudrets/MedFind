@@ -160,7 +160,7 @@ function RemindersCreateForm(props) {
 
         }
 
-    }, [medicineFullList,props.formData[MEDICINE]]);
+    }, []);
     useEffect(() => {
         if (timesArray.length == maxTimes) {
             setReachedMaxTimes(true);

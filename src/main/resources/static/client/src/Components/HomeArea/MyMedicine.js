@@ -11,8 +11,11 @@ import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
 import AlertDialog from "../UI/Dialog";
 import {Alert, Snackbar} from "@mui/material";
-import RemindersCreateForm from "../RemindersArea/RemindersCreateForm";
+import RemindersCreateForm, {defualtFormData, MEDICINE} from "../RemindersArea/RemindersCreateForm";
 import TransitionsModal from "../UI/Modal/Modal";
+import {getAuth} from "firebase/auth";
+import {handleRemSubmit} from "../RemindersArea/Reminders";
+
 
 function MyMedicine() {
     const navigate = useNavigate();
@@ -43,7 +46,11 @@ function MyMedicine() {
             getMyMeds();
         }
     }, [loadData]);
-
+    const createformData= (item)=>{
+        const data = defualtFormData();
+        data[MEDICINE] = item['hebName'];
+        return data;
+    }
     const getMyMeds = async () => {
         setLoading(true);
         let data = await getRequest(currentUser.stsTokenManager.accessToken,
@@ -79,19 +86,20 @@ function MyMedicine() {
         setShowDeleteMessage(true);
     };
 
-    const handleAlertClick = () => {
-        setOpenReminderDialog(true);
+    const handleAlertClick = (item) => {
+        setOpenReminderDialog(item);
     };
 
     const toggleReminderDialog = () => {
-        setOpenReminderDialog(!openReminderDialog);
+        setOpenReminderDialog(null);
 
     }
 
-    const handleAlertSubmit = () => {
-        console.log("Submitting alert!");
-
+    const handleAlertSubmit = async (data) => {
         toggleReminderDialog();
+        const token = await getAuth().currentUser.getIdToken(true);
+        console.log("submitting")
+        await handleRemSubmit(data,token)
     }
 
     return (
@@ -161,8 +169,8 @@ function MyMedicine() {
                     />
                     {items.map((item,index) => (
                         <>
-                            <TransitionsModal open={openReminderDialog} toggleModal={toggleReminderDialog}>
-                                <RemindersCreateForm handleSubmit={handleAlertSubmit} medicineList={[item]} medicine={0}/>
+                            <TransitionsModal open={openReminderDialog===item} toggleModal={toggleReminderDialog}>
+                                <RemindersCreateForm handleSubmit={handleAlertSubmit} medicineList={items} medicine={item} formData = {createformData(item)}/>
                             </TransitionsModal>
                             <Box
                                 key={index}
@@ -189,7 +197,7 @@ function MyMedicine() {
                                                   setDialogItem(item);
                                                   setOpenShareDialog(true);
                                               }}
-                                              handleAlertClick={handleAlertClick}
+                                              handleAlertClick={()=>handleAlertClick(item)}
                                 />
                             </Box>
                         </>
