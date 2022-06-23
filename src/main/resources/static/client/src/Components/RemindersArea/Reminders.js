@@ -59,7 +59,7 @@ const changeEndDate = (newData) => {
     newData[UNTIL_DATE] = newEndDate;
     return newData;
 }
-const sendEachFewWeeks = async (data, originalData) => {
+const sendEachFewWeeks = async (data, originalData,token) => {
     let hours = [];
     let minutes = [];
     let days = [];
@@ -86,9 +86,9 @@ const sendEachFewWeeks = async (data, originalData) => {
         "weeks": weeks.join("&weeks=")
     }
     console.log(requastParams);
-    await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_SCHEDULE_ALERT, requastParams);
+    await getRequest(token, ServerConsts.ADD_SCHEDULE_ALERT, requastParams);
 }
-const sendEachFewDays = async (data, originalData, skipBefore) => {
+const sendEachFewDays = async (data, originalData, token) => {
     const dates = [];
     const now = new Date();
     if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
@@ -132,9 +132,9 @@ const sendEachFewDays = async (data, originalData, skipBefore) => {
         'alertExpiration': dateToString(new Date(data[UNTIL_DATE])), 'fixedDateList': dates.join("&fixedDateList=")
     }
     console.log(requastParams);
-    const curData = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.ADD_FIXED_ALERT, requastParams);
+    const curData = await getRequest(token, ServerConsts.ADD_FIXED_ALERT, requastParams);
 }
-export const handleRemSubmit = async (originalData) => {
+export const handleRemSubmit = async (originalData,token) => {
 
     const newData = JSON.parse(JSON.stringify(originalData));
     changeEndDate(newData);
@@ -155,14 +155,14 @@ export const handleRemSubmit = async (originalData) => {
         // convertToUntilNum(newData);
         // } else {
         // }
-        await sendEachFewDays(newData, originalData);
+        await sendEachFewDays(newData, originalData,token);
         return true;
 
     }
     if (newData[RETURNS_TYPE] === returnsTypeOptions.EACH_WEEK) {
         convertEachWeek(newData);
     }
-    await sendEachFewWeeks(newData, originalData);
+    await sendEachFewWeeks(newData, originalData,token);
 
     return true;
 
@@ -186,6 +186,7 @@ const convertEachWeek = (newData) => {
     newData[RETURNS_TYPE] = returnsTypeOptions.EACH_FEW_DAYS;
     newData[EACH_MANY_WEEKS] = 1;
 }
+
 function RTL(props) {
     return <CacheProvider value={cacheRtl}>{props.children}</CacheProvider>;
 }
@@ -293,7 +294,8 @@ export default function Reminders() {
         if (editedID !== null) {
             const newList = await handleFinalDelete(id, false);
         }
-        await handleRemSubmit(originalData);
+        const token = await getAuth().currentUser.getIdToken(true);
+        await handleRemSubmit(originalData, token);
         const data = await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.GET_USER_ALERT_LIST);
         setRemindersList(data.reverse());
         setLoadingNew(false);
