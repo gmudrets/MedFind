@@ -1,6 +1,7 @@
 import {APP_ID} from "../../Consts/OneSignalInfo";
 import {getAuth} from "firebase/auth";
 import {ServerConsts} from "../../Consts/apiPaths";
+import {getRequest} from "../../Utils/AxiosRequests";
 
 
 export async function sendNotification(header, content, uid) {
