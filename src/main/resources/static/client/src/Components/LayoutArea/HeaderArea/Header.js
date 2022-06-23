@@ -13,6 +13,7 @@ import {Actions} from "../../../Redux/UI";
 import ReadSocket from "./ReadSocket";
 import {USER_PROFILE} from "../../../Consts/StatePaths";
 import * as ProfileFields from "../../../Consts/ProfileFields";
+import {sendNotification} from "../../RemindersArea/sendNotification";
 
 
 function Header() {
@@ -47,9 +48,25 @@ function Header() {
             dispatch(Actions.closeMenu())
         }
     };
-    const readSocket = (data) => {
+    const readSocket = async (data) => {
         if (data !== []) {
             console.log(data);
+            for (let i = 0; i < data.length; i++) {
+                const user = data[i]['user'];
+                const title = data[i]['alertName'];
+
+                if (data[i]['alertType'] === "EXPIRATION") {
+                    const _title = "התראה על סיום תוקף";
+                    const content = title;
+                    await sendNotification(_title, content, user);
+                }
+                const medicineName = data[i]['medName'];//Change if require
+                const userid = data[i]['medName'];
+                const _title = title === "" ? medicineName : title;
+                const content = title === "" ? "" : medicineName;
+                await sendNotification(_title, content, user);
+
+            }
         }
     }
 
