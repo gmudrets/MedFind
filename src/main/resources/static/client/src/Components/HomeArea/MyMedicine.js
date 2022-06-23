@@ -87,12 +87,12 @@ function MyMedicine() {
         setShowDeleteMessage(true);
     };
 
-    const handleAlertClick = (item) => {
-        setOpenReminderDialog(item);
+    const handleAlertClick = () => {
+        setOpenReminderDialog(true);
     };
 
     const toggleReminderDialog = () => {
-        setOpenReminderDialog(null);
+        setOpenReminderDialog(!openReminderDialog);
 
     }
 
@@ -197,7 +197,7 @@ function MyMedicine() {
                                                   setDialogItem(item);
                                                   setOpenShareDialog(true);
                                               }}
-                                              handleAlertClick={()=>handleAlertClick(item)}
+                                              handleAlertClick={handleAlertClick}
                                 />
                             </Box>
                         </>

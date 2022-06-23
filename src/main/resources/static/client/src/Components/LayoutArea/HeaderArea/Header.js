@@ -48,6 +48,7 @@ function Header() {
             dispatch(Actions.closeMenu())
         }
     };
+
     const readSocket = async (data) => {
         if (data !== []) {
             console.log(data);
@@ -69,7 +70,7 @@ function Header() {
     }
 
     return (
-        <Box sx={{flexGrow: 1}}>\\
+        <Box sx={{flexGrow: 1}}>
             {auth &&
                 <ReadSocket readSocket={readSocket}/>
             }

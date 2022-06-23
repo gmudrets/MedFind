@@ -82,8 +82,8 @@ const sendEachFewWeeks = async (data, originalData,token) => {
         }
 
     }
-    console.log(encodeURIComponent(JSON.stringify(originalData)));
-    const requastParams = {
+
+    const requestParams = {
         'alertDescription': encodeURIComponent(JSON.stringify(originalData)),
         'alertName': data[TITLE],
         "regNum": data[REG_NUM],
@@ -94,8 +94,7 @@ const sendEachFewWeeks = async (data, originalData,token) => {
         "minutes": minutes.join("&minutes="),
         "weeks": weeks.join("&weeks=")
     }
-    console.log(requastParams);
-    await getRequest(token, ServerConsts.ADD_SCHEDULE_ALERT, requastParams);
+    await getRequest(token, ServerConsts.ADD_SCHEDULE_ALERT, requestParams);
 }
 const sendEachFewDays = async (data, originalData, token) => {
     const dates = [];
@@ -108,9 +107,7 @@ const sendEachFewDays = async (data, originalData, token) => {
             let curDate = new Date(data[TIMES_ARRAY][i]);
             if (originalData[UNTIL_TYPE] === untilTypeOptions.NUM) {
                 for (let j = 0; j < data[REMINDERS_NUM]; j++) {
-                    // console.log(curDate.getTime() > now.getTime());
-                    // console.log(dateToString(curDate));
-                    if (curDate.getTime() > now.getTime()) {
+                     if (curDate.getTime() > now.getTime()) {
                         dates.push(dateToString(curDate));
                     } else {
                         j--;
@@ -119,8 +116,6 @@ const sendEachFewDays = async (data, originalData, token) => {
                 }
             } else {
                 while (curDate.getTime() < data[UNTIL_DATE].getTime()) {
-                    // console.log(curDate.getTime() > now.getTime());
-                    // console.log(dateToString(curDate));
                     if (curDate.getTime() > now.getTime()) {
                         dates.push(dateToString(curDate));
 
