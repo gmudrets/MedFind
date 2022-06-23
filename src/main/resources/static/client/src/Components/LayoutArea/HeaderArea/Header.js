@@ -54,7 +54,7 @@ function Header() {
     }
 
     return (
-        <Box sx={{flexGrow: 1}}>
+        <Box sx={{flexGrow: 1}}>\\
             {auth &&
                 <ReadSocket readSocket={readSocket}/>
             }

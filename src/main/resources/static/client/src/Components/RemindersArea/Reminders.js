@@ -82,6 +82,7 @@ export default function Reminders() {
         }
     }, [RemindersFilterdList]);
     useEffect(() => {
+        console.log(onReminderCreation)
         if (!onReminderCreation) {
             setEditedID(null);
             setEditedID(null);
@@ -168,10 +169,12 @@ export default function Reminders() {
     const handleSubmit = async (originalData) => {
         setLoadingNew(true);
         const id = editedID;
-        if (editedID !== null) {
-            handleFinalDelete(id);
-        }
+        console.log(id);
         toggleOnReminderCreation();
+        const newList = null;
+        if (editedID !== null) {
+            const newList = await handleFinalDelete(id,false);
+        }
         const newData = JSON.parse(JSON.stringify(originalData));
         changeEndDate(newData);
         if (originalData[RETURNS_TYPE] === returnsTypeOptions.NOT_RETURN) {
@@ -403,7 +406,10 @@ export default function Reminders() {
     const handleDeleteDialogFinished = (event) => {
         setDeletedID(null);
     }
-    const handleFinalDelete = async (uuid) => {
+    const handleFinalDelete = async (uuid, deleteFromList = true) => {
+        if(!uuid){
+            uuid = deletedID;
+        }
         setLoadingNew(true);
         const newRem = [];
         setDeletedID(null);
@@ -413,10 +419,14 @@ export default function Reminders() {
                 newRem.push(RemindersList[i]);
             }
         }
-        await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_UID, {"uuid": deletedID});
-        setRemindersList(newRem);
-        setLoadingNew((false));
+        await getRequest(await getAuth().currentUser.getIdToken(true), ServerConsts.DELETE_ALRET_BY_UID, {"uuid": uuid});
+        if(deleteFromList){
+            setRemindersList(newRem);
+        }else{
+            return newRem;
+        }
     }
+
     const handleEdit = (id, formData) => {
         setEditedID(id);
         setEditedFormData(formData);
@@ -442,7 +452,7 @@ export default function Reminders() {
                             {loadingNew &&
                                 <Grid item xs={12} sx={{textAlign: "left"}}>
                                     <Typography component="h1" variant="h6" marginBottom={'5px'} textAlign={'center'}>
-                                        טוען....
+                                        טוען שינויים....
                                     </Typography>
                                 </Grid>}
                             {RemindersFilterdList !== null && RemindersFilterdList.length !== 0 && RemindersFilterdList.map((item) => (
@@ -478,7 +488,7 @@ export default function Reminders() {
 
                         <DialogActions>
                             <Button onClick={handleDeleteDialogFinished}>בטל מחיקה</Button>
-                            <Button onClick={() => handleFinalDelete(deletedID)} autoFocus>
+                            <Button onClick={() => handleFinalDelete(deletedID).then(setLoadingNew((false)))} autoFocus>
                                 מחק
                             </Button>
                         </DialogActions>

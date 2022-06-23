@@ -340,6 +340,8 @@ function RemindersCreateForm(props) {
         value[UNTIL_DATE] = untilDate;
         value[IN_WHICH_DATE] = inDate;
         value[MEDICINE] = medicine;
+        value[EACH_MANY_WEEKS] = eachManyWeeks;
+        value[EACH_MANY_DAYS] = eachManyDays;
         for (let i = 0; i < medicineFullList.length; i++) {
             if(medicineFullList[i]['hebName'] === medicine){
                 value[REG_NUM] = medicineFullList[i]['regNum'];
