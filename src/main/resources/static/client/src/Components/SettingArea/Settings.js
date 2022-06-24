@@ -87,7 +87,7 @@ export default function Settings() {
     const takingReminder = getField(ProfileFields.TAKING_REMINDER, false);
     const expirationReminder = getField(ProfileFields.EXPIRATION_REMINDER, false);
     const profilePic = getField(ProfileFields.PROFILE_PICTURE, defualtProfPic);
-    const initialyValidatedtionList = ['משתמש רגיל'];//TODO List of all the validation for the use
+    const initialyValidatedtionList = ['משתמש רגיל'];
 
     const profilePictureRef = useRef();
     const secondPasswordRef = useRef();
@@ -141,7 +141,6 @@ export default function Settings() {
     const handleUserTypeChange = (event) => {
         setUserType(event.target.value);
         setField(ProfileFields.USER_TYPE, event.target.value);
-        //TODO open change user type form in case that not normal user
     }
     const startEditPasswordMode = () => {
         setOldPasswordEditMode(true);
@@ -343,17 +342,6 @@ export default function Settings() {
                                                      errorHint={lastNameError}
                             />
                         </Grid>
-                        {/*<Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center"}}>*/}
-                        {/*    <EditableTextWithButtons label="כתובת מייל להתראות" initVal={mail} periodicValidate={validateMail}*/}
-                        {/*                             onSubmit={handleMailSubmit}*/}
-                        {/*                             notOutsideRef={goBackButtonRef}*/}
-                        {/*                             beforeEditModeStart={onFieldEnterEditMode}*/}
-                        {/*                             beforeEditModeFinish={onFieldExitEditMode}*/}
-                        {/*                             clearOnOutsideClick={!goBackDialogOpen}*/}
-                        {/*                             id="mailAdrres"*/}
-                        {/*    />*/}
-                        {/*</Grid>*/}
-
                         <Grid item xs={isMobile ? "" : 6} md={4} sx={{textAlign: "center", paddingBottom: "15px"}}>
                             <EditableTextWithButtons label="מס' טלפון" initVal={phoneNum}
                                                      validateOnlyOnSubmit
@@ -378,24 +366,6 @@ export default function Settings() {
                                                      errorHint={cityError}
                             />
                         </Grid>
-                        {/*<Grid item xs={isMobile ? "" : 6} md={3} sx={{textAlign: "left"}}>*/}
-                        {/*<TextField*/}
-                        {/*    select*/}
-                        {/*    fullWidth*/}
-                        {/*    id="until"*/}
-                        {/*    label="סוג משתמש"*/}
-                        {/*    name="returns"*/}
-                        {/*    value={userType}*/}
-                        {/*    onChange={handleUserTypeChange}*/}
-                        {/*    helperText={isUserTypeValidated() ? " " : "מחכה לאישור מנהל"}*/}
-                        {/*>*/}
-                        {/*    {userTypeArr.map((type) => (*/}
-                        {/*        <MenuItem key={type} value={type}>*/}
-                        {/*            {type}*/}
-                        {/*        </MenuItem>*/}
-                        {/*    ))}*/}
-                        {/*</TextField>*/}
-                        {/*</Grid>*/}
                         <Grid item xs={12} sx={{textAlign: "left", marginTop: "5px"}}>
                             <Divider/>
                         </Grid>

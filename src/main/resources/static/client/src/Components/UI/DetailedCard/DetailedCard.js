@@ -19,10 +19,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import LoadingButton from "@mui/lab/LoadingButton";
 import {useState} from "react";
-import {Stack, TableCell} from "@mui/material";
+import {Alert, Snackbar, Stack, TableCell} from "@mui/material";
 import TableRow from "@mui/material/TableRow";
 import Table from "@mui/material/Table";
-import {ThemeProvider} from "@emotion/react";
+import {CacheProvider, ThemeProvider} from "@emotion/react";
 import noPrescription from '../../../Assets/Images/no_perscription_logo.png';
 import needPrescription from '../../../Assets/Images/perscription_only_logo.png';
 import Link from "@mui/material/Link";
@@ -34,6 +34,12 @@ import {red} from "@mui/material/colors";
 import {useSelector} from "react-redux";
 import {getSafe} from "../../../Utils/Utils";
 import * as STATE_PATHS from "../../../Consts/StatePaths";
+import {DesktopDatePicker, LocalizationProvider} from "@mui/lab";
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TransitionsModal from "../Modal/Modal";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -83,6 +89,10 @@ export default function DetailedCard(props) {
     const [ docBrochureLoading, setDocBrochureLoading ] = useState(false);
     const [ showBrochureError, setShowBrochureError ] = useState(false);
     const [ showDocBrochureError, setShowDocBrochureError ] = useState(false);
+    const [ showUpdateCountDialog, setShowUpdateCountDialog ] = useState(false);
+    const [ showUpdateMessage, setShowUpdateMessage ] = useState(false);
+    const [ countUpdateItem, setCountUpdateItem ] = useState(null);
+    const [ newAmount, setNewAmount ] = useState(expandData.count);
     const DOCTOR = 'רופא';
     const MEDICAL_STAFF = 'צוות רפואי';
     const isMedStaff = profile.userType===DOCTOR || profile.userType===MEDICAL_STAFF;
@@ -155,8 +165,76 @@ export default function DetailedCard(props) {
         doctor ? setDocBrochureLoading(false) : setBrochureLoading(false);
     }
 
+    const handleUpdateAmount = (item) => {
+        setShowUpdateCountDialog(true);
+        setCountUpdateItem(item);
+    }
+
+    const updateMedicineAmount = async () => {
+        let data = await getRequest(
+            await auth.currentUser.getIdToken(true),
+            ServerConsts.UPDATE_MEDICINE_COUNT,
+            { id : countUpdateItem.id, count : newAmount});
+    }
+
+    const handleUnitsAmount = (newAmount) => {
+        setNewAmount(newAmount.target.value);
+    }
+
+    const toggleUpdateCountDialog = () => {
+      setShowUpdateCountDialog(!showUpdateCountDialog);
+    }
+
     return (
         <ThemeProvider theme={theme}>
+            <TransitionsModal open={showUpdateCountDialog} toggleModal={toggleUpdateCountDialog}>
+                <Typography sx={{ mt: 2 }} align={"center"} marginBottom={'20px'}>
+                    עדכון כמות יחידות לתרופה
+                </Typography>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <Stack spacing={3}>
+                            <TextField
+                                required
+                                id="outlined-number"
+                                label="כמות חדשה"
+                                type="number"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                value={newAmount}
+                                onChange={handleUnitsAmount}
+                                InputProps={{
+                                    inputProps: { min: 1 }
+                                }}
+                            />
+                        </Stack>
+                        <Box
+                            marginTop='20px'
+                            display='flex'
+                            flexDirection='row'
+                            justifyContent="center"
+                            alignItems='center'
+                        >
+                            <Button onClick={() => {
+                                setShowUpdateCountDialog(false);
+                                updateMedicineAmount();
+                            } } autoFocus>
+                                אישור
+                            </Button>
+                        </Box>
+                    </LocalizationProvider>
+            </TransitionsModal>
+            <Snackbar open={showUpdateMessage}
+                      autoHideDuration={1500}
+                      onClose={() => {
+                          setShowUpdateMessage(false);
+                      }}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+                <Alert severity="success">
+                    הכמות עודכנה
+                </Alert>
+            </Snackbar>
             <Card sx={{ maxWidth: 600, width: '90%', marginBottom: 2 }}>
                 <CardHeader
                     title={title}
@@ -235,7 +313,7 @@ export default function DetailedCard(props) {
                             <CssBaseline>
                             <Stack direction="row" >
                                 <Item>{"תאריך תפוגה: " + Utils.formatDate(expandData.expiration)}</Item>
-                                <Item>{"כמות זמינה: " + expandData.count}</Item>
+                                <Item style={{ cursor: 'pointer' }} onClick={() => handleUpdateAmount(expandData)}>{"כמות זמינה: " + newAmount}</Item>
                             </Stack>
                             </CssBaseline>
                         </CardActions>

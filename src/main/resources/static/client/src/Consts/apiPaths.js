@@ -19,6 +19,7 @@ module.exports = {
         UPDATE_MEDICINE_SHARING : "/api/ShareMedicineInStock",
         DELETE_MEDICINE : "/api/DeleteMedicineFromStock",
         ADD_MEDICINE : "/api/AddMedicineToStock",
+        UPDATE_MEDICINE_COUNT : "/api/UpdateMedicineCountInStock",
         CREATE_NEW_USERTYPE_REQUEST : "/api/CreateNewUserTypeRequest",
         GET_PENDING_REQUESTS : "/api/GetAllUserTypeRequestsByStatus",
         CHANGE_REQUEST_STATUS : "/api/changeUserTypeRequestStatus",
