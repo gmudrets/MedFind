@@ -44,7 +44,7 @@ function Header() {
             dispatch(Actions.closeMenu())
         }
     };
-
+    
     return (
         <Box sx={{flexGrow: 1}}>
             <AppBar position="fixed" color="grey">
