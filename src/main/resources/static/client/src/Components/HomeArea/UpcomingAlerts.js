@@ -30,8 +30,6 @@ function UpcomingAlerts() {
             const token = await getAuth().currentUser.getIdToken(true);
             const list = await getRequest(token, ServerConsts.GET_USER_ALERT_LIST);
             setAlerts(findClosestAlerts(list));
-
-
         } else {
             setTimeout(async () => {
                 if (getAuth().currentUser !== null) {
@@ -41,16 +39,13 @@ function UpcomingAlerts() {
                 }
             }, 1000)
         }
-        ;
     }, []);
 
     const createPropsFromRem = (data) => {
-        console.log(data);
         let result = {};
         result['title'] = data[REM_TITLE];
         result["medicineName"] = JSON.parse(data[REM_DES])[MEDICINE];
         const time = data[REM_TYPE] === FIXED ? new Date(data[FIXED_DATE]) : getDateFromScheduald(data);
-        console.log(time);
         let info = "";
         const newDateString = dateToString(time);
         info += "תאריך: ";
@@ -68,11 +63,9 @@ function UpcomingAlerts() {
         for (let i = 0; i < 7; i++) {
 
             if (alertDate.getTime() > new Date(Date.parse(al[REM_EXPERATION])).getTime()) {
-                console.log("hello");
                 return null;
             }
             if (alertDate.getDay() + 1 === al[DAY_IN_WEEK]) {
-                console.log("hey")
                 return alertDate;
             }
             alertDate.setDate(alertDate.getDate() + 1);
@@ -108,17 +101,12 @@ function UpcomingAlerts() {
         return res;
     }
 
-    useEffect(() => {
-        console.log(alerts);
-    }, [alerts]);
-
-
     return (
         <>
             <Typography variant="h6" component="h2" align='center' marginTop={4}>
                 התראות קרובות
             </Typography>
-            <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}>
+            <Box style={{maxHeight: '50vh'}} margin={'27px'}>
                 <Grid container columnSpacing={5} rowSpacing={2.4} style={{overflowY: 'auto'}}>
                     {alerts !== null && alerts.length > 0 && (alerts.map((item, index) => (
                         <Grid item md={3} key={item[RemindersFields.REM_ID]}>
