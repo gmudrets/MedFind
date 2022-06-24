@@ -31,6 +31,7 @@ import {collection, doc, setDoc} from "firebase/firestore";
 import * as ProfileFields from '../../../Consts/ProfileFields.js'
 import PicturePicker from "../../UI/PicturePicker";
 import certificatePlaceHolder from "../../../Assets/Images/certificatePlaceHolder.jpg";
+import defualt_profile_picture from "../../../Assets/Images/defualt_profile_picture.png"
 
 const theme = createTheme({direction: 'rtl'});
 
@@ -91,7 +92,11 @@ function Register() {
   // checks if the user email is not in use and password meets requirements.
   // if not, raise an error. else, register the user to firebase + saving user info in "users" collection firestore.
   const registerNewUser = async (data) => {
-    await createUserWithEmailAndPassword(auth,
+      let profilePicture = "";
+      toDataURL(defualt_profile_picture,
+          (dataURL) =>
+          { profilePicture = dataURL });
+      await createUserWithEmailAndPassword(auth,
         data.get("email").toString(),
         data.get("password").toString())
         .then(async (userCredential) => {
@@ -106,6 +111,7 @@ function Register() {
                 lastName: data.get("lastName").toString(),
                 telephone: data.get("telephone").toString(),
                 city: data.get("city").toString(),
+                profilePic: profilePicture,
                 allowExtraEmails: true
             }))).then();
           } catch(error) {
@@ -149,11 +155,24 @@ function Register() {
         setRegisterErrorMessage(false);
     }
 
+    function toDataURL(url, callback) {
+        let xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            let reader = new FileReader();
+            reader.onloadend = function() {
+                callback(reader.result);
+            }
+            reader.readAsDataURL(xhr.response);
+        };
+        xhr.open('GET', url);
+        xhr.responseType = 'blob';
+        xhr.send();
+    }
+
     const handleSubmit = async (event) => {
 
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-
         // setting all errors as false before validations.
         setEmailError("");
         setPasswordError("");
