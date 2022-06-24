@@ -24,6 +24,7 @@ import * as RemindersFields from "../../Consts/RemindersFields";
 
 
 function UpcomingAlerts() {
+    const showAlertNum = 4;
     useEffect(async () => {
         if (getAuth().currentUser !== null) {
             const token = await getAuth().currentUser.getIdToken(true);
@@ -79,7 +80,6 @@ function UpcomingAlerts() {
         return null;
     }
     const [alerts, setAlerts] = useState(null);
-    const showAlertNum = 5;
     const findClosestAlerts = (alerts) => {
         if (alerts === null) {
             return null;
@@ -119,7 +119,7 @@ function UpcomingAlerts() {
                 התראות קרובות
             </Typography>
             <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}>
-                <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'auto'}}>
+                <Grid container columnSpacing={5} rowSpacing={2.4} style={{overflowY: 'auto'}}>
                     {alerts !== null && alerts.length > 0 && (alerts.map((item, index) => (
                         <Grid item md={3} key={item[RemindersFields.REM_ID]}>
                             <SingleReminderCard {...createPropsFromRem(item)}/>
