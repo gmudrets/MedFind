@@ -5,6 +5,8 @@ export const FIXED = "FIXED";
 export const FIXED_DATE = "fixedDate";
 export const REM_EXPERATION = "alertExpiration"
 export const REM_ID = 'id';
+export const REM_UUID = 'alertUuid';
+
 export const DAY_IN_WEEK = 'day';
 export const HOUR = 'hour';
 export const MINUTE = 'minute'

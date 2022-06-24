@@ -11,8 +11,11 @@ import {getRequest} from "../../Utils/AxiosRequests";
 import {ServerConsts} from "../../Consts/apiPaths";
 import AlertDialog from "../UI/Dialog";
 import {Alert, Snackbar} from "@mui/material";
-import RemindersCreateForm from "../RemindersArea/RemindersCreateForm";
+import RemindersCreateForm, {defaultFormData, MEDICINE} from "../RemindersArea/RemindersCreateForm";
 import TransitionsModal from "../UI/Modal/Modal";
+import {getAuth} from "firebase/auth";
+import {handleReminderSubmit} from "../RemindersArea/Reminders";
+
 
 function MyMedicine() {
     const navigate = useNavigate();
@@ -44,6 +47,11 @@ function MyMedicine() {
         }
     }, [loadData]);
 
+    const createFormData= (item)=>{
+        const data = defaultFormData();
+        data[MEDICINE] = item['hebName'];
+        return data;
+    }
     const getMyMeds = async () => {
         setLoading(true);
         let data = await getRequest(currentUser.stsTokenManager.accessToken,
@@ -88,9 +96,10 @@ function MyMedicine() {
 
     }
 
-    const handleAlertSubmit = () => {
-        console.log("Submitting alert!");
+    const handleAlertSubmit = async (data) => {
         toggleReminderDialog();
+        const token = await getAuth().currentUser.getIdToken(true);
+        await handleReminderSubmit(data,token)
     }
 
     return (
@@ -161,7 +170,7 @@ function MyMedicine() {
                     {items.map((item,index) => (
                         <>
                             <TransitionsModal open={openReminderDialog} toggleModal={toggleReminderDialog}>
-                                <RemindersCreateForm handleSubmit={handleAlertSubmit} medicineList={[item]} medicine={0}/>
+                                <RemindersCreateForm handleSubmit={handleAlertSubmit} medicineList={items} medicine={item} formData = {createFormData(item)}/>
                             </TransitionsModal>
                             <Box
                                 key={index}

@@ -29,6 +29,8 @@ public class MedicineEntry {
 
     private String uuid;
 
+    private String userEmail;
+
     private String regNum;
 
     private Date expiration;

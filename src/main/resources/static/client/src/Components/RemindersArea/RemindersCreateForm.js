@@ -1,5 +1,5 @@
 import {Alert, Box, Divider, Snackbar, ThemeProvider} from "@mui/material";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Avatar from "@mui/material/Avatar";
@@ -25,13 +25,6 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {TimePicker} from "@mui/x-date-pickers/TimePicker";
 import {DatePicker} from "@mui/x-date-pickers";
 import {createTheme} from "@mui/material/styles";
-import {getRequest} from "../../Utils/AxiosRequests";
-import {useSelector} from "react-redux";
-import {getSafe} from "../../Utils/Utils";
-import {USER_PROFILE} from "../../Consts/StatePaths";
-import {getAuth} from "firebase/auth";
-import {ServerConsts} from "../../Consts/apiPaths";
-import {current} from "@reduxjs/toolkit";
 
 export const TITLE = 'title';
 export const MEDICINE = 'medicine';
@@ -43,7 +36,24 @@ export const UNTIL_DATE = 'untilDate';
 export const UNTIL_TYPE = 'untilType';
 export const REMINDERS_NUM = 'reminderNum';
 export const EACH_MANY_DAYS = 'eachManyDAys';
-
+export const IN_WHICH_DATE = "inDate";
+export const REG_NUM = 'regNumber'
+export const HEB_NAME = 'hebName'
+export const defaultFormData = () => {
+    const data = {};
+    data[TIMES_ARRAY] = [null];
+    data[TITLE] = "";
+    data[RETURNS_TYPE] = returnsTypeOptions.NOT_RETURN;
+    data[EACH_MANY_DAYS] = 2;
+    data[EACH_MANY_WEEKS] = 2;
+    data[WEEK_DAYS_SELECTED] = initilizeWeekDaysSelected();
+    data[UNTIL_DATE] = getAfterWeek();
+    data[UNTIL_TYPE] = untilTypeOptions.DATE;
+    data[MEDICINE] = loadingMed;
+    data[IN_WHICH_DATE] = new Date();
+    data[REMINDERS_NUM] = 2;
+    return data;
+}
 
 export const returnsTypeOptions = {
     NOT_RETURN: 'לא חוזר',
@@ -61,12 +71,22 @@ export const daysWeekOptions = [
     'שישי',
     'שבת'
 ];
+export const shortDaysWeekOptions = [
+    'א',
+    'ב',
+    'ג',
+    'ד',
+    'ה',
+    'ו',
+    'ש'
+];
 export const untilTypeOptions = {
     DATE: 'תאריך',
     NUM: 'כמות תזכורת'
 };
 export const fakeExpiration = new Date('2500-01-01')
-
+export const defaultMed = "בחר תרופה";
+export const loadingMed = "טוען תרופות..."
 export const getTomorow = () => {
     let date = new Date();
     date.setDate(date.getDate() + 1);
@@ -83,50 +103,54 @@ const initilizeWeekDaysSelected = () => {
 }
 
 function RemindersCreateForm(props) {
-    // const auth = getAuth().currentUser.uid;
-    // const profile = useSelector((state) => getSafe(USER_PROFILE, state));
-    //
-
     const maxTimes = 15;
     const ltrTheme = createTheme({direction: 'ltr'});
-    const defualtMedicne = "בחר תרופה";
+    const defaultErrorMessage = "חלק מהפרטים שגויים, נסה שוב";
     const [hasErrorOnSomeField, set] = React.useState(false);
     const [stopStream, setStopStream] = useState(false);
-    const [timesArray, setTimesArray] = useState(props.timesArray);
-    const [name, setName] = React.useState(props.name);
+    const [timesArray, setTimesArray] = useState(props.formData[TIMES_ARRAY]);
+    const [name, setName] = React.useState(props.formData[TITLE]);
     const [value, setValue] = React.useState(null);
     const [triedSubmit, setTriedSubmitted] = React.useState(false);
     const [reachedMaxTimes, setReachedMaxTimes] = React.useState(false);
-    const [eachManyDays, setEachManyDays] = React.useState(props.eachManyDays);
-    const [eachManyWeeks, setEachManyWeeks] = React.useState(props.eachManyWeeks);
-    const [returnsType, setReturnsType] = useState(props.returnsType);
-    const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.weekDays);
-    const [untilType, setUntilType] = React.useState(props.untilType);
-    const [remindersRemain, setRemindersRemain] = React.useState(2);//later if possible
-    const [errorMessege, setErrorMessege] = React.useState(false);
-    const [newFrom, setNewFrom] = React.useState(1);
-    const [untilDate, setUntilDate] = React.useState(props.untilDate);
+    const [eachManyDays, setEachManyDays] = React.useState(props.formData[EACH_MANY_DAYS]);
+    const [eachManyWeeks, setEachManyWeeks] = React.useState(props.formData[EACH_MANY_WEEKS]);
+    const [returnsType, setReturnsType] = useState(props.formData[RETURNS_TYPE]);
+    const [weekDaysSelected, setWeekDaysSelected] = React.useState(props.formData[WEEK_DAYS_SELECTED]);
+    const [untilType, setUntilType] = React.useState(props.formData[UNTIL_TYPE]);
+    const [remindersRemain, setRemindersRemain] = React.useState(props.formData[REMINDERS_NUM]);
+    const [errorMessegeOpen, setErrorMessegeOpen] = React.useState(false);
+    const [newFrom, setNewFrom] = React.useState(0);
+    const [untilDate, setUntilDate] = React.useState(props.formData[UNTIL_DATE]);
     const [medicineFullList, setMedicineFullList] = React.useState(props.medicineList);
-    const [medicineList, setMedicineList] = React.useState(["טוען תרופות..."]);
-    const [medicine, setMedicine] = React.useState("טוען תרופות...");
+    const [medicineList, setMedicineList] = React.useState([props.formData[MEDICINE]]);
+    const [medicine, setMedicine] = React.useState(props.formData[MEDICINE]);
     const [weekDaysError, setWeekDaysError] = React.useState(false);
+    const [inDate, setInDate] = React.useState(props.formData[IN_WHICH_DATE]);
+    const [errorMessege, setErrorMessege] = React.useState(defaultErrorMessage);
+
 
     useEffect(async () => {
-        if (medicineFullList != []) {
-            let medicenes = [defualtMedicne];
+        if (medicineFullList.length !== 0) {
+            let medicines = [defaultMed];
             for (let i = 0; i < medicineFullList.length; i++) {
-                medicenes[i + 1] = medicineFullList[i]['hebName'];
+                medicines[i + 1] = medicineFullList[i]['hebName'];
             }
-            setMedicineList(medicenes);
-            setMedicine(medicenes[props.medicine + 1]);
-            if (props.medicine + 1 !== 0) {
-                handleMedicineChange2(medicenes[props.medicine + 1],medicenes);
+            let med = props.medicineInd === -1 ? props.formData[MEDICINE] : medicines[props.medicine + 1]
+            if(med === loadingMed){
+                med = defaultMed;
             }
+            setMedicine(med);
+            setMedicineList(medicines);
+            if (med !== defaultMed && med!== loadingMed) {
+                handleMedicineChange2(med, medicines);
+            }
+            setMedicineList([...new Set(medicines)]);
         }
 
-    }, [medicineFullList]);
+    }, []);
     useEffect(() => {
-        if (timesArray.length == maxTimes) {
+        if (timesArray.length === maxTimes) {
             setReachedMaxTimes(true);
         } else {
             setReachedMaxTimes(false);
@@ -135,10 +159,9 @@ function RemindersCreateForm(props) {
     const handleMedicineChange = (event) => {
         handleMedicineChange2(event.target.value);
     }
-    const handleMedicineChange2 = (value,medLis = medicineList) => {
-        console.log(medLis);
-        console.log(medLis[0]);
-        if (medLis[0] === defualtMedicne) {
+
+    const handleMedicineChange2 = (value, medLis = medicineList) => {
+        if (medLis[0] === defaultMed) {
             const next = [...medLis];
             next.splice(0, 1);
             setMedicineList(next);
@@ -156,6 +179,9 @@ function RemindersCreateForm(props) {
             },
         },
     };
+    const handleInDateChange = (date) => {
+        setInDate(date);
+    }
     const handleUntilDateChange = (date) => {
         setUntilDate(date);
     }
@@ -190,7 +216,7 @@ function RemindersCreateForm(props) {
 
     const showError = (time, index, triedSumit2 = false, newFrom2 = 0) => {
         let hasError = !validateTime(time, index);
-        if (!triedSumit2 && ((newFrom2 == 0 ? index >= newFrom : index >= newFrom2) || (!triedSubmit && time == null))) {
+        if (!triedSumit2 && ((newFrom2 === 0 ? index >= newFrom : index >= newFrom2) || (!triedSubmit && time == null))) {
             return false;
         } else {
 
@@ -200,14 +226,21 @@ function RemindersCreateForm(props) {
 
     }
     const validateTime = (time, index) => {
-        if ((new Date(time) == "Invalid Date") || isNaN(new Date(time)) || Date.parse(new Date(time)) === 0) {
+        if ((new Date(time) === "Invalid Date") || isNaN(new Date(time)) || Date.parse(new Date(time)) === 0) {
             return false;
         }
+        if (returnsType === returnsTypeOptions.NOT_RETURN && (new Date(inDate)).getDate() === new Date().getDate() && new Date(inDate).getMonth() === new Date().getMonth()) {
 
+            if (new Date(time).getTime() < new Date().getTime()) {
+                setErrorMessege("תזמנת התראה לעבר, שנה ונסה שוב")
+                return false;
+            }
+        }
         for (let i = 0; i < timesArray.length; i++) {
-            if (index != i) {
-                if (new Date(time).getHours() == new Date(timesArray[i]).getHours() && new Date(time).getMinutes() == new Date(timesArray[i]).getMinutes()) {
+            if (index !== i) {
+                if (new Date(time).getHours() === new Date(timesArray[i]).getHours() && new Date(time).getMinutes() === new Date(timesArray[i]).getMinutes()) {
                     if (index > i) {
+                        setErrorMessege("יצרת שתי התראות באותו זמן, שנה ונסה שוב")
                         return false;
                     }
                 }
@@ -215,15 +248,13 @@ function RemindersCreateForm(props) {
         }
         return true;
     }
-    // const checkIfHasError = (time, index) => {
-    //     let hasError = !validateTime(time, index);
-    //     let nextHasError = [...hasErrorArr];
-    //     nextHasError[index] = hasError;
-    //     setHasErrorArr(nextHasError);
-    // }
 
     const handleTimeChange = (time, index) => {
         const next = [...timesArray];
+        //for some reasons sometimes created previous year
+        if(new Date(time).getFullYear() !== new Date().getFullYear()){
+            time = new Date(new Date(time).setFullYear(new Date().getFullYear()))
+        }
         next[index] = time;
         setTimesArray(next);
     }
@@ -247,14 +278,11 @@ function RemindersCreateForm(props) {
 
     };
     const showMedicineError = (triedSubmitted2 = false) => {
-        if (medicine === defualtMedicne && (triedSubmit || triedSubmitted2)) {
-            return true;
-        } else {
-            return false;
-        }
+        return medicine === defaultMed && (triedSubmit || triedSubmitted2);
     }
     const closeError = () => {
-        setErrorMessege(false);
+        setErrorMessegeOpen(false);
+        setErrorMessege(defaultErrorMessage);
     }
     const myHandleSubmit = (event) => {
         event.preventDefault();
@@ -262,30 +290,39 @@ function RemindersCreateForm(props) {
         setNewFrom(timesArray.length);
         for (let i = 0; i < timesArray.length; i++) {
             if (timesArray[i] == null || showError(timesArray[i], i, true, timesArray.length)) {
-                setErrorMessege(true);
+                setErrorMessegeOpen(true);
                 return false;
             }
         }
         if (showMedicineError(true)) {
-            setErrorMessege(true);
+            setErrorMessege("בעיה בבחירת התרופה, שנה ונסה שוב")
+            setErrorMessegeOpen(true);
             return false;
         }
         if (returnsType === returnsTypeOptions.EACH_WEEK || returnsType === returnsTypeOptions.EACH_FEW_WEEKS) {
-            if (weekDaysSelected == "") {
-                setErrorMessege(true);
+            if (weekDaysSelected === "") {
+                setErrorMessegeOpen(true);
                 setWeekDaysError(true);
                 return false;
             }
         }
-        console.log(weekDaysSelected);
         const data = new FormData(event.currentTarget);
         const value = Object.fromEntries(data.entries());
         value[TIMES_ARRAY] = timesArray;
         value[WEEK_DAYS_SELECTED] = weekDaysSelected;
         value[UNTIL_TYPE] = untilType;
         value[UNTIL_DATE] = untilDate;
-        value[MEDICINE] = medicineFullList[medicineList.indexOf(medicine)];
-        console.log(value);
+        value[IN_WHICH_DATE] = inDate;
+        value[MEDICINE] = medicine;
+        value[EACH_MANY_WEEKS] = eachManyWeeks;
+        value[EACH_MANY_DAYS] = eachManyDays;
+        for (let i = 0; i < medicineFullList.length; i++) {
+            if(medicineFullList[i]['hebName'] === medicine){
+                value[REG_NUM] = medicineFullList[i]['regNum'];
+                value[HEB_NAME] = medicineFullList[i]['hebName'];
+                break;
+            }
+        }
         props.handleSubmit(value);
         return true;
 
@@ -295,13 +332,13 @@ function RemindersCreateForm(props) {
 
     return (
         <>
-            <Snackbar open={errorMessege}
+            <Snackbar open={errorMessegeOpen}
                       autoHideDuration={1500}
                       onClose={closeError}
                       anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             >
                 <Alert severity="error">
-                    חלק מהפרטים שגויים, נסה שוב
+                    {errorMessege}
                 </Alert>
             </Snackbar>
             <Paper style={{maxHeight: "80vh", overflow: 'auto'}}
@@ -338,6 +375,7 @@ function RemindersCreateForm(props) {
                                         label="כותרת (אופציונלי)"
                                         value={name}
                                         onChange={handleNameChange}
+                                        autoComplete={"off"}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -393,6 +431,7 @@ function RemindersCreateForm(props) {
                                     <IconButton onClick={handleAddTimeClick}
                                                 disabled={reachedMaxTimes}><AddAlarmIcon/></IconButton>
                                 </Grid>
+
                                 <Grid item xs={12}><Divider/></Grid>
                                 <Grid item xs={8}>
                                     <TextField
@@ -411,8 +450,9 @@ function RemindersCreateForm(props) {
                                         ))}
                                     </TextField>
                                 </Grid>
+
                                 {/*in case of repeat each few days*/}
-                                {returnsType == returnsTypeOptions.EACH_FEW_DAYS &&
+                                {returnsType === returnsTypeOptions.EACH_FEW_DAYS &&
                                     <Grid item xs={4}>
                                         <TextField
                                             id={EACH_MANY_DAYS}
@@ -429,7 +469,7 @@ function RemindersCreateForm(props) {
                                     </Grid>
                                 }
                                 {/*in case of repeat each few days*/}
-                                {returnsType == returnsTypeOptions.EACH_FEW_WEEKS &&
+                                {returnsType === returnsTypeOptions.EACH_FEW_WEEKS &&
                                     <Grid item xs={4}>
                                         <TextField
                                             id={EACH_MANY_WEEKS}
@@ -447,7 +487,7 @@ function RemindersCreateForm(props) {
                                     </Grid>
                                 }
                                 {/*in case of repeat each few or each week weeks*/}
-                                {(returnsType == returnsTypeOptions.EACH_WEEK || returnsType == returnsTypeOptions.EACH_FEW_WEEKS) &&
+                                {(returnsType === returnsTypeOptions.EACH_WEEK || returnsType === returnsTypeOptions.EACH_FEW_WEEKS) &&
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
                                             <InputLabel id="demo-multiple-checkbox-label">בימים</InputLabel>
@@ -473,9 +513,32 @@ function RemindersCreateForm(props) {
                                         </FormControl>
                                     </Grid>
                                 }
-                                {returnsType != returnsTypeOptions.NOT_RETURN &&
-                                    <Grid item xs={12}><Divider/></Grid>}
-                                {(returnsType == returnsTypeOptions.EACH_FEW_DAYS || returnsType == returnsTypeOptions.EACH_DAY) &&
+                                <Grid item xs={12}><Divider/></Grid>
+                                {returnsType === returnsTypeOptions.NOT_RETURN &&
+                                    <>
+                                        <Grid item xs={12}><Divider/></Grid>
+                                        <Grid item xs={12}>
+                                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                <ThemeProvider theme={ltrTheme}>
+                                                    <DatePicker
+                                                        label="בחר תאריך"
+                                                        id={IN_WHICH_DATE}
+                                                        name={IN_WHICH_DATE}
+                                                        value={inDate}
+                                                        onChange={handleInDateChange}
+                                                        views={["year", "month", "day"]}
+                                                        filel
+                                                        inputFormat="dd/MM/yyyy"
+                                                        minDate={new Date()}
+                                                        renderInput={(params) => <TextField {...params}
+                                                        />}
+
+                                                    />
+                                                </ThemeProvider>
+                                            </LocalizationProvider>
+                                        </Grid>
+                                    </>}
+                                {(returnsType === returnsTypeOptions.EACH_FEW_DAYS || returnsType === returnsTypeOptions.EACH_DAY) &&
 
                                     <Grid item xs={5}>
                                         <TextField
@@ -495,13 +558,13 @@ function RemindersCreateForm(props) {
                                         </TextField>
                                     </Grid>
                                 }
-                                {returnsType != returnsTypeOptions.NOT_RETURN && !((returnsType == returnsTypeOptions.EACH_FEW_DAYS || returnsType == returnsTypeOptions.EACH_DAY) && untilType != untilTypeOptions.DATE) &&
+                                {returnsType !== returnsTypeOptions.NOT_RETURN && !((returnsType === returnsTypeOptions.EACH_FEW_DAYS || returnsType === returnsTypeOptions.EACH_DAY) && untilType !== untilTypeOptions.DATE) &&
                                     <Grid item xs={7}>
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <ThemeProvider theme={ltrTheme}>
                                                 <DatePicker
-                                                    label={(returnsType == returnsTypeOptions.EACH_FEW_DAYS || returnsType == returnsTypeOptions.EACH_DAY) ? "תאריך (כולל)" : "חזור עד (כולל)"}
+                                                    label={(returnsType === returnsTypeOptions.EACH_FEW_DAYS || returnsType === returnsTypeOptions.EACH_DAY) ? "תאריך (כולל)" : "חזור עד (כולל)"}
                                                     id={UNTIL_DATE}
                                                     name={UNTIL_DATE}
                                                     value={untilDate}
@@ -519,11 +582,11 @@ function RemindersCreateForm(props) {
                                     </Grid>
 
                                 }
-                                {(returnsType == returnsTypeOptions.EACH_FEW_DAYS || returnsType == returnsTypeOptions.EACH_DAY) && untilType == untilTypeOptions.NUM &&
+                                {(returnsType === returnsTypeOptions.EACH_FEW_DAYS || returnsType === returnsTypeOptions.EACH_DAY) && untilType === untilTypeOptions.NUM &&
                                     <Grid item xs={7}>
                                         <TextField
                                             id={REMINDERS_NUM}
-                                            label="כמות תזכורת"
+                                            label=" כמות תזכורת (מעתה והלאה)"
                                             name={REMINDERS_NUM}
                                             type="number"
                                             InputLabelProps={{
@@ -557,19 +620,12 @@ function RemindersCreateForm(props) {
 }
 
 RemindersCreateForm.defaultProps = {
-    timesArray: [null],
-    name: "",
-    returnsType: returnsTypeOptions.NOT_RETURN,
-    eachManyDays: 2,
-    eachManyWeeks: 2,
-    weekDays: initilizeWeekDaysSelected(),
-    untilDate: getAfterWeek(),
-    untilType: untilTypeOptions.DATE,
+    formData: defaultFormData(),
     handleSubmit: (res) => {
         return true;
     },
     medicineList: [],
-    medicine: -1
+    medicineInd: -1,
 
 
 }

@@ -28,12 +28,16 @@ public class AlertEntry {
 
     private String userUuid;
 
+    private String userEmail;
+
     private String alertName;
 
     @Column(length = 1000)
     private String alertDescription;
 
     private String regNum;
+
+    private String medicineHebName;
 
     @Type(type="uuid-char")
     private UUID alertUuid;

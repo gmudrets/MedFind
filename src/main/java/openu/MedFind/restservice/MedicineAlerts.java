@@ -42,13 +42,16 @@ public class MedicineAlerts {
                               @RequestParam String alertName,
                               @RequestParam String alertDescription,
                               @RequestParam String regNum,
+                              @RequestParam String medicineHebName,
                               @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy-HH:mm") LocalDateTime alertExpiration,
                               @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy-HH:mm") List<LocalDateTime> fixedDateList) throws TokenException {
 
         String uuid;
+        String email;
 
         try {
             uuid = FirebaseValidator.getUidFromIdToken(idToken);
+            email = FirebaseValidator.getEmailFromIdToken(idToken);
         } catch (FirebaseAuthException e) {
             throw new TokenException("User not found.", e);
         }
@@ -58,9 +61,11 @@ public class MedicineAlerts {
         for (var date : fixedDateList) {
             alertEntryRepository.save(AlertEntry.builder()
                     .userUuid(uuid)
+                    .userEmail(email)
                     .alertName(alertName)
                     .alertDescription(alertDescription)
                     .regNum(regNum)
+                    .medicineHebName(medicineHebName)
                     .alertUuid(alertUuid)
                     .alertExpiration(alertExpiration)
                     .fixedDate(date)
@@ -76,6 +81,7 @@ public class MedicineAlerts {
                                  @RequestParam String alertName,
                                  @RequestParam String alertDescription,
                                  @RequestParam String regNum,
+                                 @RequestParam String medicineHebName,
                                  @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy-HH:mm") LocalDateTime alertExpiration,
                                  @RequestParam List<Integer> days,
                                  @RequestParam List<Integer> hours,
@@ -84,9 +90,11 @@ public class MedicineAlerts {
     ) throws TokenException {
 
         String uuid;
+        String email;
 
         try {
             uuid = FirebaseValidator.getUidFromIdToken(idToken);
+            email = FirebaseValidator.getEmailFromIdToken(idToken);
         } catch (FirebaseAuthException e) {
             throw new TokenException("User not found.", e);
         }
@@ -103,15 +111,17 @@ public class MedicineAlerts {
             var minute = minutes.get(i);
             var week = weeks.get(i);
 
-            if (day <= 0 || hour <= 0 || minute <= 0 || week <= 0) {
-                throw new IllegalArgumentException("time cannot be <= 0");
+            if (day <= 0 || hour < 0 || minute < 0 || week <= 0) {
+                throw new IllegalArgumentException("time cannot be < 0");
             }
 
             alertEntryRepository.save(AlertEntry.builder()
                     .userUuid(uuid)
+                    .userEmail(email)
                     .alertName(alertName)
                     .alertDescription(alertDescription)
                     .regNum(regNum)
+                    .medicineHebName(medicineHebName)
                     .alertUuid(alertUuid)
                     .alertExpiration(alertExpiration)
                     .day(day)

@@ -45,9 +45,11 @@ public class MedicineStock {
                                      @RequestParam boolean shared) throws TokenException {
 
         String uuid;
+        String email;
 
         try {
             uuid = FirebaseValidator.getUidFromIdToken(idToken);
+            email = FirebaseValidator.getEmailFromIdToken(idToken);
         } catch (FirebaseAuthException e) {
             throw new TokenException("User not found.", e);
         }
@@ -69,6 +71,7 @@ public class MedicineStock {
                 .dosage(dosage)
                 .shared(shared)
                 .uuid(uuid)
+                .userEmail(email)
                 .expirationAlertSent(false)
                 .build());
     }

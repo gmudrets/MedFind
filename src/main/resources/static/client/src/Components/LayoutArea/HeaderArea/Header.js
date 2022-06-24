@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,14 +9,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import logo from '../../../Assets/Images/logo.png'
 import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
+import {USER_PROFILE} from '../../../Consts/StatePaths'
 import {Actions} from "../../../Redux/UI";
-import ReadSocket from "./ReadSocket";
-import {USER_PROFILE} from "../../../Consts/StatePaths";
 import * as ProfileFields from "../../../Consts/ProfileFields";
 
-
 function Header() {
-//   const navigate = useNavigate();
     const dispatch = useDispatch();
     const [auth, setAuth] = useState(true);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -47,17 +44,9 @@ function Header() {
             dispatch(Actions.closeMenu())
         }
     };
-    const readSocket = (data) => {
-        if (data !== []) {
-
-        }
-    }
 
     return (
         <Box sx={{flexGrow: 1}}>
-            {auth &&
-                <ReadSocket readSocket={readSocket}/>
-            }
             <AppBar position="fixed" color="grey">
                 <Toolbar>
                     {auth && <IconButton

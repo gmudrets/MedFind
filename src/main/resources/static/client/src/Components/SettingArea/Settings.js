@@ -19,6 +19,7 @@ import Typography from "@mui/material/Typography";
 import SettingsCheckBox from "../UI/SettingsCheckBox";
 import {isMobile} from "react-device-detect";
 import {prefixer} from 'stylis';
+import * as STATE_PATHS from "../../Consts/StatePaths";
 import {USER_PROFILE} from "../../Consts/StatePaths";
 import Divider from "@mui/material/Divider";
 import DialogTitle from '@mui/material/DialogTitle';
@@ -33,7 +34,6 @@ import * as ProfileFields from "../../Consts/ProfileFields";
 import defualtProfPic from '../../Assets/Images/defualt_profile_picture.png';
 import * as validations from "../../Components/AuthArea/Validators/Validators";
 import {useNavigate} from "react-router-dom";
-import * as STATE_PATHS from "../../Consts/StatePaths";
 
 
 // Create rtl cache
@@ -286,8 +286,6 @@ export default function Settings() {
     }
     const handleGoBackPress = () => {
         if (fieldsOnEditMode.length === 0) {
-            console.log(fieldsOnEditMode);
-            console.log(fieldsOnEditMode.length)
             navigateBack();
         } else {
             setGoBackDialogOpen(true);

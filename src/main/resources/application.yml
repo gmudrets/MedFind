@@ -4,6 +4,18 @@ logging:
     openu.Medfind: DEBUG
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: medfind.alerts@gmail.com
+    password: hrtcksfzgtdiakjn
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
   web:
     resources:
       static-locations: "classpath:/static/client/build/"
@@ -26,3 +38,7 @@ server:
     key-store-password: SecretP4ss
   max-http-header-size: 10000000
 
+medfind:
+  alerts:
+    appid: 577a3ade-c29c-434b-8c12-ee8749ed6dfb
+    authtoken: OTgxNzVjNTUtNTU3Yi00OTUyLThhYzMtMGY3ZjBhNjRlYjM3
