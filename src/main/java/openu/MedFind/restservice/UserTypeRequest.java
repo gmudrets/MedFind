@@ -9,6 +9,8 @@ import openu.MedFind.exceptions.TokenException;
 import openu.MedFind.repositories.UserTypeRequestEntryRepository;
 import openu.MedFind.services.FirebaseValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -21,6 +23,12 @@ public class UserTypeRequest {
 
     private final String DOCTOR_TYPE = "רופא";
     private final String MEDICAL_STAFF_MEMBER_TYPE = "צוות רפואי";
+    private static final String FROM_EMAIL = "medfind.alerts@gmail.com";
+
+    private static final String EMAIL_SUBJECT = "MEDFIND ALERT";
+
+    @Autowired
+    private JavaMailSender emailSender;
 
     @GetMapping("/api/CreateNewUserTypeRequest")
     public void createNewUserTypeRequest(@RequestHeader(name = "idToken", required = false) String idToken,
@@ -80,7 +88,19 @@ public class UserTypeRequest {
                 docRef.update("userType",newUserType);
             }
 
-            //TODO send an alert to the user with the request's status.
+            var message = new SimpleMailMessage();
+            message.setFrom(FROM_EMAIL);
+            message.setTo(entry.getEmail());
+
+            if(requestStatus == RequestStatus.APPROVED){
+                message.setSubject("Your user status request has approved");
+                message.setText("Please reconnect to the system for updating your new features !");
+            }
+            else{
+                message.setSubject("Your user status request has denied");
+                message.setText("We sorry to inform you the request of user status had been denied by administrator");
+            }
+            emailSender.send(message);
         }
     }
 

@@ -11,13 +11,9 @@ import {getSafe} from '../../../Utils/Utils'
 import * as STATE_PATHS from '../../../Consts/StatePaths'
 import {USER_PROFILE} from '../../../Consts/StatePaths'
 import {Actions} from "../../../Redux/UI";
-import ReadSocket from "./ReadSocket";
 import * as ProfileFields from "../../../Consts/ProfileFields";
-import {sendNotification} from "../../RemindersArea/sendNotification";
-
 
 function Header() {
-//   const navigate = useNavigate();
     const dispatch = useDispatch();
     const [auth, setAuth] = useState(true);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -48,32 +44,9 @@ function Header() {
             dispatch(Actions.closeMenu())
         }
     };
-
-    const readSocket = async (data) => {
-        // if (data !== []) {
-        //     console.log(data);
-        //     for (let i = 0; i < data.length; i++) {
-        //         const user = data[i]['user'];
-        //         const title = data[i]['alertName'];
-        //
-        //         if (data[i]['alertType'] === "EXPIRATION") {
-        //             const _title = "התראה על סיום תוקף";
-        //             const content = title;
-        //             await sendNotification(_title, content, user);
-        //         }
-        //         const medicineName = data[i]['medicineHebName'];
-        //         const _title = title === "" ? medicineName : title;
-        //         const content = title === "" ? "" : medicineName;
-        //         await sendNotification(_title, content, user);
-        //     }
-        // }
-    }
-
+    
     return (
         <Box sx={{flexGrow: 1}}>
-            {auth &&
-                <ReadSocket readSocket={readSocket}/>
-            }
             <AppBar position="fixed" color="grey">
                 <Toolbar>
                     {auth && <IconButton

@@ -74,7 +74,6 @@ const sendEachFewWeeks = async (data, originalData,token) => {
     let weeks = [];
     for (let i = 0; i < data[TIMES_ARRAY].length; i++) {
         for (let j = 0; j < data[WEEK_DAYS_SELECTED].length; j++) {
-            console.log(new Date(data[TIMES_ARRAY][i]).getHours());
             hours.push(new Date(data[TIMES_ARRAY][i]).getHours());
             minutes.push(new Date(data[TIMES_ARRAY][i]).getMinutes());
             days.push(daysWeekOptions.indexOf(data[WEEK_DAYS_SELECTED][j]) + 1);
