@@ -168,7 +168,6 @@ export default function DetailedCard(props) {
     const handleUpdateAmount = (item) => {
         setShowUpdateCountDialog(true);
         setCountUpdateItem(item);
-    //    id and count
     }
 
     const updateMedicineAmount = async () => {
