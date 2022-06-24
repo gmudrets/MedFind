@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from "react";
-import DetailedCard from "../UI/DetailedCard/DetailedCard";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import {getRequest} from "../../Utils/AxiosRequests";
 import {getAuth} from "firebase/auth";
 import {ServerConsts} from "../../Consts/apiPaths";
-import Grid from "@mui/material/Grid";
 
 import {
     DAY_IN_WEEK,
@@ -20,8 +18,6 @@ import {
 import {MEDICINE} from "../RemindersArea/RemindersCreateForm";
 import {dateToString, toOnlyDateString, toOnlyTimeString} from "../RemindersArea/Reminders";
 import SingleReminderCard from "./SingleReminderCard";
-import * as RemindersFields from "../../Consts/RemindersFields";
-
 
 function UpcomingAlerts() {
     const showAlertNum = 4;
@@ -106,16 +102,19 @@ function UpcomingAlerts() {
             <Typography variant="h6" component="h2" align='center' marginTop={4}>
                 התראות קרובות
             </Typography>
-            <Box style={{maxHeight: '50vh'}} margin={'27px'}>
-                <Grid container columnSpacing={5} rowSpacing={2.4} style={{overflowY: 'auto'}}>
-                    {alerts !== null && alerts.length > 0 && (alerts.map((item, index) => (
-                        <Grid item md={3} key={item[RemindersFields.REM_ID]}>
-                            <SingleReminderCard {...createPropsFromRem(item)}/>
-                        </Grid>
-                    )))}
-                </Grid>
-            </Box>
-
+            {alerts !== null && alerts.length > 0 && (alerts.map((item, index) => (
+                <Box
+                     key={index}
+                     marginTop='15px'
+                     marginBottom='15px'
+                     display='flex'
+                     flexDirection='column'
+                     justifyContent="center"
+                     alignItems='center'
+                >
+                    <SingleReminderCard {...createPropsFromRem(item)}/>
+                </Box>
+            )))}
             {alerts === null &&
                 <Typography variant="subtitle1" component="h2" align='center' key={alerts === null ? "0" : "1"}>
                     טוען התראות...
