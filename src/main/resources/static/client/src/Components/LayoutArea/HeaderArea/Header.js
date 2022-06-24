@@ -50,23 +50,23 @@ function Header() {
     };
 
     const readSocket = async (data) => {
-        if (data !== []) {
-            console.log(data);
-            for (let i = 0; i < data.length; i++) {
-                const user = data[i]['user'];
-                const title = data[i]['alertName'];
-
-                if (data[i]['alertType'] === "EXPIRATION") {
-                    const _title = "התראה על סיום תוקף";
-                    const content = title;
-                    await sendNotification(_title, content, user);
-                }
-                const medicineName = data[i]['medicineHebName'];
-                const _title = title === "" ? medicineName : title;
-                const content = title === "" ? "" : medicineName;
-                await sendNotification(_title, content, user);
-            }
-        }
+        // if (data !== []) {
+        //     console.log(data);
+        //     for (let i = 0; i < data.length; i++) {
+        //         const user = data[i]['user'];
+        //         const title = data[i]['alertName'];
+        //
+        //         if (data[i]['alertType'] === "EXPIRATION") {
+        //             const _title = "התראה על סיום תוקף";
+        //             const content = title;
+        //             await sendNotification(_title, content, user);
+        //         }
+        //         const medicineName = data[i]['medicineHebName'];
+        //         const _title = title === "" ? medicineName : title;
+        //         const content = title === "" ? "" : medicineName;
+        //         await sendNotification(_title, content, user);
+        //     }
+        // }
     }
 
     return (

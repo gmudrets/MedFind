@@ -5,6 +5,8 @@ import Typography from "@mui/material/Typography";
 import {getRequest} from "../../Utils/AxiosRequests";
 import {getAuth} from "firebase/auth";
 import {ServerConsts} from "../../Consts/apiPaths";
+import Grid from "@mui/material/Grid";
+
 import {
     DAY_IN_WEEK,
     FIXED,
@@ -18,6 +20,7 @@ import {
 import {MEDICINE} from "../RemindersArea/RemindersCreateForm";
 import {dateToString, toOnlyDateString, toOnlyTimeString} from "../RemindersArea/Reminders";
 import SingleReminderCard from "./SingleReminderCard";
+import * as RemindersFields from "../../Consts/RemindersFields";
 
 
 function UpcomingAlerts() {
@@ -40,12 +43,12 @@ function UpcomingAlerts() {
         ;
     }, []);
 
-    const createPropsFromRem = (data)=>{
+    const createPropsFromRem = (data) => {
         console.log(data);
         let result = {};
         result['title'] = data[REM_TITLE];
         result["medicineName"] = JSON.parse(data[REM_DES])[MEDICINE];
-        const time = data[REM_TYPE] === FIXED?new Date(data[FIXED_DATE]):getDateFromScheduald(data);
+        const time = data[REM_TYPE] === FIXED ? new Date(data[FIXED_DATE]) : getDateFromScheduald(data);
         console.log(time);
         let info = "";
         const newDateString = dateToString(time);
@@ -62,10 +65,13 @@ function UpcomingAlerts() {
         alertDate.setHours(al[HOUR]);
         alertDate.setMinutes(al[MINUTE]);
         for (let i = 0; i < 7; i++) {
-            if (alertDate.getTime() < new Date(al[REM_EXPERATION]).getTime()) {
+
+            if (alertDate.getTime() > new Date(Date.parse(al[REM_EXPERATION])).getTime()) {
+                console.log("hello");
                 return null;
             }
             if (alertDate.getDay() + 1 === al[DAY_IN_WEEK]) {
+                console.log("hey")
                 return alertDate;
             }
             alertDate.setDate(alertDate.getDate() + 1);
@@ -94,19 +100,17 @@ function UpcomingAlerts() {
                 }
             }
         }
-        arr.sort((a,b)=>a[0]-b[0]);
+        arr.sort((a, b) => a[0] - b[0]);
         const res = []
-        for (let i = 0; i < showAlertNum && i< arr.length; i++) {
+        for (let i = 0; i < showAlertNum && i < arr.length; i++) {
             res.push(arr[i][1]);
-            console.log(arr[i][1]);
         }
         return res;
     }
 
-    useEffect( () => {
+    useEffect(() => {
         console.log(alerts);
-    },[alerts]);
-
+    }, [alerts]);
 
 
     return (
@@ -114,19 +118,16 @@ function UpcomingAlerts() {
             <Typography variant="h6" component="h2" align='center' marginTop={4}>
                 התראות קרובות
             </Typography>
-            {alerts !== null && alerts.length > 0 && (alerts.map((item, index) => (
-                <Box
-                    key={index}
-                    marginTop='65px'
-                    marginBottom='45px'
-                    display='flex'
-                    flexDirection='column'
-                    justifyContent="center"
-                    alignItems='center'
-                >
-                    <SingleReminderCard {...createPropsFromRem(item)}/>
-                </Box>
-            )))}
+            <Box style={{maxHeight: '50vh', overflow: 'auto'}} margin={'27px'}>
+                <Grid container columnSpacing={5} rowSpacing={2.8} style={{overflowY: 'auto'}}>
+                    {alerts !== null && alerts.length > 0 && (alerts.map((item, index) => (
+                        <Grid item md={3} key={item[RemindersFields.REM_ID]}>
+                            <SingleReminderCard {...createPropsFromRem(item)}/>
+                        </Grid>
+                    )))}
+                </Grid>
+            </Box>
+
             {alerts === null &&
                 <Typography variant="subtitle1" component="h2" align='center' key={alerts === null ? "0" : "1"}>
                     טוען התראות...
