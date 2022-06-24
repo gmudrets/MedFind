@@ -482,7 +482,10 @@ export default function Reminders() {
 
                         <DialogActions>
                             <Button onClick={handleDeleteDialogFinished}>בטל מחיקה</Button>
-                            <Button onClick={() => handleFinalDelete(deletedID).then(setLoadingNew((false)))} autoFocus>
+                            <Button onClick={async () => {
+                                await handleFinalDelete(deletedID);
+                                setLoadingNew((false));}
+                            } autoFocus>
                                 מחק
                             </Button>
                         </DialogActions>
