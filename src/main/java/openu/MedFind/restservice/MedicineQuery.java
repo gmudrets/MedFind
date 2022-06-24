@@ -29,7 +29,7 @@ public class MedicineQuery {
         if(!FirebaseValidator.isIdTokenValid(idToken)){
             throw new TokenException("User not found.");
         }
-        var response = WebClientHelper.webClientRestCall(
+        var response = WebClientHelper.webClientRestPostCall(
                 HEALTH_MINISTRY_SITE,
                 SEARCH_BY_NAME_ENDPOINT,
                 Mono.just(new RequestMedicineByName(name, prescription, false, pageIndex, 0)),
@@ -47,7 +47,7 @@ public class MedicineQuery {
             throw new TokenException("User not found.");
         }
 
-        var response = WebClientHelper.webClientRestCall(
+        var response = WebClientHelper.webClientRestPostCall(
                 HEALTH_MINISTRY_SITE,
                 GET_SPECIFIC_DRUG_ENDPOINT,
                 Mono.just(new RequestBrochureByDrugRegNum(drugRegNum)),
@@ -67,7 +67,7 @@ public class MedicineQuery {
             throw new TokenException("User not found.");
         }
 
-        String response = WebClientHelper.webClientRestCall(
+        String response = WebClientHelper.webClientRestPostCall(
                 HEALTH_MINISTRY_SITE,
                 SEARCH_GENERIC,
                 Mono.just(new RequestGenericMedicine(val, name, null, null, null, pageIndex, 1)),
@@ -79,7 +79,7 @@ public class MedicineQuery {
 
     @GetMapping("/api/Autocomplete")
     public String Autocomplete(@RequestParam String val) throws JsonProcessingException {
-        return WebClientHelper.webClientRestCall(
+        return WebClientHelper.webClientRestPostCall(
                 HEALTH_MINISTRY_SITE,
                 AUTOCOMPLETE,
                 Mono.just(new RequestAutocomplete(val, 1, 1)),

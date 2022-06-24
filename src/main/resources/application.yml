@@ -38,3 +38,7 @@ server:
     key-store-password: SecretP4ss
   max-http-header-size: 10000000
 
+medfind:
+  alerts:
+    appid: 577a3ade-c29c-434b-8c12-ee8749ed6dfb
+    authtoken: OTgxNzVjNTUtNTU3Yi00OTUyLThhYzMtMGY3ZjBhNjRlYjM3
