@@ -60,12 +60,7 @@ export default function SingleReminderCard(props) {
                         {info}
                     </Typography>
                 </CardContent>
-                <CardActions disableSpacing>
-                    <IconButton aria-label="deleteReminder">
-                        <DeleteIcon/>
-                    </IconButton>
 
-                </CardActions>
 
             </Card>
         </ThemeProvider>
