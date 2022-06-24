@@ -111,8 +111,8 @@ public class MedicineAlerts {
             var minute = minutes.get(i);
             var week = weeks.get(i);
 
-            if (day < 0 || hour < 0 || minute < 0 || week < 0) {
-                throw new IllegalArgumentException("time cannot be <+ 0");
+            if (day <= 0 || hour < 0 || minute < 0 || week <= 0) {
+                throw new IllegalArgumentException("time cannot be < 0");
             }
 
             alertEntryRepository.save(AlertEntry.builder()
