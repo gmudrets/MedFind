@@ -25,7 +25,6 @@ function UpcomingAlerts() {
         if (getAuth().currentUser !== null) {
             const token = await getAuth().currentUser.getIdToken(true);
             const list = await getRequest(token, ServerConsts.GET_USER_ALERT_LIST);
-            console.log(list)
             setAlerts(findClosestAlerts(list));
 
 
@@ -45,7 +44,7 @@ function UpcomingAlerts() {
         console.log(data);
         let result = {};
         result['title'] = data[REM_TITLE];
-        result["medicineName"] = data[REM_DES][MEDICINE];
+        result["medicineName"] = JSON.parse(data[REM_DES])[MEDICINE];
         const time = data[REM_TYPE] === FIXED?new Date(data[FIXED_DATE]):getDateFromScheduald(data);
         console.log(time);
         let info = "";
@@ -82,10 +81,8 @@ function UpcomingAlerts() {
         const arr = [];
         for (let i = 0; i < alerts.length; i++) {
             alerts[i][FIXED_DATE] = new Date(Date.parse(alerts[i][FIXED_DATE]));
-            console.log(new Date(alerts[i][FIXED_DATE]));
             if (alerts[i][REM_TYPE] === FIXED) {
                 const timeDiff = new Date(alerts[i][FIXED_DATE]).getTime() - new Date().getTime();
-                console.log(new Date(alerts[i][FIXED_DATE]));
                 const inner = [timeDiff, alerts[i]];
                 arr.push(inner);
             } else {
